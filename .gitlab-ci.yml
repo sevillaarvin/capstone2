@@ -1,3 +1,5 @@
+image: node:alpine
+
 cache:
   paths:
     - node_modules/
@@ -6,6 +8,7 @@ before_script:
 # - apt-get update -qq && apt-get install -y -qq sshpass
 
 deploy_stage:
+  image: node:alpine
   stage: deploy
   environment: Staging
   only:

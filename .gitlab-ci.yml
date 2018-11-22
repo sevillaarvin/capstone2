@@ -26,6 +26,7 @@ deploy_stage:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | ssh-add -
 #    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - scp -r . aes@clubseville.icu:~/apps/clubseville
 

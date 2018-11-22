@@ -5,30 +5,22 @@ cache:
     - node_modules/
 
 before_script:
-# - apt-get update -qq && apt-get install -y -qq sshpass
   - which ssh-agent || ( apk --update add openssh-client )
 
 deploy_stage:
   image: node:alpine
   stage: deploy
-  environment: Staging
+  environment: Production
   only:
     - master
   script:
     - rm ./package-lock.json
-    - npm install
-#    - ./node_modules/@angular/cli/bin/ng test --progress false --single-run=true --watch=false
-#    - ./node_modules/@angular/cli/bin/ng e2e --progress false --watch=false
-#    - ./node_modules/@angular/cli/bin/ng build --progress false --prod 
-    - npm run build
-#    - cd .nuxt/
-    - ls
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | ssh-add -
-#    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - scp -P 2222 -r . aes@clubseville.icu:~/apps/clubseville
+    - rsync -avr -e "ssh -p 2222" --exclude=node_modules . aes@clubseville.icu:~/apps/clubseville
+    - ssh -p 2222 aes@clubseville.icu "cd ~/apps/clubseville; rm package-lock.json; npm install; npm run build"
 
 # deploy_production:
 #   stage: deploy

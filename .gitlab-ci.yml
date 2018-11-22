@@ -21,7 +21,7 @@ deploy_stage:
 #    - ./node_modules/@angular/cli/bin/ng e2e --progress false --watch=false
 #    - ./node_modules/@angular/cli/bin/ng build --progress false --prod 
     - npm run build
-    - cd .nuxt/
+#    - cd .nuxt/
     - ls
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | ssh-add -

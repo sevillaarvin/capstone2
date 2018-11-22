@@ -28,7 +28,7 @@ deploy_stage:
 #    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-    - scp -p 2222 -r . aes@clubseville.icu:~/apps/clubseville
+    - scp -P 2222 -r . aes@clubseville.icu:~/apps/clubseville
 
 # deploy_production:
 #   stage: deploy

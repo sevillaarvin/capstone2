@@ -24,7 +24,7 @@ deploy_stage:
     - cd .nuxt/
     - ls
     - eval $(ssh-agent -s)
-    - ssh-add < (echo "$SSH_PRIVATE_KEY")
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - scp -r . aes@clubseville.icu:~/apps/clubseville
 

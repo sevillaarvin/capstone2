@@ -6,6 +6,7 @@ cache:
 
 before_script:
 # - apt-get update -qq && apt-get install -y -qq sshpass
+  - which ssh-agent || ( apk --update add openssh-client )
 
 deploy_stage:
   image: node:alpine

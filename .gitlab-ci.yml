@@ -6,6 +6,7 @@ cache:
 
 before_script:
   - which ssh-agent || ( apk --update add openssh-client )
+  - which rsync || ( apk --update add rsync )
 
 deploy_stage:
   image: node:alpine

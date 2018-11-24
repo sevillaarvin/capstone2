@@ -2,84 +2,78 @@
   <v-toolbar>
     <v-toolbar-side-icon
       @click="$emit('drawer')"/>
-    <v-container
-      fluid
-      fill-height
-      d-flex
-      justify-start>
-      <v-toolbar-items>
+    <v-toolbar-title>
+      Brand
+    </v-toolbar-title>
+    <v-toolbar-items
+      class="hidden-md-and-down">
+      <template
+        v-for="nav in genNavs">
+        <v-menu
+          v-if="nav.dropdown"
+          :key="nav.name">
+          <v-btn
+            slot="activator"
+            flat>
+            {{ nav.name }}
+          </v-btn>
+          <v-list>
+            <v-list-tile
+              v-for="item in nav.items"
+              :key="item.name">
+              <v-list-tile-content>
+                <nuxt-link
+                  :to="item.path"
+                  tag="span">
+                  {{ item.name }}
+                </nuxt-link>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
         <v-btn
-          v-for="nav in genNavs"
+          v-else
           :key="nav.name"
           :to="nav.path"
           flat>
           {{ nav.name }}
         </v-btn>
-      </v-toolbar-items>
-      <v-toolbar-title>
-        TITLE
-      </v-toolbar-title>
-      <v-toolbar-items>
-        <v-btn
-          v-for="nav in userNavs"
-          :key="nav.name"
-          :to="nav.path"
-          flat>
-          {{ nav.name }}
-        </v-btn>
-      </v-toolbar-items>
-    </v-container>
+      </template>
+    </v-toolbar-items>
+    <v-spacer />
+    <v-toolbar-items
+      class="hidden-xs-only">
+      <v-btn
+        v-for="nav in userNavs"
+        :key="nav.name"
+        :to="nav.path"
+        flat>
+        {{ nav.name }}
+      </v-btn>
+    </v-toolbar-items>
+    <v-btn
+      icon
+      class="hidden-lg-and-up"
+      @click="$emit('navDrawer')">
+      <v-icon>more_vert</v-icon>
+    </v-btn>
   </v-toolbar>
 </template>
 
 <script>
   export default {
+    props: {
+      genNavs: {
+        type: Array,
+        required: true
+      },
+      userNavs: {
+        type: Array,
+        required: true
+      }
+    },
     data() {
       return {
-        genNavs: [
-          {
-            name: "News",
-            path: "/news"
-          },
-          {
-            name: "Events",
-            path: "/events"
-          },
-          {
-            name: "Facilities",
-            path: "/facilities"
-          },
-          {
-            name: "Membership",
-            path: "/membership"
-          },
-          {
-            name: "Store",
-            path: "/store"
-          },
-          {
-            name: "About",
-            path: "/about"
-          },
-        ],
-        userNavs: [
-          {
-            name: "Cart",
-            path: "/cart"
-          },
-          {
-            name: "Signin",
-            path: "/signin"
-          },
-          {
-            name: "Signup",
-            path: "/signup"
-          },
-          {
-            name: "Signout",
-            path: "/signout"
-          },
-        ]
       }
     },
   }

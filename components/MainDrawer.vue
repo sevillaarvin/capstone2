@@ -2,6 +2,7 @@
   <v-navigation-drawer
     :value="value"
     fixed
+    app
     temporary
     @input="$emit('input', $event)">
     <v-img />

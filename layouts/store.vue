@@ -4,12 +4,18 @@
     <TheHeader
       :gen-navs="allNavs.genNavs"
       :user-navs="allNavs.userNavs"
+      drawer
       @drawer="drawer = !drawer"
       @navDrawer="navDrawer = !navDrawer" />
     <NavDrawer
       :gen-navs="allNavs.genNavs"
       :user-navs="allNavs.userNavs"
       v-model="navDrawer" />
+    <v-content>
+      <v-container fluid>
+        <nuxt />
+      </v-container>
+    </v-content>
   </v-app>
 </template>
 
@@ -68,19 +74,25 @@
             },
           ],
           userNavs: [
-            { name: "Cart", path: "/cart"
+            {
+              name: "Cart",
+              path: "/cart",
+              icon: "shopping_cart"
             },
             {
               name: "Signin",
-              path: "/signin"
+              path: "/signin",
+              icon: "person"
             },
             {
               name: "Signup",
-              path: "/signup"
+              path: "/signup",
+              icon: "person_add"
             },
             {
               name: "Signout",
-              path: "/signout"
+              path: "/signout",
+              icon: "exit_to_app"
             },
           ]
         }

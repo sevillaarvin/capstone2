@@ -1,9 +1,18 @@
 <template>
-  <v-toolbar>
+  <v-toolbar
+    app
+    clipped-left>
     <v-toolbar-side-icon
+      v-if="drawer"
       @click="$emit('drawer')"/>
-    <v-toolbar-title>
-      Brand
+    <v-toolbar-title
+      class="pr-1">
+      <nuxt-link
+        class="cursor-pointer"
+        tag="span"
+        to="/">
+        Club Seville Int.
+      </nuxt-link>
     </v-toolbar-title>
     <v-toolbar-items
       class="hidden-md-and-down">
@@ -63,6 +72,10 @@
 <script>
   export default {
     props: {
+      drawer: {
+        type: Boolean,
+        default: false
+      },
       genNavs: {
         type: Array,
         required: true
@@ -79,5 +92,8 @@
   }
 </script>
 
-<style>
+<style scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
 </style>

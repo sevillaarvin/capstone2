@@ -6,7 +6,6 @@
     right
     temporary
     @input="$emit('input', $event)">
-    <v-img />
     <v-list
       class="hidden-lg-and-up">
       <template
@@ -38,11 +37,30 @@
           <v-list-tile-action>
             <v-icon>{{ nav.icon }}</v-icon>
           </v-list-tile-action>
-          <v-list-tile-title>
-            {{ nav.name }}
-          </v-list-tile-title>
+          <v-list-tile-content>
+            <v-list-tile-title>
+              {{ nav.name }}
+            </v-list-tile-title>
+          </v-list-tile-content>
         </v-list-tile>
       </template>
+    </v-list>
+    <v-divider
+      class="hidden-sm-and-up"/>
+    <v-list
+      class="hidden-sm-and-up">
+      <v-list-tile
+        v-for="nav in userNavs"
+        :key="nav.name"
+        :to="nav.path"
+        nuxt>
+        <v-list-tile-action>
+          <v-icon>{{ nav.icon }}</v-icon>
+        </v-list-tile-action>
+        <v-list-tile-title>
+          {{ nav.name }}
+        </v-list-tile-title>
+      </v-list-tile>
     </v-list>
   </v-navigation-drawer>
 </template>

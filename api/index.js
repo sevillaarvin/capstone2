@@ -12,8 +12,17 @@ router.use((req, res, next) => {
 })
 
 router.get("/todos", (req, res) => {
-  console.log("test")
   db.select().from("todos").then(data => {
+    console.log(data)
+    res.send(data)
+  })
+})
+
+router.get("/todos/insert", (req, res) => {
+  db("todos").insert({
+    title: "elegant todo",
+    user_id: 3
+  }).then(data => {
     console.log(data)
     res.send(data)
   })
@@ -28,6 +37,13 @@ router.get("/todos/1", (req, res) => {
 
 router.get("/todos/raw", (req, res) => {
   db.raw("select * from todos").then(data => {
+    console.log(data)
+    res.send(data)
+  })
+})
+
+router.get("/todos/raw/insert", (req, res) => {
+  db.raw("insert into todos (title, user_id) values (?, ?)", ["test todo", "2"]).then((data) => {
     console.log(data)
     res.send(data)
   })

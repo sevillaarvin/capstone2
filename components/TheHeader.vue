@@ -29,13 +29,11 @@
           <v-list>
             <v-list-tile
               v-for="item in nav.items"
-              :key="item.name">
+              :key="item.name"
+              :to="item.path"
+              class="cursor-pointer">
               <v-list-tile-content>
-                <nuxt-link
-                  :to="item.path"
-                  tag="span">
-                  {{ item.name }}
-                </nuxt-link>
+                {{ item.name }}
               </v-list-tile-content>
             </v-list-tile>
           </v-list>

@@ -11,6 +11,9 @@ router.use((req, res, next) => {
   next()
 })
 
+router.get("")
+
+/*
 router.get("/todos", (req, res) => {
   db.select().from("todos").then(data => {
     console.log(data)
@@ -18,13 +21,12 @@ router.get("/todos", (req, res) => {
   })
 })
 
-router.get("/todos/insert", (req, res) => {
-  db("todos").insert({
-    title: "elegant todo",
-    user_id: 3
-  }).then(data => {
+router.get("/todos/insert", (req, res, next) => {
+  db.insert(req.body).into("todos").then(data => {
     console.log(data)
     res.send(data)
+  }).catch(e => {
+    next(e)
   })
 })
 
@@ -56,7 +58,70 @@ router.post("/todos/raw", (req, res) => {
   })
 })
 
+router.patch("/todos/raw/update/:id", async (req, res) => {
+  const field = req.body.field
+  const value = req.body.value
+  try {
+    const response = await db.raw("update todos set " + field + " = ? where id = ?", [value, req.params.id])
+    res.status(200).send(response)
+  } catch (e) {
+    res.status(404).send(e)
+  }
+})
+
+router.patch("/todos/update/:id", async (req, res, next) => {
+  const field = req.body.field
+  const value = req.body.value
+  try {
+    const response = await db("todos").where({id: req.params.id}).update({[field]: value})
+    const newTodos = await db.select().from("todos")
+    res.status(200).send(newTodos)
+  } catch (e) {
+    console.log(e)
+    next(e)
+    // res.status(404).send(e)
+  }
+})
+
+router.delete("/todos/raw/delete/:id", async (req, res, next) => {
+  try {
+    await db.raw("delete from todos where id = ?", req.params.id)
+    res.status(200).send(await db.select().from("todos"))
+  } catch (e) {
+    next(e)
+  }
+})
+
+router.delete("/todos/delete/:id", async (req, res) => {
+  try {
+    await db("todos").where({id: req.params.id}).del()
+    res.status(200).send(await db.select().from("todos"))
+  } catch (e) {
+    next(e)
+  }
+})
+
+router.get("/todos/raw/join/:id", async (req, res, next) => {
+  try {
+    const result = await db.raw("select * from todos inner join users on todos.user_id = users.id where todos.user_id = ?", req.params.id)
+    res.status(200).send(result)
+  } catch (e) {
+    next(e)
+  }
+})
+
+router.get("/todos/join/:id", async (req, res, next) => {
+  try {
+    // const result = await db.select().from("todos").innerJoin("users", "todos.user_id", "users.id").where("id", req.params.id)
+    const result = await db.select().from("todos").innerJoin("users", "todos.user_id", "users.id").where({"todos.user_id": req.params.id})
+    res.status(200).send(result)
+  } catch (e) {
+    next(e)
+  }
+})
+*/
+
 module.exports = {
-  path: "/",
+  path: "/api",
   handler: router
 }

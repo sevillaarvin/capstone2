@@ -76,6 +76,6 @@ module.exports = {
   serverMiddleware: [
     bodyParser.json(),
     bodyParser.urlencoded({extended: false}),
-    // "~/api",
+    "~/api",
   ]
 }

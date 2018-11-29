@@ -22,7 +22,8 @@
                 class="jumbotron py-5">
                 <h1>Experience Real Luxury</h1>
                 <div>
-                  <v-btn>
+                  <v-btn
+                    @click="$router.push('/signup')">
                     Be a Member
                   </v-btn>
                 </div>

@@ -72,7 +72,7 @@
           userNavs: [
             {
               name: "Cart",
-              path: "/cart",
+              path: "/store/cart",
               icon: "shopping_cart"
             },
             {

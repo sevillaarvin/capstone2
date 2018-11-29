@@ -32,7 +32,7 @@
     },
     data() {
       return {
-        drawer: false,
+        drawer: null,
         navDrawer: false,
         allNavs: {
           genNavs: [
@@ -76,7 +76,7 @@
           userNavs: [
             {
               name: "Cart",
-              path: "/cart",
+              path: "/store/cart",
               icon: "shopping_cart"
             },
             {

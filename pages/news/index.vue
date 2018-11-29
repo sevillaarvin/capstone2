@@ -2,14 +2,7 @@
   <v-layout>
     <v-flex xs12>
       <v-container fluid>
-        <v-layout>
-          <v-flex
-            pb-3
-            xs12>
-            <h1
-              class="display-2 text-xs-center">News</h1>
-          </v-flex>
-        </v-layout>
+        <Title :title="'News'" />
         <v-layout
           v-for="test in 5"
           :key="test"
@@ -24,17 +17,15 @@
                   <v-flex
                     xs3
                     sm4
-                    md5
-                    lg6>
+                    md5>
                     <v-img
                       contain
-                      src="https://cdn.vuetifyjs.com/images/cards/desert.jpg"/>
+                      src="https://cdn.vuetifyjs.com/images/cards/desert.jpg" />
                   </v-flex>
                   <v-flex
                     xs9
                     sm8
-                    md7
-                    lg6>
+                    md7>
                     <v-card-title>
                       This Is The Headline
                     </v-card-title>
@@ -53,6 +44,13 @@
 </template>
 
 <script>
+  import Title from "~/components/TheTitle"
+
+  export default {
+    components: {
+      Title
+    }
+  }
 </script>
 
 <style>

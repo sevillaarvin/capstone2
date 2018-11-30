@@ -55,7 +55,7 @@
                                   sm6
                                   md4>
                                   <v-img
-                                    :src="item.src"
+                                    :src="item.img"
                                     contain
                                     height="100" />
                                 </v-flex>

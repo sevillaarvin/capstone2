@@ -39,10 +39,6 @@
       Sorter,
       Item
     },
-    data() {
-      return {
-      }
-    },
     computed: {
       featuredItems() {
         return this.$store.getters.featuredItems

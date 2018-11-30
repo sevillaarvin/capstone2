@@ -54,6 +54,8 @@ module.exports = {
     // See https://github.com/nuxt-community/axios-module#options
   },
 
+  middleware: [],
+
   /*
   ** Build configuration
   */
@@ -76,6 +78,6 @@ module.exports = {
   serverMiddleware: [
     bodyParser.json(),
     bodyParser.urlencoded({extended: false}),
-    // "~/api",
+    "~/api",
   ]
 }

@@ -2,13 +2,15 @@ import Vuex from 'vuex'
 
 export default () => new Vuex.Store({
   state: {
+    featuredItems: []
+    /*
     featuredItems: [
       {
         id: "item1",
         category: "cat1",
         name: "Item1",
         description: "This is description of Item1.",
-        src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa3QzcRLX4kQRxHWu7Kluz0XyqbOHQdkDEHJlGtIbEhzgfmWwB9Q",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa3QzcRLX4kQRxHWu7Kluz0XyqbOHQdkDEHJlGtIbEhzgfmWwB9Q",
         price: "100",
         rating: 5,
       },
@@ -17,7 +19,7 @@ export default () => new Vuex.Store({
         category: "cat2",
         name: "Item2",
         description: "This is description of Item2.",
-        src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa3QzcRLX4kQRxHWu7Kluz0XyqbOHQdkDEHJlGtIbEhzgfmWwB9Q",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa3QzcRLX4kQRxHWu7Kluz0XyqbOHQdkDEHJlGtIbEhzgfmWwB9Q",
         price: "100",
         rating: 4,
       },
@@ -26,25 +28,35 @@ export default () => new Vuex.Store({
         category: "cat3",
         name: "Item3",
         description: "This is description of Item3.",
-        src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa3QzcRLX4kQRxHWu7Kluz0XyqbOHQdkDEHJlGtIbEhzgfmWwB9Q",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa3QzcRLX4kQRxHWu7Kluz0XyqbOHQdkDEHJlGtIbEhzgfmWwB9Q",
         price: "100",
         rating: 3,
       },
     ]
+    */
   },
   getters: {
     featuredItems(state) {
-      // TODO: Fix featured items
-      // return state.featuredItems
-      let items = [...state.featuredItems]
-      for (let i = 0; i < 10; ++i) {
-        const item = JSON.parse(JSON.stringify(items[0]))
-        item.name += i
-        items.push(item)
-      }
-      return items
+      return state.featuredItems
     }
   },
-  mutations: {},
-  actions: {},
+  mutations: {
+    setFeaturedItems(state, items) {
+      state.featuredItems = items
+    }
+  },
+  actions: {
+    async nuxtServerInit(vuexContext, context) {
+      await vuexContext.dispatch("setFeaturedItems", context)
+    },
+    async setFeaturedItems({commit}, context) {
+      let items
+      try {
+        items = await this.$axios.$get("/api/item")
+        return commit("setFeaturedItems", items)
+      } catch (e) {
+        context.error(e)
+      }
+    }
+  },
 })

@@ -9,7 +9,7 @@
               <v-layout>
                 <v-flex xs4>
                   <v-img
-                    :src="item.src"
+                    :src="item.img"
                     contain />
                 </v-flex>
                 <v-flex xs8>

@@ -1,5 +1,5 @@
 const express = require("express")
-const db = require("./knex")
+const db = require("../db/knex")
 
 const router = express.Router()
 const app = express()
@@ -10,8 +10,59 @@ router.use((req, res, next) => {
   res.req = req
   next()
 })
+app.use(router)
 
-router.get("")
+router.get("/item", async (req, res, next) => {
+  let items
+
+  if (req.query && req.query.hasOwnProperty("featured")) {
+    // TODO: retrieve featured items only
+    try {
+      items = await db.select().from("item")
+    } catch (e) {
+      console.log(e)
+      res.status(500).send()
+    }
+  } else {
+    try {
+      items = await db.select().from("item")
+    } catch (e) {
+      console.log(e)
+      res.status(500).send()
+    }
+  }
+  res.status(200).send(items)
+})
+
+router.get("/item/:id", async (req, res, next) => {
+  let item
+
+  try {
+    item = await db.select()
+      .from("item")
+      .where({id: req.params.id})
+  } catch (e) {
+    console.log(e)
+    res.status(500).send()
+  }
+
+  res.status(200).send(item)
+})
+
+router.get("/member/:id", async (req, res, next) => {
+  let member
+
+  try {
+    member = await db.select(/* which columns? */)
+      .from("member")
+      .where({id: req.params.id})
+  } catch (e) {
+    console.log(e)
+    res.status(500).send()
+  }
+
+  res.status(200).send(member)
+})
 
 /*
 router.get("/todos", (req, res) => {
@@ -123,5 +174,6 @@ router.get("/todos/join/:id", async (req, res, next) => {
 
 module.exports = {
   path: "/api",
-  handler: router
+  handler: router,
+  app
 }

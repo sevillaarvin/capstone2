@@ -3,7 +3,7 @@
     :to="'/store/' + item.category + '/' + item.id"
     nuxt>
     <v-img
-      :src="item.src" />
+      :src="item.img" />
     <v-card-title
       class="justify-center font-weight-bold">
       {{ item.name }}

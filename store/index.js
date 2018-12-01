@@ -2,40 +2,75 @@ import Vuex from 'vuex'
 
 export default () => new Vuex.Store({
   state: {
-    featuredItems: []
-    /*
-    featuredItems: [
-      {
-        id: "item1",
-        category: "cat1",
-        name: "Item1",
-        description: "This is description of Item1.",
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa3QzcRLX4kQRxHWu7Kluz0XyqbOHQdkDEHJlGtIbEhzgfmWwB9Q",
-        price: "100",
-        rating: 5,
-      },
-      {
-        id: "item2",
-        category: "cat2",
-        name: "Item2",
-        description: "This is description of Item2.",
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa3QzcRLX4kQRxHWu7Kluz0XyqbOHQdkDEHJlGtIbEhzgfmWwB9Q",
-        price: "100",
-        rating: 4,
-      },
-      {
-        id: "item3",
-        category: "cat3",
-        name: "Item3",
-        description: "This is description of Item3.",
-        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa3QzcRLX4kQRxHWu7Kluz0XyqbOHQdkDEHJlGtIbEhzgfmWwB9Q",
-        price: "100",
-        rating: 3,
-      },
-    ]
-    */
+    allNavs: {
+      genNavs: [
+        {
+          dropdown: true,
+          name: "News & Events",
+          items: [
+            {
+              name: "News",
+              path: "/news",
+              icon: "rss_feed"
+            },
+            {
+              name: "Events",
+              path: "/events",
+              icon: "event_note"
+            },
+          ]
+        },
+        {
+          name: "Facilities",
+          path: "/facilities",
+          icon: "pool"
+        },
+        {
+          name: "Membership",
+          path: "/membership",
+          icon: "card_membership"
+        },
+        {
+          name: "Store",
+          path: "/store",
+          icon: "store_mall_directory"
+        },
+        {
+          name: "About",
+          path: "/about",
+          icon: "sentiment_satisfied_alt"
+        },
+      ],
+      userNavs: [
+        {
+          name: "Cart",
+          path: "/store/cart",
+          icon: "shopping_cart"
+        },
+        {
+          name: "Signin",
+          path: "/signin",
+          icon: "person"
+        },
+        {
+          name: "Signup",
+          path: "/signup",
+          icon: "person_add"
+        },
+        {
+          name: "Signout",
+          path: "/signout",
+          icon: "exit_to_app"
+        },
+      ]
+    },
+    featuredItems: [],
+    user: {}
   },
   getters: {
+    allNavs(state) {
+      return state.allNavs
+    },
     featuredItems(state) {
       return state.featuredItems
     }
@@ -43,6 +78,9 @@ export default () => new Vuex.Store({
   mutations: {
     setFeaturedItems(state, items) {
       state.featuredItems = items
+    },
+    signUpUser(state, user) {
+      state.user = user
     }
   },
   actions: {
@@ -52,11 +90,19 @@ export default () => new Vuex.Store({
     async setFeaturedItems({commit}, context) {
       let items
       try {
-        items = await this.$axios.$get("/api/item")
+        items = await this.$axios.$get("/item")
         return commit("setFeaturedItems", items)
       } catch (e) {
         context.error(e)
       }
+    },
+    async signUpUser({commit}, user) {
+      try {
+        await this.$axios.$post("/member", user)
+      } catch (e) {
+        return Promise.reject(e)
+      }
+      commit("signUpUser", user)
     }
   },
 })

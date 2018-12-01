@@ -13,7 +13,8 @@
           class="justify-center">
           <h1>Sign-up</h1>
         </v-card-title>
-        <v-form>
+        <v-form
+          @submit.prevent="onSubmit">
           <v-container>
             <v-layout
               row
@@ -22,6 +23,7 @@
                 xs12
                 sm6>
                 <v-text-field
+                  v-model="user.firstName"
                   type="text"
                   label="First Name"/>
               </v-flex>
@@ -29,6 +31,7 @@
                 xs12
                 sm6>
                 <v-text-field
+                  v-model="user.lastName"
                   type="text"
                   label="Last Name"/>
               </v-flex>
@@ -36,6 +39,7 @@
             <v-layout>
               <v-flex xs12>
                 <v-text-field
+                  v-model="user.username"
                   type="text"
                   label="Username"/>
               </v-flex>
@@ -43,6 +47,7 @@
             <v-layout>
               <v-flex xs12>
                 <v-text-field
+                  v-model="user.email"
                   type="email"
                   label="Email"/>
               </v-flex>
@@ -50,6 +55,7 @@
             <v-layout>
               <v-flex xs12>
                 <v-text-field
+                  v-model="user.password"
                   type="password"
                   label="Password" />
               </v-flex>
@@ -57,6 +63,7 @@
             <v-layout>
               <v-flex xs12>
                 <v-text-field
+                  v-model="user.confirmPassword"
                   type="password"
                   label="Confirm Password" />
               </v-flex>
@@ -64,7 +71,8 @@
             <v-layout>
               <v-flex xs12>
                 <v-btn
-                  block>
+                  block
+                  type="submit">
                   Submit
                 </v-btn>
               </v-flex>
@@ -77,7 +85,32 @@
 </template>
 
 <script>
-  export default {}
+  export default {
+    data() {
+      return {
+        user: {
+          firstName: "",
+          lastName: "",
+          email: "",
+          username: "",
+          password: "",
+          confirmPassword: "",
+        }
+      }
+    },
+    methods: {
+      onSubmit() {
+        const {confirmPassword, ...user} = this.user
+        this.$store.dispatch("signUpUser", user)
+        .then(res => {
+          this.$router.push("/signin")
+        })
+        .catch(e => {
+          console.error(e)
+        })
+      }
+    }
+  }
 </script>
 
 <style>

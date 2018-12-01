@@ -23,6 +23,7 @@ module.exports = {
   /*
   ** Customize the progress-bar color
   */
+  // TODO: Setup Loading
   loading: { color: '#fff' },
 
   /*
@@ -52,6 +53,7 @@ module.exports = {
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
+    baseURL: "http://localhost:3000/api"
   },
 
   middleware: [],
@@ -73,11 +75,22 @@ module.exports = {
           exclude: /(node_modules)/
         })
       }
-    }
+    },
+
+    watch: ["api", "db"]
   },
+
   serverMiddleware: [
+    /*
     bodyParser.json(),
     bodyParser.urlencoded({extended: false}),
+    */
     "~/api",
-  ]
+  ],
+
+  vue: {
+    config: {
+      productionTip: false
+    }
+  }
 }

@@ -16,13 +16,14 @@
     "test-watch": "nodemon --exec \"npm test\"",
     "deploy:test": "npm run setupenv:test",
     "presetupenv:test": "npm install",
-    "setupenv:test": "cross-env-shell NODE_ENV=production PORT=3001 DATABASE_URL=postgres://aes:password@localhost/nextseville API_URL=http://localhost:3001 API_URL_BROWSER=https://next.clubseville.icu \"npm test && npm run build:test && npm run start:test\"",
+    "setupenv:test": "cross-env-shell NODE_ENV=production PORT=3001 DATABASE_URL=postgres://aes:password@localhost/nextseville API_URL=http://localhost:3001/api API_URL_BROWSER=https://next.clubseville.icu/api \"npm test && npm run build:test && npm run start:test\"",
     "prebuild:test": "psql -U aes -tc \"SELECT 1 FROM pg_database WHERE datname = 'nextseville'\" | grep -q 1 || psql -U aes -c \"CREATE DATABASE nextseville\"",
     "build:test": "npm run build",
     "prestart:test": "pm2 -s delete nextseville || :",
     "start:test": "pm2 start server/index.js --name nextseville",
     "deploy:prod": "npm run setupenv:prod",
-    "setupenv:prod": "cross-env-shell NODE_ENV=production PORT=4001 DATABASE_URL=postgres://aes:password@localhost/clubseville API_URL=http://localhost:4001 API_URL_BROWSER=https://clubseville.icu \"npm test && npm run build:prod && npm run start:prod\"",
+    "presetupenv:prod": "npm install",
+    "setupenv:prod": "cross-env-shell NODE_ENV=production PORT=4001 DATABASE_URL=postgres://aes:password@localhost/clubseville API_URL=http://localhost:4001/api API_URL_BROWSER=https://clubseville.icu/api \"npm test && npm run build:prod && npm run start:prod\"",
     "prebuild:prod": "psql -U aes -tc \"SELECT 1 FROM pg_database WHERE datname = 'clubseville'\" | grep -q 1 || psql -U aes -c \"CREATE DATABASE clubseville\"",
     "build:prod": "npm run build",
     "prestart:prod": "pm2 -s delete clubseville || :",
@@ -37,8 +38,8 @@
     "jsonwebtoken": "^8.4.0",
     "knex": "^0.16.0-next5",
     "nuxt": "^2.3.4",
-    "pg": "^7.6.1",
-    "vuetify": "^1.3.9"
+    "pg": "^7.7.1",
+    "vuetify": "^1.3.11"
   },
   "devDependencies": {
     "babel-eslint": "^8.2.1",

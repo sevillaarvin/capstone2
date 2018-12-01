@@ -10,6 +10,9 @@ before(done => {
     return db.seed.run()
   }).then(() => {
     done()
+  }).catch(e => {
+    console.error(e.message)
+    console.error(e.detail)
   })
 })
 

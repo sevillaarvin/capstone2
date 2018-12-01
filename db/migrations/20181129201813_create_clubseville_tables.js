@@ -75,6 +75,25 @@ exports.up = function(knex, Promise) {
       table.decimal("price", 15, 6).notNullable()
     })
 
+    .createTable("cart", table => {
+      table.increments()
+      table.integer("member_id").notNullable()
+      table.foreign("member_id").references("id").inTable("member")
+      table.integer("order_id").unique()
+      table.foreign("order_id").references("id").inTable("order")
+      table.timestamp("created_at").notNullable().defaultTo(knex.fn.now())
+    })
+    
+    .createTable("cart_item", table => {
+      table.increments()
+      table.integer("cart_id").notNullable()
+      table.foreign("cart_id").references("id").inTable("cart")
+      table.integer("item_id").notNullable()
+      table.foreign("item_id").references("id").inTable("item")
+      table.unique(["cart_id", "item_id"])
+      table.integer("quantity").notNullable()
+    })
+
     /*
     .createTable("", table => {
       table.increments()
@@ -83,6 +102,7 @@ exports.up = function(knex, Promise) {
     .then(() => {
       knex.raw("alter table rating add check (stars between 1 and 5)").then(() => {})
       knex.raw("alter table order_detail add check (quantity > 0)").then(() => {})
+      knex.raw("alter table cart_item add check (quantity > 0)").then(() => {})
     })
     .catch(e => {
       console.log(e)
@@ -96,6 +116,8 @@ exports.down = function(knex, Promise) {
 
 const dropTables = (knex, Promise) => {
   return knex.schema
+    .dropTableIfExists("cart_item")
+    .dropTableIfExists("cart")
     .dropTableIfExists("order_detail")
     .dropTableIfExists("order")
     .dropTableIfExists("status")

@@ -9,53 +9,101 @@ exports.up = function(knex, Promise) {
       table.text("email").notNullable().unique()
       table.text("username").notNullable().unique()
       table.text("password").notNullable()
+      table.date("birthdate")
+      table.text("address")
+      table.timestamp("created_at").notNullable().defaultTo(knex.fn.now())
     })
+
     .createTable("category", table => {
       table.increments()
       table.text("name").notNullable()
     })
+
+    .createTable("size", table => {
+      table.increments()
+      table.text("name").notNullable()
+    })
+
     .createTable("item", table => {
       table.increments()
+      table.text("sku").notNullable().unique()
       table.text("name").notNullable()
       table.integer("category_id").notNullable()
       table.foreign("category_id").references("id").inTable("category")
       table.text("description").notNullable()
       table.text("img")
-      // integer - store money in cents
-      table.integer("price").notNullable()
+      table.decimal("price", 15, 6).notNullable()
+      table.decimal("discount", 15, 6).notNullable()
+      table.integer("size_id")
+      table.foreign("size_id").references("id").inTable("size")
     })
+    
     .createTable("rating", table => {
       table.increments()
       table.integer("member_id").notNullable()
       table.foreign("member_id").references("id").inTable("member")
       table.integer("item_id").notNullable()
       table.foreign("item_id").references("id").inTable("item")
-      table.integer("rating").notNullable().unsigned()
+      table.unique(["member_id", "item_id"])
+      table.integer("stars").notNullable().unsigned()
     })
+
+    .createTable("status", table => {
+      table.increments()
+      table.text("name").notNullable()
+    })
+
+    .createTable("order", table => {
+      table.increments()
+      table.integer("member_id").notNullable()
+      table.foreign("member_id").references("id").inTable("member")
+      table.timestamp("order_at").notNullable().defaultTo(knex.fn.now())
+      table.text("ship_to").notNullable()
+      table.integer("status_id").notNullable().defaultTo(1)
+      table.foreign("status_id").references("id").inTable("status")
+      table.timestamp("ship_at")
+      table.timestamp("deliver_at")
+    })
+
+    .createTable("order_detail", table => {
+      table.increments()
+      table.integer("order_id").notNullable()
+      table.foreign("order_id").references("id").inTable("order")
+      table.integer("item_id").notNullable()
+      table.foreign("item_id").references("id").inTable("item")
+      table.integer("quantity").notNullable()
+      table.decimal("price", 15, 6).notNullable()
+    })
+
     /*
     .createTable("", table => {
       table.increments()
     })
     */
     .then(() => {
-      knex.raw("alter table rating add check (rating between 1 and 5)").then(() => {})
+      knex.raw("alter table rating add check (stars between 1 and 5)").then(() => {})
+      knex.raw("alter table order_detail add check (quantity > 0)").then(() => {})
     })
     .catch(e => {
       console.log(e)
-      return knex.schema
-        .dropTableIfExists("rating")
-        .dropTableIfExists("item")
-        .dropTableIfExists("category")
-        .dropTableIfExists("member")
+      return dropTables(knex, Promise)
     })
 };
 
 exports.down = function(knex, Promise) {
+  return dropTables(knex, Promise)
+};
+
+const dropTables = (knex, Promise) => {
   return knex.schema
+    .dropTableIfExists("order_detail")
+    .dropTableIfExists("order")
+    .dropTableIfExists("status")
     .dropTableIfExists("rating")
     .dropTableIfExists("item")
+    .dropTableIfExists("size")
     .dropTableIfExists("category")
     .dropTableIfExists("member")
-};
+}
 
 exports.config = { transaction: false }

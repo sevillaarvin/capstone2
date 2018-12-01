@@ -22,6 +22,8 @@ exports.seed = async function(knex, Promise) {
           email: "john@smith.com",
           username: "smithjohn",
           password: password1,
+          birthdate: "2011-01-01",
+          address: "123 Lombard Street, Philadelphia",
         },
         {
           firstName: "Jaden",
@@ -29,6 +31,8 @@ exports.seed = async function(knex, Promise) {
           email: "jaden@smith.com",
           username: "smithjaden",
           password: password2,
+          birthdate: "2010-01-01",
+          address: "99 Xiexie Ave, Beijing",
         },
         {
           firstName: "Juan",
@@ -36,6 +40,8 @@ exports.seed = async function(knex, Promise) {
           email: "juan@felipe.com",
           username: "felipejuan",
           password: password3,
+          birthdate: "2009-01-01",
+          address: "122 Wallaby, Sydney",
         },
       ]);
     });

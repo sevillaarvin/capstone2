@@ -6,25 +6,33 @@ exports.seed = function(knex, Promise) {
       // Inserts seed entries
       return knex('item').insert([
         {
+          sku: "APMSTR0001",
           name: "Swimming Trunks",
           category_id: 1,
           description: "These are swimming trunks.",
           img: "https://cdn.vuetifyjs.com/images/cards/halcyon.png",
-          price: 100000
+          price: 1000,
+          discount: 500,
+          size_id: 2,
         },
         {
+          sku: "APFTPI0001",
           name: "Two Piece",
           category_id: 2,
           description: "These are two piece.",
           img: "https://cdn.vuetifyjs.com/images/cards/halcyon.png",
-          price: 200000
+          price: 2000,
+          discount: 0,
+          size_id: 3,
         },
         {
+          sku: "ACCGOG0001",
           name: "Swimming Goggles",
           category_id: 3,
           description: "These are goggles.",
           img: "https://cdn.vuetifyjs.com/images/cards/halcyon.png",
-          price: 50000
+          price: 500,
+          discount: 5,
         },
       ]);
     });

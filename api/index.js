@@ -12,6 +12,62 @@ router.use((req, res, next) => {
 })
 app.use(router)
 
+const getId = async (req, res) => {
+  let result
+
+  try {
+    result = await db.select(/* which columns? */)
+      .from(res.locals.table)
+      .where({id: req.params.id})
+      .first()
+  } catch (e) {
+    res.status(404).send()
+  }
+
+  if (!result) {
+    res.status(404).send()
+  }
+
+  res.status(200).send(result)
+}
+
+const getAll = async (req, res) => {
+  let results
+
+  try {
+    results = await db.select()
+      .from(res.locals.table)
+  } catch (e) {
+    res.status(500).send()
+  }
+  res.status(200).send(results)
+}
+
+router.get("/member/:id", (req, res, next) => {
+  res.locals.table = "member"
+  next()
+}, getId)
+
+router.get("/category", (req, res, next) => {
+  res.locals.table = "category"
+  next()
+}, getAll)
+
+router.get("/category/:id", (req, res, next) => {
+  res.locals.table = "category"
+  next()
+}, getId)
+
+router.get("/size", (req, res, next) => {
+  res.locals.table = "size"
+  next()
+}, getAll)
+
+router.get("/size/:id", (req, res, next) => {
+  res.locals.table = "size"
+  next()
+}, getId)
+
 router.get("/item", async (req, res, next) => {
   let items
 
@@ -19,158 +75,52 @@ router.get("/item", async (req, res, next) => {
     // TODO: retrieve featured items only
     try {
       items = await db.select().from("item")
+      res.status(200).send(items)
     } catch (e) {
-      console.log(e)
       res.status(500).send()
     }
   } else {
+    res.locals.table = "item"
+    next()
+  }
+}, getAll)
+
+router.get("/item/:id", (req, res, next) => {
+  res.locals.table = "item"
+  next()
+}, getId)
+
+router.get("/order/:id", async (req, res, next) => {
+  res.locals.table = "order"
+  next()
+}, getId)
+
+router.get("/order_detail", async (req, res, next) => {
+  if (req.query && req.query.orderId) {
+    let order_details
+
     try {
-      items = await db.select().from("item")
+      order_details = await db.select()
+        .from("order_detail")
+        .where({order_id: req.query.orderId})
     } catch (e) {
-      console.log(e)
-      res.status(500).send()
+      res.status(404).send()
     }
+
+    if (!order_details) {
+      res.status(404).send()
+    }
+
+    res.status(200).send(order_details)
+  } else {
+    res.status(400).send()
   }
-  res.status(200).send(items)
-})
+}, getId)
 
-router.get("/item/:id", async (req, res, next) => {
-  let item
-
-  try {
-    item = await db.select()
-      .from("item")
-      .where({id: req.params.id})
-  } catch (e) {
-    console.log(e)
-    res.status(500).send()
-  }
-
-  res.status(200).send(item)
-})
-
-router.get("/member/:id", async (req, res, next) => {
-  let member
-
-  try {
-    member = await db.select(/* which columns? */)
-      .from("member")
-      .where({id: req.params.id})
-  } catch (e) {
-    console.log(e)
-    res.status(500).send()
-  }
-
-  res.status(200).send(member)
-})
-
-/*
-router.get("/todos", (req, res) => {
-  db.select().from("todos").then(data => {
-    console.log(data)
-    res.send(data)
-  })
-})
-
-router.get("/todos/insert", (req, res, next) => {
-  db.insert(req.body).into("todos").then(data => {
-    console.log(data)
-    res.send(data)
-  }).catch(e => {
-    next(e)
-  })
-})
-
-router.get("/todos/1", (req, res) => {
-  db.select().from("todos").where("id", 1).then(data => {
-    console.log(data)
-    res.send(data)
-  })
-})
-
-router.get("/todos/raw", (req, res) => {
-  db.raw("select * from todos").then(data => {
-    console.log(data)
-    res.send(data)
-  })
-})
-
-router.get("/todos/raw/insert", (req, res) => {
-  db.raw("insert into todos (title, user_id) values (?, ?)", ["test todo", "2"]).then((data) => {
-    console.log(data)
-    res.send(data)
-  })
-})
-
-router.post("/todos/raw", (req, res) => {
-  res.send(req.body)
-  db.raw("select * from todos").then(data => {
-    console.log(data)
-  })
-})
-
-router.patch("/todos/raw/update/:id", async (req, res) => {
-  const field = req.body.field
-  const value = req.body.value
-  try {
-    const response = await db.raw("update todos set " + field + " = ? where id = ?", [value, req.params.id])
-    res.status(200).send(response)
-  } catch (e) {
-    res.status(404).send(e)
-  }
-})
-
-router.patch("/todos/update/:id", async (req, res, next) => {
-  const field = req.body.field
-  const value = req.body.value
-  try {
-    const response = await db("todos").where({id: req.params.id}).update({[field]: value})
-    const newTodos = await db.select().from("todos")
-    res.status(200).send(newTodos)
-  } catch (e) {
-    console.log(e)
-    next(e)
-    // res.status(404).send(e)
-  }
-})
-
-router.delete("/todos/raw/delete/:id", async (req, res, next) => {
-  try {
-    await db.raw("delete from todos where id = ?", req.params.id)
-    res.status(200).send(await db.select().from("todos"))
-  } catch (e) {
-    next(e)
-  }
-})
-
-router.delete("/todos/delete/:id", async (req, res) => {
-  try {
-    await db("todos").where({id: req.params.id}).del()
-    res.status(200).send(await db.select().from("todos"))
-  } catch (e) {
-    next(e)
-  }
-})
-
-router.get("/todos/raw/join/:id", async (req, res, next) => {
-  try {
-    const result = await db.raw("select * from todos inner join users on todos.user_id = users.id where todos.user_id = ?", req.params.id)
-    res.status(200).send(result)
-  } catch (e) {
-    next(e)
-  }
-})
-
-router.get("/todos/join/:id", async (req, res, next) => {
-  try {
-    // const result = await db.select().from("todos").innerJoin("users", "todos.user_id", "users.id").where("id", req.params.id)
-    const result = await db.select().from("todos").innerJoin("users", "todos.user_id", "users.id").where({"todos.user_id": req.params.id})
-    res.status(200).send(result)
-  } catch (e) {
-    next(e)
-  }
-})
-*/
+router.get("/order_detail/:id", async (req, res, next) => {
+  res.locals.table = "order_detail"
+  next()
+}, getId)
 
 module.exports = {
   path: "/api",

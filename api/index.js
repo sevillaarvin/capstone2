@@ -1,4 +1,6 @@
 const express = require("express")
+const bodyParser = require("body-parser")
+const bcrypt = require("bcryptjs")
 const db = require("../db/knex")
 
 const router = express.Router()
@@ -10,6 +12,8 @@ router.use((req, res, next) => {
   res.req = req
   next()
 })
+router.use(bodyParser.json())
+router.use(bodyParser.urlencoded({extended: false}))
 app.use(router)
 
 const getId = async (req, res) => {
@@ -47,6 +51,19 @@ router.get("/member/:id", (req, res, next) => {
   res.locals.table = "member"
   next()
 }, getId)
+
+router.post("/member", async (req, res) => {
+  let result
+
+  try {
+    const member = req.body
+    member.password = await bcrypt.hash(member.password, 10)
+    result = await db.insert(member, "id").into("member")
+  } catch (e) {
+    res.status(500).send()
+  }
+  res.status(200).send(result)
+})
 
 router.get("/category", (req, res, next) => {
   res.locals.table = "category"

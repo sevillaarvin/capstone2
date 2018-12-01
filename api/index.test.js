@@ -30,6 +30,58 @@ describe("GET /member/id", () => {
   })
 })
 
+describe("POST /member", () => {
+  it("should register the user", done => {
+    request(app)
+      .post("/member")
+      .send({
+        firstName: "Tiffany",
+        lastName: "Tester",
+        email: "tif@test.com",
+        username: "testtif",
+        password: "passwordtiff",
+        birthdate: "1990-01-01",
+        address: "Somewhere in America",
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body).to.be.an("array")
+        expect(res.body).to.have.length(1)
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should hash the user's password", done => {
+    request(app)
+      .post("/member")
+      .send({
+        firstName: "Gerald",
+        lastName: "Gregor",
+        email: "ger@mane.com",
+        username: "geraldgreg",
+        password: "shouldbehashed",
+        birthdate: "2000-08-08",
+        address: "18 Open Street, Ohio",
+      })
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err)
+        db.select("password")
+          .from("member")
+          .where({id: res.body[0]})
+          .first()
+          .then(res => {
+            expect(res).to.be.an("object")
+            expect(res.password).to.not.be.equal("shouldbehashed")
+            done()
+        }).catch(e => done(e))
+      })
+  })
+})
+
 describe("GET /category", () => {
   it("should return all categories", done => {
     request(app)

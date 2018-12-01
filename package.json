@@ -15,7 +15,7 @@
     "test": "mocha --exit \"./{,!(node_modules)/**/}*.test.js\"",
     "test-watch": "nodemon --exec \"npm test\"",
     "deploy:test": "npm run setupenv:test",
-    "presetupenv:test": "git pull github next && npm install",
+    "presetupenv:test": "npm install",
     "setupenv:test": "cross-env-shell NODE_ENV=production PORT=3001 DATABASE_URL=postgres://aes:password@localhost/nextseville API_URL=http://localhost:3001 API_URL_BROWSER=https://next.clubseville.icu \"npm test && npm run build:test && npm run start:test\"",
     "prebuild:test": "psql -U aes -tc \"SELECT 1 FROM pg_database WHERE datname = 'nextseville'\" | grep -q 1 || psql -U aes -c \"CREATE DATABASE nextseville\"",
     "build:test": "npm run build",

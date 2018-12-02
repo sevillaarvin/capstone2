@@ -13,18 +13,28 @@
           class="justify-center">
           <h1>Sign-in</h1>
         </v-card-title>
-        <v-form>
+        <!-- TODO: Convert to snackbar -->
+        <v-alert 
+          v-model="showError"
+          type="error"
+          dismissible>
+          {{ errorMessage }}
+        </v-alert>
+        <v-form
+          @submit.prevent="onSubmit">
           <v-container>
             <v-layout>
               <v-flex xs12>
                 <v-text-field
+                  v-model="user.username"
                   type="text"
-                  label="Username"/>
+                  label="Username or Email"/>
               </v-flex>
             </v-layout>
             <v-layout>
               <v-flex xs12>
                 <v-text-field
+                  v-model="user.password"
                   type="password"
                   label="Password" />
               </v-flex>
@@ -47,7 +57,8 @@
             <v-layout>
               <v-flex xs12>
                 <v-btn
-                  block>
+                  block
+                  type="submit">
                   Submit
                 </v-btn>
               </v-flex>
@@ -60,7 +71,38 @@
 </template>
 
 <script>
-  export default {}
+  export default {
+    data() {
+      return {
+        user: {
+          username: "",
+          password: ""
+        },
+        showError: false,
+        errorMessage: ""
+      }
+    },
+    created() {
+      if (this.$auth.$state.loggedIn) {
+        this.$router.replace("/dashboard")
+      }
+    },
+    methods: {
+      async onSubmit() {
+        await this.$auth.loginWith("local", {
+          data: this.user
+        }).catch(e => {
+          const status = e.response.status
+          const message = e.response.data
+          if (status == 400 || status == 404) {
+            this.errorMessage = message
+            this.showError = true
+          }
+        })
+        console.log(JSON.stringify(this.$auth.$state, null, 2))
+      }
+    }
+  }
 </script>
 
 <style>

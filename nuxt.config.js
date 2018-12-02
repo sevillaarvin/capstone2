@@ -46,15 +46,23 @@ module.exports = {
   */
   modules: [
     // Doc: https://github.com/nuxt-community/axios-module#usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    "@nuxtjs/auth"
   ],
   /*
   ** Axios module configuration
   */
   axios: {
     // See https://github.com/nuxt-community/axios-module#options
-    baseURL: "http://localhost:3000/api"
+    baseURL: "http://localhost:3000/api",
+    // proxy: true
   },
+
+  /*
+  proxy: {
+    "/api": "http://localhost:3000"
+  },
+  */
 
   middleware: [],
 
@@ -81,16 +89,46 @@ module.exports = {
   },
 
   serverMiddleware: [
-    /*
     bodyParser.json(),
     bodyParser.urlencoded({extended: false}),
-    */
     "~/api",
   ],
 
   vue: {
     config: {
       productionTip: false
+    }
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: {
+            url: "/signin",
+            method: "post",
+            propertyName: "token"
+          },
+          logout: false,
+          user: {
+            url: "/user",
+            method: "get",
+            propertyName: "user"
+          }
+        }
+      }
+    },
+    // redirect: false
+    redirect: {
+    /*
+      login: "/signin",
+      // user: "/dashboard",
+      callback: "/",
+    */
+      login: false,
+      callback: false,
+      logout: "/",
+      home: "/dashboard"
     }
   }
 }

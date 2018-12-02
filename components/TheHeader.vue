@@ -50,13 +50,23 @@
     <v-spacer />
     <v-toolbar-items
       class="hidden-xs-only">
-      <v-btn
-        v-for="nav in userNavs"
-        :key="nav.name"
-        :to="nav.path"
-        flat>
-        {{ nav.name }}
-      </v-btn>
+      <template
+        v-for="nav in userNavs">
+        <v-btn
+          v-if="!nav.guard"
+          :key="nav.name"
+          :to="nav.path"
+          flat>
+          {{ nav.name }}
+        </v-btn>
+        <v-btn
+          v-else-if="nav.auth == $auth.$state.loggedIn"
+          :key="nav.name"
+          :to="nav.path"
+          flat>
+          {{ nav.name }}
+        </v-btn>
+      </template>
     </v-toolbar-items>
     <v-btn
       icon

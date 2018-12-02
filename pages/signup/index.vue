@@ -98,15 +98,19 @@
         }
       }
     },
+    created() {
+      if (this.$auth.$state.loggedIn) {
+        this.$router.replace("/dashboard")
+      }
+    },
     methods: {
       onSubmit() {
-        const {confirmPassword, ...user} = this.user
+        const { confirmPassword, ...user } = this.user
         this.$store.dispatch("signUpUser", user)
         .then(res => {
           this.$router.push("/signin")
         })
         .catch(e => {
-          console.error(e)
         })
       }
     }

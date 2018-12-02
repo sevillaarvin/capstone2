@@ -50,17 +50,23 @@ export default () => new Vuex.Store({
         {
           name: "Signin",
           path: "/signin",
-          icon: "person"
+          icon: "person",
+          guard: true,
+          auth: false
         },
         {
           name: "Signup",
           path: "/signup",
-          icon: "person_add"
+          icon: "person_add",
+          guard: true,
+          auth: false
         },
         {
           name: "Signout",
           path: "/signout",
-          icon: "exit_to_app"
+          icon: "exit_to_app",
+          guard: true,
+          auth: true
         },
       ]
     },
@@ -98,7 +104,7 @@ export default () => new Vuex.Store({
     },
     async signUpUser({commit}, user) {
       try {
-        await this.$axios.$post("/member", user)
+        await this.$axios.$post("/signup", user)
       } catch (e) {
         return Promise.reject(e)
       }

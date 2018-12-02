@@ -1,16 +1,12 @@
 <template>
   <v-layout>
-    <v-flex xs12>
-      You will automatically be redirected.
-    </v-flex>
+    DASHBOARD
   </v-layout>
 </template>
 
 <script>
   export default {
     created() {
-      console.log(JSON.stringify(this.$auth.$state, null, 2))
-      this.$auth.logout()
       console.log(JSON.stringify(this.$auth.$state, null, 2))
     }
   }

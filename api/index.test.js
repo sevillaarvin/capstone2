@@ -33,23 +33,27 @@ describe("GET /member/id", () => {
   })
 })
 
-describe("POST /member", () => {
+describe("POST /signup", () => {
   it("should register the user", done => {
     request(app)
-      .post("/member")
+      .post("/signup")
       .send({
         firstName: "Tiffany",
         lastName: "Tester",
         email: "tif@test.com",
-        username: "testtif",
-        password: "passwordtiff",
+        username: "test",
+        password: "test",
         birthdate: "1990-01-01",
         address: "Somewhere in America",
       })
       .expect(200)
       .expect(res => {
-        expect(res.body).to.be.an("array")
-        expect(res.body).to.have.length(1)
+        expect(res.body).to.be.an("object")
+        expect(res.body).to.have.all.keys("userId", "token")
+        expect(res.body.userId)
+          .to.be.a("number")
+        expect(res.body.token)
+          .to.be.a("string")
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -59,7 +63,7 @@ describe("POST /member", () => {
 
   it("should hash the user's password", done => {
     request(app)
-      .post("/member")
+      .post("/signup")
       .send({
         firstName: "Gerald",
         lastName: "Gregor",
@@ -74,13 +78,107 @@ describe("POST /member", () => {
         if (err) return done(err)
         db.select("password")
           .from("member")
-          .where({id: res.body[0]})
+          .where({id: res.body.userId})
           .first()
           .then(res => {
             expect(res).to.be.an("object")
             expect(res.password).to.not.be.equal("shouldbehashed")
             done()
         }).catch(e => done(e))
+      })
+  })
+
+  it("should not register an existing username", done => {
+    request(app)
+      .post("/signup")
+      .send({
+        firstName: "Gerald",
+        lastName: "Gregor",
+        email: "ger@mane.com",
+        username: "geraldgreg",
+        password: "shouldbehashed",
+        birthdate: "2000-08-08",
+        address: "18 Open Street, Ohio",
+      })
+      // TODO: Should expect 403 Forbidden
+      .expect(500)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not register when required fields are missing", done => {
+    request(app)
+      .post("/signup")
+      .send({
+        these: "fields",
+        are: "invalid",
+        password: "asdf"
+      })
+      .expect(400)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("POST /signin", () => {
+  it("should sign in the user", done => {
+    request(app)
+      .post("/signin")
+      .send({
+        username: "test",
+        password: "test",
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body).to.be.an("object")
+        expect(res.body).to.have.all.keys("userId", "token")
+        expect(res.body.userId)
+          .to.be.a("number")
+        expect(res.body.token)
+          .to.be.a("string")
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not sign in invalid user", done => {
+    request(app)
+      .post("/signin")
+      .send({
+        username: "asdfasdf",
+        password: "i am invalid",
+      })
+      .expect(404)
+      .expect(res => {
+        expect(res.text).to.be.a("string")
+          .to.be.equal("Invalid username or password.")
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not signin if required fields are missing", done => {
+    request(app)
+      .post("/signin")
+      .send({
+        what: "the"
+      })
+      .expect(400)
+      .expect(res => {
+        expect(res.text).to.be.a("string")
+          .to.be.equal("A valid username and password is required.")
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
       })
   })
 })

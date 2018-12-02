@@ -1,10 +1,15 @@
 const express = require("express")
 const bodyParser = require("body-parser")
-const bcrypt = require("bcryptjs")
 const db = require("../db/knex")
 
 const router = express.Router()
 const app = express()
+const bcrypt = require("bcryptjs")
+const {
+  generateUserToken,
+  verifyUserToken,
+  findUserCredentials
+} = require("./auth")
 router.use((req, res, next) => {
   Object.setPrototypeOf(req, app.request)
   Object.setPrototypeOf(res, app.response)
@@ -47,22 +52,113 @@ const getAll = async (req, res) => {
   res.status(200).send(results)
 }
 
+const authenticate = async (req, res, next) => {
+  let token
+
+  if (req.body && req.body.token) {
+    token = req.body.token
+  }
+  const user = await verifyUserToken(token)
+    .catch(e => {
+    res.status(401).send()
+  })
+  res.locals.user = user
+  next()
+}
+
 router.get("/member/:id", (req, res, next) => {
   res.locals.table = "member"
   next()
 }, getId)
 
-router.post("/member", async (req, res) => {
+// TODO: Fix this faux-route
+router.get("/user", async (req, res) => {
+  let token
+  let user
+  try {
+    token = req.get("authorization")
+      .split(" ")[1]
+    user = await verifyUserToken(token)
+  } catch (e) {
+    res.status(401).send("Invalid token.")
+    return
+  }
+
+  res.send({ user })
+})
+
+router.post("/signup", async (req, res) => {
+  let member
   let result
 
   try {
-    const member = req.body
-    member.password = await bcrypt.hash(member.password, 10)
+    const {
+      firstName,
+      lastName,
+      email,
+      username,
+      password
+    } = req.body
+
+    // TODO: Fix validation user input
+    if (!firstName || !lastName || !email || !username || !password) {
+      throw new Error("Incomplete fields.")
+    }
+
+    member = {
+      firstName,
+      lastName,
+      email,
+      username,
+      password: await bcrypt.hash(password, 10)
+    }
+  } catch (e) {
+    res.status(400).send()
+    return
+  }
+
+  try {
     result = await db.insert(member, "id").into("member")
   } catch (e) {
     res.status(500).send()
+    return
   }
-  res.status(200).send(result)
+
+  if (result) {
+    const userId = result[0]
+    const token = generateUserToken({ userId })
+    res.status(200).send({
+      userId,
+      token
+    })
+    return
+  }
+
+  return res.status(500).send()
+})
+
+router.post("/signin", async (req, res) => {
+  let user
+  const { username, password } = req.body
+  // TODO: Fix validation
+  if (!username || !password) {
+    res.status(400).send("A valid username and password is required.")
+    return
+  }
+
+  try {
+    user = await findUserCredentials(username, password)
+  } catch (e) {
+    res.status(404).send("Invalid username or password.")
+    return
+  }
+
+  const token = generateUserToken(user)
+  res.status(200).send({
+    userId: user.userId,
+    token
+  })
+  res.status(200).send()
 })
 
 router.get("/category", (req, res, next) => {

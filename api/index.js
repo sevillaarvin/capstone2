@@ -91,15 +91,15 @@ router.post("/signup", async (req, res) => {
   let member
   let result
 
-  try {
-    const {
-      firstName,
-      lastName,
-      email,
-      username,
-      password
-    } = req.body
+  const {
+    firstName,
+    lastName,
+    email,
+    username,
+    password
+  } = req.body
 
+  try {
     // TODO: Fix validation user input
     if (!firstName || !lastName || !email || !username || !password) {
       throw new Error("Incomplete fields.")
@@ -126,15 +126,16 @@ router.post("/signup", async (req, res) => {
 
   if (result) {
     const userId = result[0]
-    const token = generateUserToken({ userId })
+    const token = generateUserToken({ userId, username })
     res.status(200).send({
       userId,
+      username,
       token
     })
     return
   }
 
-  return res.status(500).send()
+  res.status(500).send()
 })
 
 router.post("/signin", async (req, res) => {
@@ -156,6 +157,7 @@ router.post("/signin", async (req, res) => {
   const token = generateUserToken(user)
   res.status(200).send({
     userId: user.userId,
+    username,
     token
   })
   res.status(200).send()

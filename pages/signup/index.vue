@@ -40,6 +40,7 @@
               <v-flex xs12>
                 <v-text-field
                   v-model="user.username"
+                  browser-autocomplete="username"
                   type="text"
                   label="Username"/>
               </v-flex>
@@ -56,6 +57,7 @@
               <v-flex xs12>
                 <v-text-field
                   v-model="user.password"
+                  browser-autocomplete="new-password"
                   type="password"
                   label="Password" />
               </v-flex>
@@ -64,6 +66,7 @@
               <v-flex xs12>
                 <v-text-field
                   v-model="user.confirmPassword"
+                  browser-autocomplete="new-password"
                   type="password"
                   label="Confirm Password" />
               </v-flex>

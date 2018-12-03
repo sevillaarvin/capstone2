@@ -2,6 +2,9 @@ import Vuex from 'vuex'
 
 export default () => new Vuex.Store({
   state: {
+    user: {},
+    featuredItems: [],
+    categories: [],
     allNavs: {
       genNavs: [
         {
@@ -70,20 +73,24 @@ export default () => new Vuex.Store({
         },
       ]
     },
-    featuredItems: [],
-    user: {}
   },
   getters: {
+    featuredItems(state) {
+      return state.featuredItems
+    },
+    categories(state) {
+      return state.categories
+    },
     allNavs(state) {
       return state.allNavs
     },
-    featuredItems(state) {
-      return state.featuredItems
-    }
   },
   mutations: {
     setFeaturedItems(state, items) {
       state.featuredItems = items
+    },
+    setCategories(state, categories) {
+      state.categories = categories
     },
     signUpUser(state, user) {
       state.user = user
@@ -92,12 +99,22 @@ export default () => new Vuex.Store({
   actions: {
     async nuxtServerInit(vuexContext, context) {
       await vuexContext.dispatch("setFeaturedItems", context)
+      await vuexContext.dispatch("setCategories", context)
     },
     async setFeaturedItems({commit}, context) {
       let items
       try {
         items = await this.$axios.$get("/item")
         return commit("setFeaturedItems", items)
+      } catch (e) {
+        context.error(e)
+      }
+    },
+    async setCategories({commit}, context) {
+      let categories
+      try {
+        categories = await this.$axios.$get("/category")
+        return commit("setCategories", categories)
       } catch (e) {
         context.error(e)
       }

@@ -27,14 +27,16 @@
               <v-flex xs12>
                 <v-text-field
                   v-model="user.username"
+                  browser-autocomplete="username"
                   type="text"
-                  label="Username or Email"/>
+                  label="Username or Email" />
               </v-flex>
             </v-layout>
             <v-layout>
               <v-flex xs12>
                 <v-text-field
                   v-model="user.password"
+                  browser-autocomplete="current-password"
                   type="password"
                   label="Password" />
               </v-flex>
@@ -99,7 +101,6 @@
             this.showError = true
           }
         })
-        console.log(JSON.stringify(this.$auth.$state, null, 2))
       }
     }
   }

@@ -46,6 +46,12 @@ export default {
       ]
     }
   },
+  created() {
+    console.log(JSON.stringify(this.$auth.$state, null, 2))
+    if (this.$auth.$state.loggedIn) {
+      this.$router.replace("/" + this.$auth.$state.user.username)
+    }
+  },
   layout: "landing"
 }
 </script>

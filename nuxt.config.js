@@ -125,10 +125,10 @@ module.exports = {
       // user: "/dashboard",
       callback: "/",
     */
-      login: false,
+      login: "/signin",
       callback: false,
       logout: "/",
-      home: "/dashboard"
+      home: "/"
     }
   }
 }

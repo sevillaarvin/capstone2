@@ -5,7 +5,8 @@
         <Title :title="'About'" />
         <v-layout>
           <v-flex xs12>
-            <v-timeline>
+            <v-timeline
+              :dense="$vuetify.breakpoint.xsOnly">
               <v-timeline-item
                 v-for="item in items"
                 :key="item.title">
@@ -14,6 +15,10 @@
                 </span>
                 <v-card
                   class="elevation-2">
+                  <v-card-title
+                    class="title hidden-sm-and-up">
+                    {{ item.label }}
+                  </v-card-title>
                   <v-card-text>
                     {{ item.description }}
                   </v-card-text>

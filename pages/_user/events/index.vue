@@ -1,14 +1,12 @@
 <template>
   <v-layout>
-    DASHBOARD
+    EVENTS
   </v-layout>
 </template>
 
 <script>
   export default {
-    created() {
-      console.log(JSON.stringify(this.$auth.$state, null, 2))
-    }
+    layout: "user"
   }
 </script>
 

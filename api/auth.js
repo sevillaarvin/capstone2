@@ -33,7 +33,10 @@ const findUserCredentials = async (username, password) => {
     return Promise.reject()
   }
 
-  return { userId: user.id }
+  return {
+    userId: user.id,
+    username: user.username
+  }
 }
 
 module.exports = {

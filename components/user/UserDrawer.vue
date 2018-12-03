@@ -23,17 +23,17 @@
     </v-card>
     <v-list>
       <template
-        v-for="category in categories">
+        v-for="link in userLinks">
         <v-list-tile
-          :key="category.id"
-          :to="'/store/' + category.name"
+          :key="link.name"
+          :to="'/' + user + link.path"
           nuxt>
           <v-list-tile-content>
-            {{ category.name }}
+            {{ link.name }}
           </v-list-tile-content>
         </v-list-tile>
         <v-divider
-          :key="category.name + category.id" />
+          :key="link.name + '1'" />
       </template>
     </v-list>
   </v-navigation-drawer>
@@ -45,15 +45,32 @@
       value: {
         type: Boolean,
         default: false
+      },
+      user: {
+        type: String,
+        required: true
       }
     },
     data() {
       return {
-      }
-    },
-    computed: {
-      categories() {
-        return this.$store.getters.categories
+        userLinks: [
+          {
+            name: "Profile",
+            path: "/profile",
+          },
+          {
+            name: "Orders",
+            path: "/orders",
+          },
+          {
+            name: "Events",
+            path: "/events",
+          },
+          {
+            name: "Admin",
+            path: "/admin",
+          },
+        ]
       }
     }
   }

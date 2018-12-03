@@ -1,16 +1,16 @@
 <template>
   <v-layout>
-    <v-flex xs12>
-      You will automatically be redirected.
-    </v-flex>
+    USER
   </v-layout>
 </template>
 
 <script>
   export default {
     created() {
-      this.$auth.logout()
-    }
+      const asdf = JSON.stringify(this.$route.params, null, 2)
+      console.log(asdf)
+    },
+    layout: "user"
   }
 </script>
 

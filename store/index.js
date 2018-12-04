@@ -5,6 +5,11 @@ export default () => new Vuex.Store({
     user: {},
     featuredItems: [],
     categories: [],
+    currentCategory: {
+      items: [],
+      offset: 0,
+      limit: null,
+    },
     allNavs: {
       genNavs: [
         {
@@ -76,10 +81,20 @@ export default () => new Vuex.Store({
   },
   getters: {
     featuredItems(state) {
-      return state.featuredItems
+      // TODO: Should return x items at a time
+      return state.featuredItems.slice(0,15)
     },
     categories(state) {
       return state.categories
+    },
+    currentCategoryItems(state) {
+      return state.currentCategory.items
+    },
+    currentCategoryOffset(state) {
+      return state.currentCategory.offset
+    },
+    currentCategoryLimit(state) {
+      return state.currentCategory.limit
     },
     allNavs(state) {
       return state.allNavs
@@ -91,6 +106,11 @@ export default () => new Vuex.Store({
     },
     setCategories(state, categories) {
       state.categories = categories
+    },
+    setCurrentCategoryItems(state, { items, offset, limit }) {
+      state.currentCategory.items.push(...items)
+      state.currentCategory.offset += limit
+      state.currentCategory.limit = limit
     },
     signUpUser(state, user) {
       state.user = user
@@ -104,19 +124,38 @@ export default () => new Vuex.Store({
     async setFeaturedItems({commit}, context) {
       let items
       try {
-        items = await this.$axios.$get("/item")
+        items = await this.$axios.$get("/item?featured=")
         return commit("setFeaturedItems", items)
       } catch (e) {
         context.error(e)
       }
     },
-    async setCategories({commit}, context) {
-      let categories
+    async setCategories({ commit }, context) {
       try {
-        categories = await this.$axios.$get("/category")
-        return commit("setCategories", categories)
+        const categories = await this.$axios.$get("/category")
+        commit("setCategories", categories)
+        return
       } catch (e) {
         context.error(e)
+      }
+    },
+    async setCurrentCategoryItems({ commit }, category) {
+      try {
+        const { name, offset, limit } = category
+        console.log(name, offset, limit)
+        const items = await this.$axios.$get("/category/" + name, {
+          params: {
+            offset,
+            limit,
+          }
+        })
+        commit("setCurrentCategoryItems", {
+          items,
+          offset,
+          limit,
+        })
+      } catch (e) {
+        return Promise.reject()
       }
     },
     async signUpUser({commit}, user) {

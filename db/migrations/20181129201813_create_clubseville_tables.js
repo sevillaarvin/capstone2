@@ -33,7 +33,7 @@ exports.up = function(knex, Promise) {
       table.text("description").notNullable()
       table.text("img")
       table.decimal("price", 15, 6).notNullable()
-      table.decimal("discount", 15, 6).notNullable()
+      table.decimal("discount", 15, 6).defaultTo(0)
       table.integer("size_id")
       table.foreign("size_id").references("id").inTable("size")
     })

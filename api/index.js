@@ -168,10 +168,60 @@ router.get("/category", (req, res, next) => {
   next()
 }, getAll)
 
+/*
 router.get("/category/:id", (req, res, next) => {
   res.locals.table = "category"
   next()
 }, getId)
+*/
+
+router.get("/category/:name", async (req, res, next) => {
+  const category = req.params.name
+  let results
+
+  try {
+    const catObj = await db.select("id")
+      .from("category")
+      .where({ name: category })
+      .first()
+
+    if (!catObj) {
+      res.status(404).send("Category not found.")
+      return
+    }
+
+    const { offset, limit } = req.query
+    results = await db.select([
+        "item.id",
+        "item.sku",
+        "item.name",
+        "category.name as category",
+        "item.description",
+        "item.img",
+        "item.price",
+        "item.discount",
+        "size.name as size"
+      ])
+      .from("item")
+      .where({ category_id: catObj.id })
+      // Category is required
+      .innerJoin("category", "item.category_id", "category.id")
+      // Size is not required
+      .leftJoin("size", "item.size_id", "size.id")
+      .offset(offset)
+      .limit(limit)
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  if (!results) {
+    res.status(404).send("No items for category.")
+    return
+  }
+
+  res.status(200).send(results)
+})
 
 router.get("/size", (req, res, next) => {
   res.locals.table = "size"
@@ -189,10 +239,27 @@ router.get("/item", async (req, res, next) => {
   if (req.query && req.query.hasOwnProperty("featured")) {
     // TODO: retrieve featured items only
     try {
-      items = await db.select().from("item")
+      items = await db.select([
+          "item.id",
+          "item.sku",
+          "item.name",
+          "category.name as category",
+          "item.description",
+          "item.img",
+          "item.price",
+          "item.discount",
+          "size.name as size"
+        ])
+        .from("item")
+        // Category is required
+        .innerJoin("category", "item.category_id", "category.id")
+        // Size is not required
+        .leftJoin("size", "item.size_id", "size.id")
       res.status(200).send(items)
+      return
     } catch (e) {
       res.status(500).send()
+      return
     }
   } else {
     res.locals.table = "item"

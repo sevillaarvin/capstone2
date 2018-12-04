@@ -3,7 +3,8 @@ const expect = require("chai").expect
 const app = require("./index").app
 const db = require("../db/knex")
 
-before(done => {
+before(function(done) {
+  this.timeout(10000)
   db.migrate.rollback().then(() => {
     return db.migrate.latest()
   }).then(() => {
@@ -13,6 +14,7 @@ before(done => {
   }).catch(e => {
     console.error(e.message)
     console.error(e.detail)
+    done(e)
   })
 })
 
@@ -205,15 +207,22 @@ describe("GET /category", () => {
   })
 })
 
-describe("GET /category/id", () => {
-  it("should return the category with id 1", done => {
+describe("GET /category/name", () => {
+  it("should return the category with matching name", done => {
     request(app)
-      .get("/category/1")
-      .expect("content-type", /json/)
+      .get("/category/Swimming Equipment")
       .expect(200)
+      .expect("content-type", /json/)
       .expect(res => {
-        expect(res.body).to.have.all.keys("id", "name")
-        expect(res.body.id).to.be.equal(1)
+        expect(res.body).to.be.an("array")
+        expect(res.body[0]).to.include.all.keys(
+          "id",
+          "sku",
+          "name",
+          "category",
+          "description",
+          "price",
+        )
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -228,6 +237,42 @@ describe("GET /category/id", () => {
       .end((err, res) => {
         if (err) return done(err)
         done()
+      })
+  })
+
+  it("should return the category with matching name limited to 5 items", done => {
+    request(app)
+      .get("/category/Swimming Equipment")
+      .query({ limit: 5 })
+      .expect(200)
+      .expect(res => {
+        expect(res.body).to.be.an("array").with.lengthOf(5)
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should return the category with matching name skipping 10 items", done => {
+    request(app)
+      .get("/category/Swimming Equipment")
+      .query({ offset: 10 })
+      .expect(200)
+      .expect(res => {
+        expect(res.body).to.be.an("array")
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        db.select(["item.id", "category.name as category"])
+          .from("item")
+          .where({ "category.name": "Swimming Equipment" })
+          .innerJoin("category", "item.category_id", "category.id")
+          .then(dbres => {
+            expect(dbres).to.be.an("array")
+            expect(dbres[10].id).to.equal(res.body[0].id)
+            done()
+        }).catch(e => done(e))
       })
   })
 })
@@ -292,8 +337,8 @@ describe("GET /item", () => {
     request(app)
       .get("/item")
       .query({"featured": ""})
-      .expect("content-type", /json/)
       .expect(200)
+      .expect("content-type", /json/)
       .expect(res => {
         expect(res.body).to.be.an("array")
       })
@@ -322,7 +367,7 @@ describe("GET /item/id", () => {
 
   it("should return 404 with an invalid item id", done => {
     request(app)
-      .get("/item/123")
+      .get("/item/asdfasdf")
       .expect(404)
       .end((err, res) => {
         if (err) return done(err)

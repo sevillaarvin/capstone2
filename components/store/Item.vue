@@ -1,9 +1,11 @@
 <template>
   <v-card
-    :to="'/store/' + item.category + '/' + item.id"
+    :to="itemLink"
     nuxt>
     <v-img
-      :src="item.img" />
+      :src="item.img || ''"
+      contain
+      height="150" />
     <v-card-title
       class="justify-center font-weight-bold">
       {{ item.name }}
@@ -23,6 +25,15 @@
         type: Object,
         required: true
       }
-    }
+    },
+    computed: {
+      itemLink() {
+        const { category, name } = this.item
+        return encodeURIComponent(category) + "/" + encodeURIComponent(name)
+      }
+    },
+    created() {
+      // console.log(this.item)
+    },
   }
 </script>

@@ -9,16 +9,16 @@
               fluid
               grid-list-md>
               <v-layout
+                v-scroll="onScroll"
                 row
                 wrap>
                 <v-flex
                   v-for="feature in featuredItems"
-                  :key="feature.name"
+                  :key="feature.id"
                   xs12
                   sm6
                   md4
-                  lg3
-                  xl2>
+                  xl3>
                   <Item :item="feature" />
                 </v-flex>
               </v-layout>
@@ -42,6 +42,16 @@
     computed: {
       featuredItems() {
         return this.$store.getters.featuredItems
+      }
+    },
+    created() {
+      console.log( this.$store.getters.featuredItems[0] )
+    },
+    methods: {
+      onScroll() {
+        if (window.innerHeight + (window.pageYOffset || document.documentElement.scrollTop) >= document.body.offsetHeight) {
+          
+        }
       }
     },
     layout: "store",

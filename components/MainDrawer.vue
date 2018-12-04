@@ -22,6 +22,14 @@
       </v-card-text>
     </v-card>
     <v-list>
+      <v-list-tile
+        to="/store"
+        nuxt>
+        <v-list-tile-content>
+          All
+        </v-list-tile-content>
+      </v-list-tile>
+      <v-divider />
       <template
         v-for="category in categories">
         <v-list-tile

@@ -6,13 +6,16 @@ exports.seed = function(knex, Promise) {
       // Inserts seed entries
       return knex('category').insert([
         {
-          name: "Male Apparel"
+          name: "Swimming Equipment"
         },
         {
-          name: "Female Apparel"
+          name: "Aqua Learning"
         },
         {
-          name: "Accessories"
+          name: "Open Water Swimming"
+        },
+        {
+          name: "Swimsuits"
         },
       ]);
     });

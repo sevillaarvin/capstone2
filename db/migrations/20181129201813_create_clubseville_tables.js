@@ -6,6 +6,7 @@ exports.up = function(knex, Promise) {
       table.increments()
       table.text("firstName").notNullable()
       table.text("lastName").notNullable()
+      table.enu("gender", ["m", "f"])
       table.text("email").notNullable().unique()
       table.text("username").notNullable().unique()
       table.text("password").notNullable()
@@ -46,6 +47,7 @@ exports.up = function(knex, Promise) {
       table.foreign("item_id").references("id").inTable("item")
       table.unique(["member_id", "item_id"])
       table.integer("stars").notNullable().unsigned()
+      table.text("comment")
     })
 
     .createTable("status", table => {

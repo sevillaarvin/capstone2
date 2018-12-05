@@ -7,7 +7,7 @@
           <v-flex>
             <v-container
               fluid
-              grid-list-md>
+              grid-list-xl>
               <v-layout
                 v-scroll="onScroll"
                 row
@@ -39,18 +39,32 @@
       Sorter,
       Item
     },
+    async asyncData(context) {
+      await context.store.dispatch("setFeaturedItems", {
+        offset: context.store.getters.featuredOffset,
+        limit: context.store.getters.featuredLimit,
+        featured: true,
+      })
+    },
     computed: {
       featuredItems() {
         return this.$store.getters.featuredItems
       }
     },
-    created() {
-      console.log( this.$store.getters.featuredItems[0] )
-    },
     methods: {
-      onScroll() {
-        if (window.innerHeight + (window.pageYOffset || document.documentElement.scrollTop) >= document.body.offsetHeight) {
-          
+      async onScroll() {
+        const endOfPage = window.innerHeight + (window.pageYOffset || document.documentElement.scrollTop) >= document.body.offsetHeight
+
+        if (endOfPage) {
+          try {
+            await this.$store.dispatch("setFeaturedItems", {
+              offset: this.$store.getters.featuredOffset,
+              limit: this.$store.getters.featuredLimit,
+              featured: true,
+            })
+          } catch (e) {
+            console.log(e)
+          }
         }
       }
     },

@@ -1,7 +1,7 @@
 <template>
   <v-card
-    :to="itemLink"
-    nuxt>
+    class="cursor-pointer"
+    @click="onClick">
     <v-img
       :src="item.img || ''"
       contain
@@ -12,7 +12,10 @@
     </v-card-title>
     <v-card-text
       class="text-xs-center">
-      <v-rating v-model="item.rating" />
+      <v-rating
+        v-model="item.rating"
+        dense
+        readonly />
       {{ item.price | currency }}
     </v-card-text>
   </v-card>
@@ -29,11 +32,21 @@
     computed: {
       itemLink() {
         const { category, name } = this.item
-        return encodeURIComponent(category) + "/" + encodeURIComponent(name)
+        return "/store/" + encodeURIComponent(category) + "/" + encodeURIComponent(name)
       }
     },
-    created() {
-      // console.log(this.item)
-    },
+    methods: {
+      onClick() {
+        console.log(JSON.stringify(this.item, null, 2))
+        this.$store.dispatch("setCurrentItem", this.item)
+        this.$router.push(this.itemLink)
+      }
+    }
   }
 </script>
+
+<style scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
+</style>

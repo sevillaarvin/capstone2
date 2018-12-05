@@ -48,14 +48,10 @@
     components: {
       Item
     },
-    asyncData(context) {
-      return new Promise((resolve, reject) => {
-        const dataObj = {
-          item: context.store.getters.featuredItems[1]
-        }
-
-        resolve(dataObj)
-      })
+    computed: {
+      item() {
+        return this.$store.getters.currentItem
+      }
     },
     layout: "store"
   }

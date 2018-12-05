@@ -2,14 +2,18 @@ import Vuex from 'vuex'
 
 export default () => new Vuex.Store({
   state: {
-    user: {},
-    featuredItems: [],
+    featured: {
+      items: [],
+      offset: 0,
+      limit: 24,
+    },
     categories: [],
     currentCategory: {
       items: [],
       offset: 0,
-      limit: null,
+      limit: 24,
     },
+    currentItem: {},
     allNavs: {
       genNavs: [
         {
@@ -82,7 +86,16 @@ export default () => new Vuex.Store({
   getters: {
     featuredItems(state) {
       // TODO: Should return x items at a time
-      return state.featuredItems.slice(0,15)
+      return state.featured.items
+    },
+    featuredOffset(state) {
+      return state.featured.offset
+    },
+    featuredLimit(state) {
+      return state.featured.limit
+    },
+    featuredIterator(state) {
+      return state.featured.iterator
     },
     categories(state) {
       return state.categories
@@ -96,21 +109,27 @@ export default () => new Vuex.Store({
     currentCategoryLimit(state) {
       return state.currentCategory.limit
     },
+    currentItem(state) {
+      return state.currentItem
+    },
     allNavs(state) {
       return state.allNavs
     },
   },
   mutations: {
-    setFeaturedItems(state, items) {
-      state.featuredItems = items
+    setFeaturedItems(state, { items, offset, limit }) {
+      state.featured.items = items
+      state.featured.offset = offset
+      state.featured.limit = limit
     },
     setCategories(state, categories) {
       state.categories = categories
     },
-    setCurrentCategoryItems(state, { items, offset, limit }) {
-      state.currentCategory.items.push(...items)
-      state.currentCategory.offset += limit
-      state.currentCategory.limit = limit
+    setCurrentCategoryItems(state, currentCategory) {
+      state.currentCategory = currentCategory
+    },
+    setCurrentItem(state, item) {
+      state.currentItem = item
     },
     signUpUser(state, user) {
       state.user = user
@@ -118,17 +137,30 @@ export default () => new Vuex.Store({
   },
   actions: {
     async nuxtServerInit(vuexContext, context) {
-      await vuexContext.dispatch("setFeaturedItems", context)
       await vuexContext.dispatch("setCategories", context)
     },
-    async setFeaturedItems({commit}, context) {
-      let items
+    async setFeaturedItems({ commit, getters }, query) {
+      let { offset, limit, featured } = query
+      let items = getters.featuredItems
+      let storeItems
+
       try {
-        items = await this.$axios.$get("/item?featured=")
-        return commit("setFeaturedItems", items)
+        storeItems = await this.$axios.$get("/item", {
+          params: {
+            featured,
+            offset,
+            limit,
+          }
+        })
       } catch (e) {
         context.error(e)
+        return
       }
+      offset += storeItems.length
+      limit = 12
+
+      items = items.concat(storeItems)
+      commit("setFeaturedItems", { items, offset, limit })
     },
     async setCategories({ commit }, context) {
       try {
@@ -139,24 +171,32 @@ export default () => new Vuex.Store({
         context.error(e)
       }
     },
-    async setCurrentCategoryItems({ commit }, category) {
+    async setCurrentCategoryItems({ commit, getters }, category) {
       try {
-        const { name, offset, limit } = category
-        console.log(name, offset, limit)
-        const items = await this.$axios.$get("/category/" + name, {
+        const { name, offset, limit, initial } = category
+        let items = await this.$axios.$get("/category/" + name, {
           params: {
             offset,
             limit,
           }
         })
+
+        if (!initial) {
+          getters.currentCategoryItems.push(...items)
+          items = getters.currentCategoryItems
+        }
+
         commit("setCurrentCategoryItems", {
           items,
-          offset,
-          limit,
+          offset: items.length,
+          limit: 12,
         })
       } catch (e) {
         return Promise.reject()
       }
+    },
+    setCurrentItem({ commit }, item) {
+      commit("setCurrentItem", item)
     },
     async signUpUser({commit}, user) {
       try {

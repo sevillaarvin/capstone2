@@ -222,6 +222,7 @@ describe("GET /category/name", () => {
           "category",
           "description",
           "price",
+          "rating",
         )
       })
       .end((err, res) => {
@@ -341,6 +342,39 @@ describe("GET /item", () => {
       .expect("content-type", /json/)
       .expect(res => {
         expect(res.body).to.be.an("array")
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should return limited items", done => {
+    request(app)
+      .get("/item")
+      .query({"limit": "10"})
+      .expect(200)
+      .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.be.an("array").with.lengthOf(10)
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should return skipped items", done => {
+    request(app)
+      .get("/item")
+      .query({"offset": "10"})
+      .expect(200)
+      .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.be.an("array")
+        expect(res.body[0]).to.be.an("object")
+          .with.property("id")
+          .to.equal(11)
       })
       .end((err, res) => {
         if (err) return done(err)

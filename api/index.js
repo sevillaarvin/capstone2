@@ -202,14 +202,18 @@ router.get("/category/:name", async (req, res, next) => {
         "item.discount",
         "size.name as size"
       ])
+      .avg("rating.stars as rating")
       .from("item")
       .where({ category_id: catObj.id })
       // Category is required
       .innerJoin("category", "item.category_id", "category.id")
       // Size is not required
       .leftJoin("size", "item.size_id", "size.id")
+      .leftJoin("rating", "item.id", "rating.item_id")
       .offset(offset)
       .limit(limit)
+      .groupBy(["item.id", "category.name", "size.name"])
+      .orderBy("item.id")
   } catch (e) {
     res.status(500).send()
     return
@@ -236,7 +240,8 @@ router.get("/size/:id", (req, res, next) => {
 router.get("/item", async (req, res, next) => {
   let items
 
-  if (req.query && req.query.hasOwnProperty("featured")) {
+  const { featured, offset, limit } = req.query
+  if (featured) {
     // TODO: retrieve featured items only
     try {
       items = await db.select([
@@ -250,22 +255,53 @@ router.get("/item", async (req, res, next) => {
           "item.discount",
           "size.name as size"
         ])
+        // TODO: Convert rating to Number()
+        .avg("rating.stars as rating")
         .from("item")
         // Category is required
         .innerJoin("category", "item.category_id", "category.id")
         // Size is not required
         .leftJoin("size", "item.size_id", "size.id")
-      res.status(200).send(items)
-      return
+        .leftJoin("rating", "item.id", "rating.item_id")
+        .offset(offset)
+        .limit(limit)
+        .groupBy(["item.id", "category.name", "size.name"])
+        .orderBy("item.id")
     } catch (e) {
       res.status(500).send()
       return
     }
   } else {
-    res.locals.table = "item"
-    next()
+    try {
+      items = await db.select([
+          "item.id",
+          "item.sku",
+          "item.name",
+          "category.name as category",
+          "item.description",
+          "item.img",
+          "item.price",
+          "item.discount",
+          "size.name as size"
+        ])
+        .avg("rating.stars as rating")
+        .from("item")
+        // Category is required
+        .innerJoin("category", "item.category_id", "category.id")
+        // Size is not required
+        .leftJoin("size", "item.size_id", "size.id")
+        .leftJoin("rating", "item.id", "rating.item_id")
+        .offset(offset)
+        .limit(limit)
+        .groupBy(["item.id", "category.name", "size.name"])
+        .orderBy("item.id")
+    } catch (e) {
+      res.status(500).send()
+      return
+    }
   }
-}, getAll)
+  res.status(200).send(items)
+})
 
 router.get("/item/:id", (req, res, next) => {
   res.locals.table = "item"

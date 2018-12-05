@@ -47,8 +47,9 @@
         category = context.route.params.category
         await context.store.dispatch("setCurrentCategoryItems", {
           name: category,
-          offset: context.store.getters.currentCategoryOffset,
-          limit: 24
+          offset: 0,
+          limit: 24,
+          initial: true,
         })
       } catch (e) {
         context.error(e)
@@ -70,17 +71,16 @@
           document.body.offsetHeight
 
         if (endOfPage) {
-          console.log("initial", this.$store.getters.currentCategoryItems.length)
           try {
             await this.$store.dispatch("setCurrentCategoryItems", {
               name: this.category,
               offset: this.$store.getters.currentCategoryOffset,
-              limit: this.$store.getters.currentCategoryLimit
+              limit: this.$store.getters.currentCategoryLimit,
+              initial: false,
             })
           } catch (e) {
             console.log(e)
           }
-          console.log("final", this.$store.getters.currentCategoryItems.length)
         }
       }
     },

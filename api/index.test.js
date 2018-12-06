@@ -326,8 +326,8 @@ describe("GET /item", () => {
   it("should return all items", done => {
     request(app)
       .get("/item")
-      .expect("content-type", /json/)
       .expect(200)
+      .expect("content-type", /json/)
       .end((err, res) => {
         if (err) return done(err)
         done()
@@ -384,11 +384,11 @@ describe("GET /item", () => {
 })
 
 describe("GET /item/id", () => {
-  it("should return the item with id 1", done => {
+  it("should return the item with sku VXYIWV3367", done => {
     request(app)
-      .get("/item/1")
-      .expect("content-type", /json/)
+      .get("/item/VXYIWV3367")
       .expect(200)
+      .expect("content-type", /json/)
       .expect(res => {
         expect(res.body).to.have.a.property("id")
         expect(res.body.id).to.be.equal(1)

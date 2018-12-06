@@ -15,6 +15,7 @@
       <v-rating
         v-model="item.rating"
         dense
+        half-increments
         readonly />
       {{ item.price | currency }}
     </v-card-text>
@@ -31,8 +32,8 @@
     },
     computed: {
       itemLink() {
-        const { category, name } = this.item
-        return "/store/" + encodeURIComponent(category) + "/" + encodeURIComponent(name)
+        const { category, sku } = this.item
+        return "/store/" + encodeURIComponent(category) + "/" + encodeURIComponent(sku)
       }
     },
     methods: {

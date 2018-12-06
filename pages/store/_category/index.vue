@@ -8,7 +8,7 @@
           <v-flex>
             <v-container
               fluid
-              grid-list-md>
+              grid-list-xl>
               <v-layout
                 v-scroll="onScroll"
                 row
@@ -66,11 +66,11 @@
     },
     methods: {
       async onScroll() {
-        const endOfPage = window.innerHeight +
+        const nearEndOfPage = window.innerHeight +
           (window.pageYOffset || document.documentElement.scrollTop) >=
-          document.body.offsetHeight
+          document.body.offsetHeight * 0.90
 
-        if (endOfPage) {
+        if (nearEndOfPage) {
           try {
             await this.$store.dispatch("setCurrentCategoryItems", {
               name: this.category,

@@ -53,9 +53,11 @@
     },
     methods: {
       async onScroll() {
-        const endOfPage = window.innerHeight + (window.pageYOffset || document.documentElement.scrollTop) >= document.body.offsetHeight
+        const nearEndOfPage = window.innerHeight
+          + (window.pageYOffset || document.documentElement.scrollTop)
+          >= document.body.offsetHeight * 0.90
 
-        if (endOfPage) {
+        if (nearEndOfPage) {
           try {
             await this.$store.dispatch("setFeaturedItems", {
               offset: this.$store.getters.featuredOffset,

@@ -13,7 +13,7 @@ export default () => new Vuex.Store({
       offset: 0,
       limit: 24,
     },
-    currentItem: {},
+    currentItem: null,
     allNavs: {
       genNavs: [
         {
@@ -192,7 +192,7 @@ export default () => new Vuex.Store({
           limit: 12,
         })
       } catch (e) {
-        return Promise.reject()
+        return Promise.reject(e)
       }
     },
     setCurrentItem({ commit }, item) {

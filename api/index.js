@@ -214,6 +214,10 @@ router.get("/category/:name", async (req, res, next) => {
       .limit(limit)
       .groupBy(["item.id", "category.name", "size.name"])
       .orderBy("item.id")
+
+    results.forEach(result => {
+      result.rating = Number(result.rating)
+    })
   } catch (e) {
     res.status(500).send()
     return
@@ -267,6 +271,10 @@ router.get("/item", async (req, res, next) => {
         .limit(limit)
         .groupBy(["item.id", "category.name", "size.name"])
         .orderBy("item.id")
+
+      items.forEach(result => {
+        result.rating = Number(result.rating)
+      })
     } catch (e) {
       res.status(500).send()
       return
@@ -295,6 +303,10 @@ router.get("/item", async (req, res, next) => {
         .limit(limit)
         .groupBy(["item.id", "category.name", "size.name"])
         .orderBy("item.id")
+
+      items.forEach(result => {
+        result.rating = Number(result.rating)
+      })
     } catch (e) {
       res.status(500).send()
       return
@@ -303,10 +315,45 @@ router.get("/item", async (req, res, next) => {
   res.status(200).send(items)
 })
 
-router.get("/item/:id", (req, res, next) => {
-  res.locals.table = "item"
-  next()
-}, getId)
+router.get("/item/:sku", async (req, res, next) => {
+  const sku = req.params.sku
+  let item
+
+  try {
+    item = await db.select([
+        "item.id",
+        "item.sku",
+        "item.name",
+        "category.name as category",
+        "item.description",
+        "item.img",
+        "item.price",
+        "item.discount",
+        "size.name as size"
+      ])
+      .avg("rating.stars as rating")
+      .from("item")
+      .where({"item.sku": sku})
+      // Category is required
+      .innerJoin("category", "item.category_id", "category.id")
+      // Size is not required
+      .leftJoin("size", "item.size_id", "size.id")
+      .leftJoin("rating", "item.id", "rating.item_id")
+      .first()
+      .groupBy(["item.id", "category.name", "size.name"])
+      // .orderBy("item.id")
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  if (!item) {
+    res.status(404).send("Item not found.")
+    return
+  }
+
+  res.status(200).send(item)
+})
 
 router.get("/order/:id", async (req, res, next) => {
   res.locals.table = "order"

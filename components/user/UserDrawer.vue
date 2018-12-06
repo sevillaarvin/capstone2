@@ -26,7 +26,7 @@
         v-for="link in userLinks">
         <v-list-tile
           :key="link.name"
-          :to="'/' + user + link.path"
+          :to="userLink"
           nuxt>
           <v-list-tile-content>
             {{ link.name }}
@@ -48,7 +48,7 @@
       },
       user: {
         type: String,
-        required: true
+        default: null
       }
     },
     data() {
@@ -72,7 +72,12 @@
           },
         ]
       }
-    }
+    },
+    computed: {
+      userLink() {
+        return '/' + encodeURIComponent(user) + link.path
+      }
+    },
   }
 </script>
 

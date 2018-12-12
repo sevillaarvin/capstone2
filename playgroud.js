@@ -92,13 +92,34 @@ async function result5() {
         .leftJoin("rating", "item.id", "rating.item_id")
         .groupBy(["item.id", "category.name", "size.name"])
         .orderBy("item.id")
-        .toString()
   } catch (e) {
     console.log(e)
   }
-  console.log(results)
+  console.log(typeof results[0].rating)
   console.log(Number(null))
   console.log(Number('3.0000'))
 }
 
-result5()
+// result5()
+
+async function result6() {
+  try {
+  }
+  const members = db.select([
+    "member.id",
+    "member.firstName",
+    "member.lastName",
+    "member.gender",
+    "member.email",
+    "member.username",
+    "member.birthdate",
+    "member.address",
+    "member.created_at",
+    "role.name as role",
+  ])
+    .from("member")
+    .innerJoin("role", "member.role_id", "role.id")
+  console.log(members)
+}
+
+result6()

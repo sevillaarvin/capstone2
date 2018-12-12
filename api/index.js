@@ -66,10 +66,98 @@ const authenticate = async (req, res, next) => {
   next()
 }
 
+// TODO: Guard this route
+router.get("/role", async (req, res, next) => {
+  let roles
+  try {
+    roles = await db.select([
+        "id",
+        "name",
+      ])
+      .from("role")
+  } catch (e) {
+    res.status(500).send()
+  }
+
+  if (!roles) {
+    res.status(400).send()
+  }
+
+  res.status(200).send(roles)
+})
+
+// TODO: Guard this route
+router.get("/member", /*authenticate,*/ async (req, res, next) => {
+  let members
+
+  try {
+    members = await db.select([
+      "member.id",
+      "member.firstName",
+      "member.lastName",
+      "member.gender",
+      "member.email",
+      "member.username",
+      "member.birthdate",
+      "member.address",
+      "member.created_at",
+      "role.name as role",
+      ])
+      .from("member")
+      .innerJoin("role", "member.role_id", "role.id")
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  res.status(200).send(members)
+})
+
+// TODO: Guard this route
+router.patch("/member", async (req, res, next) => {
+  const { id, ...member } = req.body
+  let result
+
+  try {
+    result = await db("member")
+      .where({ id })
+      .update(member)
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  if (!result) {
+    res.status(404).send()
+    return
+  }
+
+  res.status(200).send()
+})
+
 router.get("/member/:id", (req, res, next) => {
   res.locals.table = "member"
   next()
 }, getId)
+
+// TODO: Guard this route
+router.delete("/member/:id", /*authenticate,*/ async (req, res, next) => {
+  const { id } = req.params
+  let result
+
+  try {
+    result = await db("member")
+      .where({id})
+      .del()
+  } catch (e) {
+    console.log(e)
+    res.status(500).send()
+    return
+  }
+
+  console.log(result)
+  res.status(200).send()
+})
 
 // TODO: Fix this faux-route
 router.get("/user", async (req, res) => {
@@ -96,12 +184,13 @@ router.post("/signup", async (req, res) => {
     lastName,
     email,
     username,
-    password
+    password,
+    role_id
   } = req.body
 
   try {
     // TODO: Fix validation user input
-    if (!firstName || !lastName || !email || !username || !password) {
+    if (!firstName || !lastName || !email || !username || !password || !role_id) {
       throw new Error("Incomplete fields.")
     }
 
@@ -110,7 +199,8 @@ router.post("/signup", async (req, res) => {
       lastName,
       email,
       username,
-      password: await bcrypt.hash(password, 10)
+      password: await bcrypt.hash(password, 10),
+      role_id,
     }
   } catch (e) {
     res.status(400).send()
@@ -126,10 +216,11 @@ router.post("/signup", async (req, res) => {
 
   if (result) {
     const userId = result[0]
-    const token = generateUserToken({ userId, username })
+    const token = generateUserToken({ userId, username, role_id })
     res.status(200).send({
       userId,
       username,
+      role_id,
       token
     })
     return
@@ -353,6 +444,28 @@ router.get("/item/:sku", async (req, res, next) => {
   }
 
   res.status(200).send(item)
+})
+
+router.get("/order", async (req, res, next) => {
+  let orders
+
+  try {
+    orders = await db.select([
+        "id",
+        "member_id",
+        "order_at",
+        "ship_to",
+        "status_id",
+        "ship_at",
+        "deliver_at",
+      ])
+      .from("order")
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  res.status(200).send(orders)
 })
 
 router.get("/order/:id", async (req, res, next) => {

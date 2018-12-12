@@ -7,10 +7,13 @@
 <script>
   export default {
     created() {
-      const asdf = JSON.stringify(this.$route.params, null, 2)
-      console.log(asdf)
+      // TODO: check if own page
+      const { user: unauthorizedUser } = this.$route.params
+      const { username: authorizedUser } = this.$auth.$state.user
     },
-    layout: "user"
+    asyncData(context) {
+    },
+    layout: "user",
   }
 </script>
 

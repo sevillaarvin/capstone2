@@ -2,6 +2,11 @@ const database = "clubseville"
 
 exports.up = function(knex, Promise) {
   return knex.schema
+    .createTable("role", table => {
+      table.increments()
+      table.text("name").notNullable()
+    })
+
     .createTable("member", table => {
       table.increments()
       table.text("firstName").notNullable()
@@ -13,6 +18,8 @@ exports.up = function(knex, Promise) {
       table.date("birthdate")
       table.text("address")
       table.timestamp("created_at").notNullable().defaultTo(knex.fn.now())
+      table.integer("role_id").notNullable()
+      table.foreign("role_id").references("id").inTable("role")
     })
 
     .createTable("category", table => {
@@ -128,6 +135,7 @@ const dropTables = (knex, Promise) => {
     .dropTableIfExists("size")
     .dropTableIfExists("category")
     .dropTableIfExists("member")
+    .dropTableIfExists("role")
 }
 
 exports.config = { transaction: false }

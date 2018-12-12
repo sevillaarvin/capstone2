@@ -24,9 +24,29 @@
     <v-list>
       <template
         v-for="link in userLinks">
+        <v-list-group
+          v-if="link.pages"
+          :key="link.name">
+          <v-list-tile slot="activator">
+            {{ link.name }}
+          </v-list-tile>
+          <v-list-tile
+            v-for="page in link.pages"
+            :key="page.name"
+            :to="adminLink(page.path)"
+            nuxt>
+            <v-list-tile-action>
+              <v-icon>{{ page.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-title>
+              {{ page.name }}
+            </v-list-tile-title>
+          </v-list-tile>
+        </v-list-group>
         <v-list-tile
+          v-else
           :key="link.name"
-          :to="userLink"
+          :to="userLink(link.path)"
           nuxt>
           <v-list-tile-content>
             {{ link.name }}
@@ -57,25 +77,56 @@
           {
             name: "Profile",
             path: "/profile",
+            admin: false,
           },
           {
             name: "Orders",
             path: "/orders",
+            admin: false,
           },
           {
             name: "Events",
             path: "/events",
+            admin: false,
           },
           {
             name: "Admin",
             path: "/admin",
+            admin: true,
+            pages: [
+              {
+                name: "Members",
+                path: "/members",
+              },
+              {
+                name: "Items",
+                path: "/items",
+              },
+              {
+                name: "Orders",
+                path: "/orders",
+              },
+              {
+                name: "Events",
+                path: "/events",
+              },
+            ],
           },
         ]
       }
     },
     computed: {
+      /*
       userLink() {
-        return '/' + encodeURIComponent(user) + link.path
+      }
+      */
+    },
+    methods: {
+      userLink(link) {
+        return '/' + encodeURIComponent(this.user) + link
+      },
+      adminLink(link) {
+        return this.userLink("/admin") + link
       }
     },
   }

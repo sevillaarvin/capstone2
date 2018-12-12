@@ -10,7 +10,7 @@ let members = [
       "gender" : "f",
       "username" : "rdyment0",
       "birthdate " : "9/28/2003",
-      "password" : "0f8a16a8053e4130748ac396a30bcb5f45426843ea8a86e4d62ebb5ad35d0491"
+      "password" : "0f8a16a8053e4130748ac396a30bcb5f45426843ea8a86e4d62ebb5ad35d0491",
    },
    {
       "lastName" : "Foster",
@@ -281,8 +281,13 @@ let members = [
 
 exports.seed = async function(knex, Promise) {
   try {
-    members = members.map(member => {
+    members = members.map((member, i) => {
       member.password = bcrypt.hashSync(member.password, 10)
+      if (i === 0) {
+        member.role_id = 1
+      } else {
+          member.role_id = 2
+      }
       return member
     })
   } catch (e) {

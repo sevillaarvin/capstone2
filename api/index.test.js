@@ -18,6 +18,101 @@ before(function(done) {
   })
 })
 
+describe("GET /role", () => {
+  it("should return all role names", done => {
+    request(app)
+      .get("/role")
+      .expect(200)
+      .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.be.an("array").to.have.lengthOf(2)
+        expect(res.body[0]).to.have.all.keys("id", "name")
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  // TODO: Implement unit test
+  it("should return all role names only if authenticated", done => {
+    done()
+  })
+})
+
+describe("GET /member", () => {
+  it("should return all members", done => {
+    request(app)
+      .get("/member")
+      .expect(200)
+      .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.be.an("array")
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  // TODO: implement unit test
+  it("should return all members only if authenticated", done => {
+    done()
+  })
+})
+
+describe("PATCH /member", () => {
+  it("should update details of user with id 2", done => {
+    request(app)
+      .patch("/member")
+      .send({
+        id: 2,
+        username: "changed",
+      })
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err)
+        db.select("username")
+          .from("member")
+          .where({ id: 2 })
+          .first()
+          .then(res => {
+            expect(res).to.be.an("object")
+            expect(res.username).to.be.equal("changed")
+            done()
+        }).catch(e => done(e))
+      })
+  })
+
+  it("should return 404 for nonexistent member", done => {
+    request(app)
+      .patch("/member")
+      .send({
+        id: 999999,
+        username: "whatever",
+      })
+      .expect(404)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  }) 
+
+  it("should return 400 for wrong fields to be updated", done => {
+    request(app)
+      .patch("/member")
+      .send({
+        id: 3,
+        wrong: "field",
+      })
+      .expect(500)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
 describe("GET /member/id", () => {
   it("should return the member with id 2", done => {
     request(app)
@@ -35,6 +130,21 @@ describe("GET /member/id", () => {
   })
 })
 
+// TODO: Complete delete member API
+describe("DELETE /member/id", () => {
+  /*
+  it("should delete the member with id 2", done => {
+    request(app)
+      .delete("/member/2")
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+  */
+})
+
 describe("POST /signup", () => {
   it("should register the user", done => {
     request(app)
@@ -47,11 +157,12 @@ describe("POST /signup", () => {
         password: "test",
         birthdate: "1990-01-01",
         address: "Somewhere in America",
+        role_id: 1,
       })
       .expect(200)
       .expect(res => {
         expect(res.body).to.be.an("object")
-        expect(res.body).to.have.all.keys("userId", "username", "token")
+        expect(res.body).to.have.all.keys("userId", "username", "role_id", "token")
         expect(res.body.userId)
           .to.be.a("number")
         expect(res.body.username)
@@ -76,6 +187,7 @@ describe("POST /signup", () => {
         password: "shouldbehashed",
         birthdate: "2000-08-08",
         address: "18 Open Street, Ohio",
+        role_id: 1
       })
       .expect(200)
       .end((err, res) => {
@@ -103,6 +215,7 @@ describe("POST /signup", () => {
         password: "shouldbehashed",
         birthdate: "2000-08-08",
         address: "18 Open Street, Ohio",
+        role_id: 1
       })
       // TODO: Should expect 403 Forbidden
       .expect(500)
@@ -403,6 +516,22 @@ describe("GET /item/id", () => {
     request(app)
       .get("/item/asdfasdf")
       .expect(404)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("GET /order", () => {
+  it("should get all orders", done => {
+    request(app)
+      .get("/order")
+      .expect(200)
+      .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.be.an("array")
+      })
       .end((err, res) => {
         if (err) return done(err)
         done()

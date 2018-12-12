@@ -2,6 +2,13 @@ import Vuex from 'vuex'
 
 export default () => new Vuex.Store({
   state: {
+    user: {},
+    admin: {
+      members: [],
+      items: [],
+      orders: [],
+      events: [],
+    },
     featured: {
       items: [],
       offset: 0,
@@ -84,6 +91,18 @@ export default () => new Vuex.Store({
     },
   },
   getters: {
+    adminMembers(state) {
+      return state.admin.members
+    },
+    adminItems(state) {
+      return state.admin.items
+    },
+    adminOrders(state) {
+      return state.admin.orders
+    },
+    adminEvents(state) {
+      return state.admin.events
+    },
     featuredItems(state) {
       // TODO: Should return x items at a time
       return state.featured.items
@@ -117,6 +136,18 @@ export default () => new Vuex.Store({
     },
   },
   mutations: {
+    setAdminMembers(state, members) {
+      state.admin.members = members
+    },
+    setAdminItems(state, items) {
+      state.admin.items = items
+    },
+    setAdminOrders(state, orders) {
+      state.admin.orders = orders
+    },
+    setAdminEvents(state, events) {
+      state.admin.events = events
+    },
     setFeaturedItems(state, { items, offset, limit }) {
       state.featured.items = items
       state.featured.offset = offset
@@ -138,6 +169,50 @@ export default () => new Vuex.Store({
   actions: {
     async nuxtServerInit(vuexContext, context) {
       await vuexContext.dispatch("setCategories", context)
+    },
+    async setAdminMembers({ commit }, context) {
+      let members
+      try {
+        members = await this.$axios.$get("/member", {
+          params: {
+            offset: 0,
+            limit: 20,
+          }
+        })
+      } catch (e) {
+        context.error(e)
+        return
+      }
+      commit("setAdminMembers", members)
+    },
+    async setAdminItems({ commit }) {
+      let items
+      try {
+        items = await this.$axios.$get("/item", {
+          params: {
+            offset: 0,
+            limit: 20,
+          }
+        })
+      } catch (e) {
+        return Promise.reject(e)
+      }
+      commit("setAdminItems", items)
+    },
+    async setAdminOrders({ commit }, context) {
+      let orders
+      try {
+        orders = await this.$axios.$get("/order", {
+          params: {
+            offset: 0,
+            limit: 20,
+          }
+        })
+      } catch (e) {
+        context.error(e)
+        return
+      }
+      commit("setAdminOrders", orders)
     },
     async setFeaturedItems({ commit, getters }, query) {
       let { offset, limit, featured } = query

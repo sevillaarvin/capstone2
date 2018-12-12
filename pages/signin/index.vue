@@ -86,7 +86,7 @@
     },
     created() {
       if (this.$auth.$state.loggedIn) {
-        this.$router.replace("/dashboard")
+        this.$router.replace("/")
       }
     },
     methods: {

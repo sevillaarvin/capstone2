@@ -38,7 +38,8 @@ module.exports = {
   */
   plugins: [
     '@/plugins/vuetify',
-    "@/plugins/store-items"
+    "@/plugins/store-items",
+    "@/plugins/utilities",
   ],
 
   /*

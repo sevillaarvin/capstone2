@@ -2,13 +2,20 @@ import Vuex from 'vuex'
 
 export default () => new Vuex.Store({
   state: {
-    user: {},
+    // authenticated data
+    user: {
+      cart: {},
+    },
+
+    // authenticated data
+    // authorized data
     admin: {
       members: [],
       items: [],
       orders: [],
       events: [],
     },
+
     featured: {
       items: [],
       offset: 0,
@@ -91,6 +98,9 @@ export default () => new Vuex.Store({
     },
   },
   getters: {
+    userCart(state) {
+      return state.user.cart
+    },
     adminMembers(state) {
       return state.admin.members
     },
@@ -136,6 +146,9 @@ export default () => new Vuex.Store({
     },
   },
   mutations: {
+    setUserCart(state, cart) {
+      state.user.cart = cart
+    },
     setAdminMembers(state, members) {
       state.admin.members = members
     },
@@ -168,9 +181,36 @@ export default () => new Vuex.Store({
   },
   actions: {
     async nuxtServerInit(vuexContext, context) {
-      await vuexContext.dispatch("setCategories", context)
+      try {
+        await vuexContext.dispatch("setCategories", context)
+        await vuexContext.dispatch("setUserCart")
+      } catch (e) {
+        console.log(e.message)
+      }
     },
-    async setAdminMembers({ commit }, context) {
+    async setUserCart({ commit }) {
+      let cart
+      
+      try {
+        cart = await this.$axios.$get("/cart/" + this.$auth.$state.user.userId)
+      } catch (e) {
+        return Promise.reject(e)
+      }
+
+      commit("setUserCart", cart)
+    },
+    async addToCart({ commit, dispatch }, item) {
+      let items
+
+      try {
+        await this.$axios.$post("/cart", item) 
+      } catch (e) {
+        return Promise.reject(e)
+      }
+
+      dispatch("setUserCart")
+    },
+    async setAdminMembers({ commit }) {
       let members
       try {
         members = await this.$axios.$get("/member", {
@@ -180,8 +220,7 @@ export default () => new Vuex.Store({
           }
         })
       } catch (e) {
-        context.error(e)
-        return
+        return Promise.reject(e)
       }
       commit("setAdminMembers", members)
     },
@@ -273,13 +312,16 @@ export default () => new Vuex.Store({
     setCurrentItem({ commit }, item) {
       commit("setCurrentItem", item)
     },
-    async signUpUser({commit}, user) {
+    async signUpUser({ commit }, user) {
       try {
         await this.$axios.$post("/signup", user)
       } catch (e) {
         return Promise.reject(e)
       }
       commit("signUpUser", user)
+    },
+    signOutUser({ commit }) {
+      commit("setUserCart", {})
     }
   },
 })

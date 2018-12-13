@@ -53,21 +53,70 @@ const getAll = async (req, res) => {
 }
 
 const authenticate = async (req, res, next) => {
+  const authorization = req.header("authorization")
   let token
+  let user
 
-  if (req.body && req.body.token) {
-    token = req.body.token
-  }
-  const user = await verifyUserToken(token)
-    .catch(e => {
+  try {
+    token = authorization.split(" ")[1]
+    user = await verifyUserToken(token)
+  } catch (e) {
     res.status(401).send()
-  })
+    return
+  }
+
   res.locals.user = user
   next()
 }
 
-// TODO: Guard this route
-router.get("/role", async (req, res, next) => {
+const authorizeAdmin = async (req, res, next) => {
+  const { user } = res.locals
+  let roles
+
+  try {
+    roles = await db.select([
+        "id",
+        "name",
+      ])
+      .from("role")
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  let userRole = roles.find(role => role.id === user.roleId)
+  if (userRole.name === "admin") {
+    next()
+  } else {
+    res.status(401).send()
+    return
+  }
+}
+
+const convertRating = items => {
+  items.forEach(item => {
+    item.rating = Number(item.rating)
+  })
+}
+
+// TODO: Fix this faux-route
+router.get("/user", async (req, res) => {
+  let token
+  let user
+  try {
+    token = req.get("authorization")
+      .split(" ")[1]
+    user = await verifyUserToken(token)
+  } catch (e) {
+    res.status(401).send("Invalid token.")
+    return
+  }
+
+  // Send an object with property user for nuxt/auth
+  res.send({ user })
+})
+
+router.get("/role", authenticate, authorizeAdmin, async (req, res, next) => {
   let roles
   try {
     roles = await db.select([
@@ -86,8 +135,7 @@ router.get("/role", async (req, res, next) => {
   res.status(200).send(roles)
 })
 
-// TODO: Guard this route
-router.get("/member", /*authenticate,*/ async (req, res, next) => {
+router.get("/member", authenticate, authorizeAdmin, async (req, res, next) => {
   let members
 
   try {
@@ -111,6 +159,22 @@ router.get("/member", /*authenticate,*/ async (req, res, next) => {
   }
 
   res.status(200).send(members)
+})
+
+// TODO: Guard this route
+router.post("/member", async (req, res, next) => {
+  // console.log(req.headers)
+  const member = req.body
+  // TODO: Fix random password
+  member.password = await bcrypt.hash("a", 10)
+  try {
+    result = await db.insert(member, "id")
+      .into("member")
+  } catch (e) {
+    res.status(500).send()
+  }
+
+  res.status(200).send(result)
 })
 
 // TODO: Guard this route
@@ -150,29 +214,12 @@ router.delete("/member/:id", /*authenticate,*/ async (req, res, next) => {
       .where({id})
       .del()
   } catch (e) {
-    console.log(e)
     res.status(500).send()
     return
   }
 
-  console.log(result)
+  // console.log(result)
   res.status(200).send()
-})
-
-// TODO: Fix this faux-route
-router.get("/user", async (req, res) => {
-  let token
-  let user
-  try {
-    token = req.get("authorization")
-      .split(" ")[1]
-    user = await verifyUserToken(token)
-  } catch (e) {
-    res.status(401).send("Invalid token.")
-    return
-  }
-
-  res.send({ user })
 })
 
 router.post("/signup", async (req, res) => {
@@ -221,7 +268,7 @@ router.post("/signup", async (req, res) => {
       userId,
       username,
       role_id,
-      token
+      token,
     })
     return
   }
@@ -248,10 +295,10 @@ router.post("/signin", async (req, res) => {
   const token = generateUserToken(user)
   res.status(200).send({
     userId: user.userId,
+    roleId: user.roleId,
     username,
-    token
+    token,
   })
-  res.status(200).send()
 })
 
 router.get("/category", (req, res, next) => {
@@ -306,9 +353,7 @@ router.get("/category/:name", async (req, res, next) => {
       .groupBy(["item.id", "category.name", "size.name"])
       .orderBy("item.id")
 
-    results.forEach(result => {
-      result.rating = Number(result.rating)
-    })
+    convertRating(results)
   } catch (e) {
     res.status(500).send()
     return
@@ -350,7 +395,6 @@ router.get("/item", async (req, res, next) => {
           "item.discount",
           "size.name as size"
         ])
-        // TODO: Convert rating to Number()
         .avg("rating.stars as rating")
         .from("item")
         // Category is required
@@ -363,9 +407,7 @@ router.get("/item", async (req, res, next) => {
         .groupBy(["item.id", "category.name", "size.name"])
         .orderBy("item.id")
 
-      items.forEach(result => {
-        result.rating = Number(result.rating)
-      })
+      convertRating(items)
     } catch (e) {
       res.status(500).send()
       return
@@ -395,9 +437,7 @@ router.get("/item", async (req, res, next) => {
         .groupBy(["item.id", "category.name", "size.name"])
         .orderBy("item.id")
 
-      items.forEach(result => {
-        result.rating = Number(result.rating)
-      })
+      convertRating(items)
     } catch (e) {
       res.status(500).send()
       return
@@ -444,6 +484,94 @@ router.get("/item/:sku", async (req, res, next) => {
   }
 
   res.status(200).send(item)
+})
+
+router.get("/cart/:member_id", authenticate, async (req, res, next) => {
+  const { user } = res.locals
+  const { member_id } = req.params
+  let cart
+  let items
+
+  // Only deep equality since typeof userId is string
+  if (!(user.userId == member_id))  {
+    res.status(401).send()
+    return
+  }
+
+  try {
+    // Get cart parent
+    // undefined if no cart or all carts are full
+    cart = await db.select([
+        "id",
+        "member_id",
+        "order_id",
+      ])
+      .from("cart")
+      .where({
+        member_id,
+        order_id: null,
+      })
+      .first()
+
+    // If user has no cart, create cart
+    if (!cart) {
+      const newCart = await db.insert({
+          member_id
+        }, "id")
+        .into("cart")
+      cart = await db.select([
+          "id",
+          "member_id",
+          "order_id",
+        ])
+        .from("cart")
+        .where({
+          member_id,
+          order_id: null,
+        })
+        .first()
+    }
+
+    items = await db.select([
+        "cart_item.id as id",
+        // "cart_item.cart_id",
+        "cart_item.item_id",
+        "cart_item.quantity",
+        "item.sku",
+        "item.name",
+        "category.name as category",
+        "item.description",
+        "item.img",
+        "item.price",
+        "item.discount",
+        "size.name as size"
+      ])
+      .from("cart_item")
+      .where({ "cart_item.cart_id": cart.id })
+      .innerJoin("item", "item.id", "cart_item.item_id")
+      .avg("rating.stars as rating")
+      // Category is required
+      .innerJoin("category", "item.category_id", "category.id")
+      // Size is not required
+      .leftJoin("size", "item.size_id", "size.id")
+      .leftJoin("rating", "item.id", "rating.item_id")
+      .groupBy(["cart_item.id", "item.id", "category.name", "size.name"])
+      .orderBy("cart_item.id")
+
+    convertRating(items)
+  } catch (e) {
+    res.status(500).send()
+  }
+
+  res.status(200).send({
+    cartId: cart.id,
+    items,
+  })
+})
+
+router.post("/cart", authenticate, async (req, res, next) => {
+
+  res.status(200).send()
 })
 
 router.get("/order", async (req, res, next) => {

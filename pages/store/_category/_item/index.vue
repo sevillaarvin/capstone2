@@ -12,10 +12,13 @@
                     :src="item.img"
                     contain />
                 </v-flex>
-                <v-flex xs8>
+                <v-flex
+                  xs8>
                   <v-container>
-                    <v-layout column>
-                      <v-flex xs12>
+                    <v-layout
+                      column>
+                      <v-flex
+                        xs12>
                         <v-card-title
                           class="title">
                           {{ item.name }}
@@ -30,6 +33,13 @@
                           {{ item.price | currency }}
                         </v-card-text>
                       </v-flex>
+                      <v-flex
+                        xs12>
+                        <v-text-field
+                          v-model="quantity"
+                          type="number"
+                          label="Quantity" />
+                      </v-flex>
                     </v-layout>
                   </v-container>
                 </v-flex>
@@ -38,7 +48,8 @@
                 <v-flex xs12>
                   <v-card-actions
                     class="justify-space-around my-3">
-                    <v-btn>
+                    <v-btn
+                      @click="addToCart">
                       Add to Cart
                     </v-btn>
                     <v-btn>
@@ -67,16 +78,28 @@
         try {
           const sku = context.route.params.item
           item = await context.app.$axios.$get("/item/" + sku)
-          console.log(item)
           context.store.dispatch("setCurrentItem", item)
         } catch (e) {
           context.error(e)
+        }
+
+        return {
+          quantity: 0
         }
       }
     },
     computed: {
       item() {
         return this.$store.getters.currentItem
+      }
+    },
+    methods: {
+      addToCart() {
+        this.$store.dispatch("addToCart", {
+          cartId: this.$store.getters.userCart.cartId,
+          itemId: this.item.id,
+          quantity: this.quantity,
+        })
       }
     },
     layout: "store"

@@ -16,6 +16,9 @@ exports.seed = async function(knex, Promise) {
         {
           member_id: 3,
         },
+        {
+          member_id: 2,
+        },
       ]);
   } catch (e) {
     console.error(e.message)

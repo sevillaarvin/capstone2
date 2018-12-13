@@ -2,10 +2,10 @@ const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const db = require("../db/knex")
 
+// { userId, roleId, username }
 const generateUserToken = user => {
   // TODO: Move secret to config file
   return jwt.sign(user, "secret")
-
 }
 
 const verifyUserToken = async token => {
@@ -17,7 +17,13 @@ const verifyUserToken = async token => {
 }
 
 const findUserCredentials = async (username, password) => {
-  const user = await db.select("id", "username", "email", "password")
+  const user = await db.select([
+      "id",
+      "username",
+      "email",
+      "password",
+      "role_id",
+    ])
     .from("member")
     .where({username: username})
     .orWhere({email: username})
@@ -35,7 +41,8 @@ const findUserCredentials = async (username, password) => {
 
   return {
     userId: user.id,
-    username: user.username
+    roleId: user.role_id,
+    username: user.username,
   }
 }
 

@@ -1,86 +1,143 @@
 <template>
   <v-layout>
     <v-flex xs12>
-      <v-container
-        fluid>
-        <Title :title="'Members'" />
-        <v-layout>
-          <v-flex xs12>
-            <v-data-table
-              :headers="headers"
-              :items="members">
+      <v-toolbar
+        flat
+        color="white">
+        <v-toolbar-title>
+          Members
+        </v-toolbar-title>
+        <v-spacer />
+        <v-dialog
+          v-model="dialog.new"
+          max-width="500px">
+          <v-btn
+            slot="activator"
+            color="primary"
+            dark
+            class="mb-2">
+            New Member
+          </v-btn>
+          <v-card>
+            <v-card-title>
+              <span class="headline">New Member</span>
+            </v-card-title>
 
-              <template
-                slot="items"
-                slot-scope="{ item }">
-                <tr
-                  class="cursor-pointer"
-                  @click="selectMember(item)">
-                  <td>{{ item.id }}</td>
-                  <td>{{ item.role }}</td>
-                  <td>{{ item.firstName }}</td>
-                  <td>{{ item.lastName }}</td>
-                  <td>{{ item.username }}</td>
-                  <td>{{ item.email }}</td>
-                  <td>{{ item.created_at | long-date }}</td>
-                </tr>
-              </template>
-            </v-data-table>
-            <v-dialog
-              v-model="dialog"
-              width="500">
-              <v-card>
-                <v-container
-                  fluid>
-                  <v-layout>
-                    <v-flex
-                      xs12>
-                      <v-form
-                        @submit.prevent="updateMember">
-                        <v-text-field
-                          v-model="currentMember.id"
-                          label="ID"
-                          disabled />
-                        <v-select
-                          :items="roleNames"
-                          v-model="currentMember.role"
-                          label="Role" />
-                        <v-text-field
-                          v-model="currentMember.firstName"
-                          label="First Name"/>
-                        <v-text-field
-                          v-model="currentMember.lastName"
-                          label="Last Name"/>
-                        <v-text-field
-                          v-model="currentMember.username"
-                          label="Username"/>
-                        <v-text-field
-                          v-model="currentMember.email"
-                          label="Email"/>
-                        <!-- TODO: Add birthdate -->
-                        <v-card-actions>
-                          <v-btn>
-                            Reset Password
-                          </v-btn>
-                          <v-btn
-                            type="submit">
-                            Update
-                          </v-btn>
-                          <v-btn
-                            color="error"
-                            @click="deleteMember">
-                            Delete
-                          </v-btn>
-                        </v-card-actions>
-                      </v-form>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
-              </v-card>
-            </v-dialog>
-          </v-flex>
-        </v-layout>
-      </v-container>
+            <v-card-text>
+              <v-container
+                fluid>
+                <v-layout
+                  wrap>
+                  <v-flex
+                    xs12>
+                    <v-select
+                      :items="roleNames"
+                      v-model="newMember.role"
+                      label="Role" />
+                    <v-text-field
+                      v-model="newMember.firstName"
+                      label="First Name"/>
+                    <v-text-field
+                      v-model="newMember.lastName"
+                      label="Last Name"/>
+                    <v-text-field
+                      v-model="newMember.username"
+                      label="Username"/>
+                    <v-text-field
+                      v-model="newMember.email"
+                      label="Email"/>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer />
+              <v-btn
+                color="blue darken-1"
+                flat
+                @click="dialog.new = false">Cancel</v-btn>
+              <v-btn
+                color="blue darken-1"
+                flat
+                @click="createMember">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-toolbar>
+      <v-divider />
+      <v-data-table
+        :headers="headers"
+        :items="members">
+
+        <template
+          slot="items"
+          slot-scope="{ item }">
+          <tr
+            class="cursor-pointer"
+            @click="selectMember(item)">
+            <td>{{ item.id }}</td>
+            <td>{{ item.role }}</td>
+            <td>{{ item.firstName }}</td>
+            <td>{{ item.lastName }}</td>
+            <td>{{ item.username }}</td>
+            <td>{{ item.email }}</td>
+            <td>{{ item.created_at | long-date }}</td>
+          </tr>
+        </template>
+      </v-data-table>
+      <v-dialog
+        v-model="dialog.edit"
+        width="500">
+        <v-card>
+          <v-container
+            fluid>
+            <v-layout>
+              <v-flex
+                xs12>
+                <v-form
+                  @submit.prevent="updateMember">
+                  <v-text-field
+                    v-model="currentMember.id"
+                    label="ID"
+                    disabled />
+                  <v-select
+                    :items="roleNames"
+                    v-model="currentMember.role"
+                    label="Role" />
+                  <v-text-field
+                    v-model="currentMember.firstName"
+                    label="First Name"/>
+                  <v-text-field
+                    v-model="currentMember.lastName"
+                    label="Last Name"/>
+                  <v-text-field
+                    v-model="currentMember.username"
+                    label="Username"/>
+                  <v-text-field
+                    v-model="currentMember.email"
+                    label="Email"/>
+                  <!-- TODO: Add birthdate -->
+                  <v-card-actions>
+                    <v-btn>
+                      Reset Password
+                    </v-btn>
+                    <v-btn
+                      type="submit">
+                      Update
+                    </v-btn>
+                    <v-btn
+                      color="error"
+                      @click="deleteMember">
+                      Delete
+                    </v-btn>
+                  </v-card-actions>
+                </v-form>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card>
+      </v-dialog>
     </v-flex>
   </v-layout>
 </template>
@@ -103,7 +160,11 @@
       }
 
       return {
-        dialog: false,
+        dialog: {
+          new: false,
+          edit: false,
+        },
+        newMember: {},
         currentMember: {},
         roles,
         headers: [
@@ -147,9 +208,23 @@
       },
     },
     methods: {
+      async createMember() {
+        const { role: roleName, ...member } = this.newMember
+        const role_id = this.roles.find(role => role.name === roleName).id
+        let result
+
+        try { result = await this.$axios.$post("/member", {
+            role_id,
+            ...member
+          })
+        } catch (e) {
+          console.log(e)
+        }
+        console.log(result)
+      },
       selectMember(member) {
         this.currentMember = member
-        this.dialog = true
+        this.dialog.edit = true
       },
       async updateMember() {
         const {

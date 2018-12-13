@@ -2,6 +2,28 @@ const bcrypt = require("bcryptjs")
 
 let members = [
    {
+      "email" : "admin@admin.com",
+      "firstName" : "Admin",
+      "lastName" : "Admin",
+      "address" : "Admin street",
+      "created_at" : "12/15/2018",
+      "gender" : "m",
+      "username" : "admin",
+      "birthdate " : "1/1/2000",
+      "password" : "admin",
+   },
+   {
+      "email" : "user@user.com",
+      "firstName" : "User",
+      "lastName" : "User",
+      "address" : "User street",
+      "created_at" : "12/15/2018",
+      "gender" : "m",
+      "username" : "user",
+      "birthdate " : "1/1/2000",
+      "password" : "user",
+   },
+   {
       "email" : "rdyment0@geocities.jp",
       "firstName" : "Ricard",
       "address" : "435 Northridge Junction",
@@ -283,10 +305,12 @@ exports.seed = async function(knex, Promise) {
   try {
     members = members.map((member, i) => {
       member.password = bcrypt.hashSync(member.password, 10)
-      if (i === 0) {
-        member.role_id = 1
-      } else {
-          member.role_id = 2
+      if (!member.role_id) {
+        if (i === 0) {
+          member.role_id = 1
+        } else {
+            member.role_id = 2
+        }
       }
       return member
     })

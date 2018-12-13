@@ -1,7 +1,19 @@
 const request = require("supertest")
 const expect = require("chai").expect
 const app = require("./index").app
+const { generateUserToken, verifyUserToken } = require("./auth")
 const db = require("../db/knex")
+// token used for testing authentication
+const tokenAdmin = generateUserToken({
+  userId: 1,
+  roleId: 1,
+  username: "admin",
+})
+const tokenUser = generateUserToken({
+  userId: 2,
+  roleId: 2,
+  username: "user",
+})
 
 before(function(done) {
   this.timeout(10000)
@@ -22,6 +34,7 @@ describe("GET /role", () => {
   it("should return all role names", done => {
     request(app)
       .get("/role")
+      .set("authorization", "Bearer " + tokenAdmin)
       .expect(200)
       .expect("content-type", /json/)
       .expect(res => {
@@ -34,9 +47,25 @@ describe("GET /role", () => {
       })
   })
 
-  // TODO: Implement unit test
-  it("should return all role names only if authenticated", done => {
-    done()
+  it("should not return members if not authenticated", done => {
+    request(app)
+      .get("/role")
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not return members if only authenticated as user", done => {
+    request(app)
+      .get("/role")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
   })
 })
 
@@ -44,6 +73,7 @@ describe("GET /member", () => {
   it("should return all members", done => {
     request(app)
       .get("/member")
+      .set("authorization", "Bearer " + tokenAdmin)
       .expect(200)
       .expect("content-type", /json/)
       .expect(res => {
@@ -55,18 +85,57 @@ describe("GET /member", () => {
       })
   })
 
-  // TODO: implement unit test
-  it("should return all members only if authenticated", done => {
-    done()
+  it("should not return members if not authenticated", done => {
+    request(app)
+      .get("/member")
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not return members if only authenticated as user", done => {
+    request(app)
+      .get("/member")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("POST /member", () => {
+  it("should create a new member", done => {
+    request(app)
+      .post("/member")
+      .send({
+        firstName: "Post",
+        lastName: "Member",
+        username: "postmemberrandom",
+        email: "random@random.com",
+        role_id: 1,
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body).to.be.an("array")
+        expect(res.body[0]).to.be.a("number")
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
   })
 })
 
 describe("PATCH /member", () => {
-  it("should update details of user with id 2", done => {
+  it("should update details of user with id 3", done => {
     request(app)
       .patch("/member")
       .send({
-        id: 2,
+        id: 3,
         username: "changed",
       })
       .expect(200)
@@ -74,7 +143,7 @@ describe("PATCH /member", () => {
         if (err) return done(err)
         db.select("username")
           .from("member")
-          .where({ id: 2 })
+          .where({ id: 3 })
           .first()
           .then(res => {
             expect(res).to.be.an("object")
@@ -252,8 +321,10 @@ describe("POST /signin", () => {
       .expect(200)
       .expect(res => {
         expect(res.body).to.be.an("object")
-        expect(res.body).to.have.all.keys("userId", "username", "token")
+        expect(res.body).to.have.all.keys("userId", "roleId", "username", "token")
         expect(res.body.userId)
+          .to.be.a("number")
+        expect(res.body.roleId)
           .to.be.a("number")
         expect(res.body.username)
           .to.be.a("string")
@@ -516,6 +587,83 @@ describe("GET /item/id", () => {
     request(app)
       .get("/item/asdfasdf")
       .expect(404)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("GET /cart/memberId", () => {
+  it("should get active cart of member with id 1 when authorized", done => {
+    request(app)
+      .get("/cart/1")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).to.be.an("object")
+          .to.have.a.property("cartId")
+        expect(res.body.items).to.be.an("array")
+          .to.be.empty
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should get active cart of member with id 3 when authorized", done => {
+    const token3 = generateUserToken({
+      userId: 3,
+      roleId: 2,
+      username: "anotheruser",
+    })
+
+    request(app)
+      .get("/cart/3")
+      .set("authorization", "Bearer " + token3)
+      .expect(200)
+      .expect(res => {
+        expect(res.body).to.be.an("object")
+        expect(res.body.items)
+          .to.be.an("array")
+        expect(res.body.items[1])
+          .to.have.all.keys(
+            "id",
+            "item_id",
+            "quantity",
+            "sku",
+            "name",
+            "category",
+            "description",
+            "img",
+            "price",
+            "discount",
+            "size",
+            "rating",
+          )
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not get active cart of member with id 2 when authorized as id 1", done => {
+    request(app)
+      .get("/cart/2")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not get active cart of member with id 1 when not authorized", done => {
+    request(app)
+      .get("/cart/1")
+      .expect(401)
       .end((err, res) => {
         if (err) return done(err)
         done()

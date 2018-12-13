@@ -36,9 +36,19 @@
       Item,
       Title,
     },
-    data() {
-      return {
-        items: this.$store.getters.featuredItems.slice(0,3)
+    async asyncData(context) {
+      /*
+      try {
+        await context.store.dispatch("setUserCart")
+        console.log(context.app.$auth.$state)
+      } catch (e) {
+        console.log(e.message)
+      }
+      */
+    },
+    computed: {
+      items() {
+        return this.$store.getters.userCart.items
       }
     },
     layout: "store",

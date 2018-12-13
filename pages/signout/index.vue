@@ -9,6 +9,7 @@
 <script>
   export default {
     created() {
+      this.$store.dispatch("signOutUser")
       this.$auth.logout()
     }
   }

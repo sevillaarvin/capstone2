@@ -103,8 +103,6 @@ async function result5() {
 // result5()
 
 async function result6() {
-  try {
-  }
   const members = db.select([
     "member.id",
     "member.firstName",
@@ -122,4 +120,62 @@ async function result6() {
   console.log(members)
 }
 
-result6()
+// result6()
+
+async function result7() {
+  const cart = await db.select([
+      "id",
+      "member_id",
+      "order_id",
+    ])
+    .from("cart")
+    .where({
+      member_id: 3,
+      order_id: null,
+    })
+    .first()
+
+  console.log(cart)
+
+  const items = await db.select([
+    ])
+    .from("cart_item")
+    .where({
+      cart_id: cart.id
+    })
+
+  console.log(items)
+
+  const joined = await db.select([
+      "cart_item.id as id",
+      "cart_item.cart_id",
+      "cart_item.item_id",
+      "cart_item.quantity",
+      "item.sku",
+      "item.name",
+      "item.category_id",
+      "item.description",
+      "item.img",
+      "item.price",
+      "item.discount",
+      "item.size_id",
+    ])
+    .from("cart_item")
+    .where({
+      cart_id: cart.id
+    })
+    .innerJoin("item", "item.id", "cart_item.item_id")
+    // PREVIOUSLY IMPLEMENTED
+    .avg("rating.stars as rating")
+    // Category is required
+    .innerJoin("category", "item.category_id", "category.id")
+    // Size is not required
+    .leftJoin("size", "item.size_id", "size.id")
+    .leftJoin("rating", "item.id", "rating.item_id")
+    .groupBy(["cart_item.id", "item.id", "category.name", "size.name"])
+    .orderBy("cart_item.id")
+
+  console.log(joined)
+}
+
+result7()

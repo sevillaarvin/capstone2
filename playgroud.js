@@ -1,4 +1,5 @@
 const db = require("./db/knex")
+const uuidv4 = require("uuid/v4")
 
 async function result1() {
   let result = await db.select().from("item")
@@ -178,4 +179,82 @@ async function result7() {
   console.log(joined)
 }
 
-result7()
+// result7()
+
+async function result8() {
+  const member_id = 2
+  let orders
+  orders = await db.select([
+      "order.id",
+      "order.order_at",
+      "order.ship_to",
+      "status.name as status",
+      "order.ship_at",
+      "order.deliver_at",
+    ])
+    .from("order")
+    .where({ member_id })
+    .innerJoin("status", "status.id", "order.status_id")
+
+  try {
+    orders = await Promise.all(
+      orders.map(async order => {
+        order.items = await db.select([
+            "order_detail.quantity",
+            "order_detail.price",
+            "item.id",
+            "item.sku",
+            "item.name",
+            "category.name as category",
+            "item.description",
+            "item.img",
+            "size.name as size",
+          ])
+          .from("order_detail")
+          .where({ order_id: order.id })
+          .innerJoin("item", "item.id", "order_detail.item_id")
+          .innerJoin("category", "category.id", "item.category_id")
+          .leftJoin("size", "size.id", "item.size_id")
+
+        order.items = await Promise.all(order.items.map(async item => {
+          const rating = await db("rating")
+            .where({ item_id: item.id })
+            .avg({ rating: "stars" })
+            .first()
+          item = { ...item, ...rating }
+          return item
+        }))
+
+        return order
+    }))
+  } catch (e) {
+    console.log(e)
+  }
+
+  /*
+  try {
+    orders = await Promise.all(orders.map(async order => {
+      order.items = await Promise.all(order.items.map(async item => {
+        const rating = await db("rating")
+          .where({ item_id: item.id })
+          .avg({ rating: "stars" })
+          .first()
+        item = { ...item, ...rating }
+        return item
+      }))
+      return order
+    }))
+  } catch (e) {
+    console.log(e)
+  }
+  */
+
+  console.log(JSON.stringify(orders, null, 2))
+}
+
+//result8()
+
+for (let i = 0; i < 1000; ++i) {
+  console.log(uuidv4() + "-" + i)
+}
+

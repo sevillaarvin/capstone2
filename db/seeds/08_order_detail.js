@@ -17,6 +17,12 @@ exports.seed = async function(knex, Promise) {
         price: 200,
       },
       {
+        order_id: 2,
+        item_id: 683,
+        quantity: 2,
+        price: 200,
+      },
+      {
         order_id: 3,
         item_id: 1,
         quantity: 3,

@@ -843,14 +843,14 @@ describe("GET /order", () => {
 })
 
 describe("GET /order/id", () => {
-  it("should return the order with id 1", done => {
+  it("should return the orders of member with id 2", done => {
     request(app)
-      .get("/order/1")
-      .expect("content-type", /json/)
+      .get("/order/2")
+      .set("authorization", "Bearer " + tokenUser)
       .expect(200)
+      .expect("content-type", /json/)
       .expect(res => {
-        expect(res.body).to.have.a.property("id")
-        expect(res.body.id).to.be.equal(1)
+        expect(res.body).to.be.an("array")
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -858,10 +858,11 @@ describe("GET /order/id", () => {
       })
   })
 
-  it("should return 404 with an invalid order id", done => {
+  it("should not return order items of different user", done => {
     request(app)
-      .get("/order/12333")
-      .expect(404)
+      .get("/order/4")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(401)
       .end((err, res) => {
         if (err) return done(err)
         done()

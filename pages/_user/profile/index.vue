@@ -3,7 +3,7 @@
     <v-flex
       xs12>
       <v-container
-        app>
+        fluid>
         <Title
           title="Profile" />
         <v-layout>

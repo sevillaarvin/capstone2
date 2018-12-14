@@ -5,6 +5,7 @@ export default () => new Vuex.Store({
     // authenticated data
     user: {
       cart: null,
+      info: null,
       details: null,
     },
 
@@ -102,6 +103,9 @@ export default () => new Vuex.Store({
     userCart(state) {
       return state.user.cart
     },
+    userInfo(state) {
+      return state.user.info
+    },
     userDetails(state) {
       return state.user.details
     },
@@ -152,6 +156,9 @@ export default () => new Vuex.Store({
   mutations: {
     setUserCart(state, cart) {
       state.user.cart = cart
+    },
+    setUserInfo(state, info) {
+      state.user.info = info
     },
     setUserDetails(state, details) {
       state.user.details = details
@@ -206,17 +213,40 @@ export default () => new Vuex.Store({
 
       commit("setUserCart", cart)
     },
+    async setUserInfo({ commit }) {
+      const id = this.$auth.$state.user.userId
+      let info
+
+      try {
+        info = await this.$axios.$get("/member/" + id)
+      } catch (e) {
+        console.log(e)
+        return Promise.reject(e)
+      }
+
+      commit("setUserInfo", info)
+    },
     async setUserDetails({ commit }) {
       const id = this.$auth.$state.user.userId
       let details
 
       try {
-        details = await this.$axios.$get("/member/" + id)
+        details = await this.$axios.$get("/member/detail/" + id)
       } catch (e) {
         return Promise.reject(e)
       }
 
       commit("setUserDetails", details)
+    },
+    async updateUserDetails({ dispatch }, user) {
+      let details
+
+      try {
+        await this.$axios.$patch("/member/detail", user)
+        await dispatch("setUserDetails")
+      } catch (e) {
+        return Promise.reject(e)
+      }
     },
     async addToCart({ commit, dispatch }, item) {
       let items

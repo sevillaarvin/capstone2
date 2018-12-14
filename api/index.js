@@ -99,6 +99,28 @@ const convertRating = items => {
   })
 }
 
+const convertGender = members => {
+  members.forEach(member => {
+    const gender = member.gender
+    if (gender === "m") {
+      member.gender = "Male"
+    } else if (gender === "f") {
+      member.gender = "Female"
+    }
+  })
+}
+
+const revertGender = members => {
+  members.forEach(member => {
+    const gender = member.gender
+    if (gender === "Male") {
+      member.gender = "m"
+    } else if (gender === "Female") {
+      member.gender = "f"
+    }
+  })
+}
+
 // TODO: Fix this faux-route
 router.get("/user", async (req, res) => {
   let token
@@ -135,6 +157,7 @@ router.get("/role", authenticate, authorizeAdmin, async (req, res, next) => {
   res.status(200).send(roles)
 })
 
+// Member page for admin
 router.get("/member", authenticate, authorizeAdmin, async (req, res, next) => {
   let members
 
@@ -153,6 +176,8 @@ router.get("/member", authenticate, authorizeAdmin, async (req, res, next) => {
       ])
       .from("member")
       .innerJoin("role", "member.role_id", "role.id")
+
+    convertGender(members)
   } catch (e) {
     res.status(500).send()
     return
@@ -163,7 +188,6 @@ router.get("/member", authenticate, authorizeAdmin, async (req, res, next) => {
 
 // TODO: Guard this route
 router.post("/member", async (req, res, next) => {
-  // console.log(req.headers)
   const member = req.body
   // TODO: Fix random password
   member.password = await bcrypt.hash("a", 10)
@@ -177,8 +201,7 @@ router.post("/member", async (req, res, next) => {
   res.status(200).send(result)
 })
 
-// TODO: Guard this route
-router.patch("/member", async (req, res, next) => {
+router.patch("/member", authenticate, authorizeAdmin, async (req, res, next) => {
   const { id, ...member } = req.body
   let result
 
@@ -199,7 +222,7 @@ router.patch("/member", async (req, res, next) => {
   res.status(200).send()
 })
 
-// Retrieve basic user info
+// Retrieve basic member info
 router.get("/member/:id", async (req, res, next) => {
   const { id } = req.params
   let member
@@ -208,17 +231,84 @@ router.get("/member/:id", async (req, res, next) => {
     member = await db.select([
         "firstName",
         "lastName",
+        "username",
         "avatar",
       ])
       .from("member")
       .where({ id })
       .first()
   } catch (e) {
-    console.log(e)
     res.status(500).send()
+    return
   }
 
   res.status(200).send(member)
+})
+
+// Retrieve detailed member info
+router.get("/member/detail/:id", authenticate, async (req, res, next) => {
+  const { user } = res.locals
+  const { id } = req.params
+  let member
+
+  // Only deep equality since typeof userId is string
+  if (!(user.userId == id))  {
+    res.status(401).send()
+    return
+  }
+
+  try {
+    member = await db.select([
+        "member.id",
+        "member.firstName",
+        "member.lastName",
+        "member.gender",
+        "member.email",
+        "member.username",
+        "member.birthdate",
+        "member.address",
+      ])
+      .from("member")
+      .where({ "member.id": id })
+      .first()
+
+    convertGender([member])
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  res.status(200).send(member)
+})
+
+// Update detailed member info
+router.patch("/member/detail", authenticate, async (req, res, next) => {
+  const { user } = res.locals
+  const { id, ...memberDetails } = req.body
+  let result
+
+  if (!id) {
+    res.status(400).send()
+    return
+  }
+
+  // Only deep equality since typeof userId is string
+  if (!(user.userId == id))  {
+    res.status(401).send()
+    return
+  }
+
+  revertGender([memberDetails])
+  try {
+    result = await db("member")
+      .where({ id })
+      .update(memberDetails)
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  res.status(200).send()
 })
 
 // TODO: Guard this route

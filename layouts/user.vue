@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <UserDrawer
-      :user-details="userDetails"
+      :user-info="userInfo"
       v-model="drawer" />
     <TheHeader
       :gen-navs="allNavs.genNavs"
@@ -42,8 +42,8 @@
       allNavs() {
         return this.$store.getters.allNavs
       },
-      userDetails() {
-        return this.$store.getters.userDetails
+      userInfo() {
+        return this.$store.getters.userInfo
       }
     },
     middleware: [

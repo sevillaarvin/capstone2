@@ -9,12 +9,12 @@
       flat
       class="mt-3">
       <v-img
-        :src="userDetails.avatar || 'http://i.pravatar.cc/150?u=' + userDetails.firstName"
+        :src="userInfo.avatar || 'http://i.pravatar.cc/150?u=' + userInfo.firstName"
         contain
         height="100" />
       <v-card-title
         class="justify-center">
-        {{ `${userDetails.firstName} ${userDetails.lastName}` }}
+        {{ `${userInfo.firstName} ${userInfo.lastName}` }}
       </v-card-title>
       <v-card-text>
         <v-text-field
@@ -66,7 +66,7 @@
         type: Boolean,
         default: false
       },
-      userDetails: {
+      userInfo: {
         type: Object,
         required: true,
       }
@@ -115,15 +115,9 @@
         ]
       }
     },
-    computed: {
-      /*
-      userLink() {
-      }
-      */
-    },
     methods: {
       userLink(link) {
-        return '/' + encodeURIComponent(this.user) + link
+        return '/' + encodeURIComponent(this.userInfo.username) + link
       },
       adminLink(link) {
         return this.userLink("/admin") + link

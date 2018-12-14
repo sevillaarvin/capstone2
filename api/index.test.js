@@ -134,6 +134,7 @@ describe("PATCH /member", () => {
   it("should update details of user with id 3", done => {
     request(app)
       .patch("/member")
+      .set("authorization", "Bearer " + tokenAdmin)
       .send({
         id: 3,
         username: "changed",
@@ -156,6 +157,7 @@ describe("PATCH /member", () => {
   it("should return 404 for nonexistent member", done => {
     request(app)
       .patch("/member")
+      .set("authorization", "Bearer " + tokenAdmin)
       .send({
         id: 999999,
         username: "whatever",
@@ -170,6 +172,7 @@ describe("PATCH /member", () => {
   it("should return 400 for wrong fields to be updated", done => {
     request(app)
       .patch("/member")
+      .set("authorization", "Bearer " + tokenAdmin)
       .send({
         id: 3,
         wrong: "field",
@@ -192,9 +195,158 @@ describe("GET /member/id", () => {
         expect(res.body).to.have.all.keys(
           "firstName",
           "lastName",
+          "username",
           "avatar",
         )
       })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("GET /member/detail/id", () => {
+  it("should return the details of member with id 2 when authorized", done => {
+    request(app)
+      .get("/member/detail/2")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(200)
+      .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.have.all.keys(
+          "id",
+          "firstName",
+          "lastName",
+          "gender",
+          "email",
+          "username",
+          "birthdate",
+          "address",
+        )
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not return the details of member with id 2 when not authorized", done => {
+    request(app)
+      .get("/member/detail/2")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not return the details of member with id 3 when not authenticated", done => {
+    request(app)
+      .get("/member/detail/3")
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("PATCH /member/detail", () => {
+  const token3 = generateUserToken({
+    userId: 3,
+    roleId: 2,
+    username: "anotheruser",
+  })
+
+  const newBirth = new Date(2010, 0, 1)
+
+  it("should change user details with id 3", done => {
+    request(app)
+      .patch("/member/detail")
+      .set("authorization", "Bearer " + token3)
+      .send({
+        id: 3,
+        firstName: "FirstNameChanged",
+        lastName: "LastNameChanged",
+        gender: "Female",
+        username: "usernamechanged",
+        email: "email@changed",
+        birthdate: newBirth.toLocaleString(),
+        address: "Address has changed",
+      })
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err)
+        db.select([
+            "firstName",
+            "lastName",
+            "gender",
+            "username",
+            "email",
+            "birthdate",
+            "address",
+          ])
+          .from("member")
+          .where({ id: 3 })
+          .first()
+          .then(member => {
+            expect(member).to.be.an("object")
+              .to.have.all.keys(
+                "firstName",
+                "lastName",
+                "gender",
+                "username",
+                "email",
+                "birthdate",
+                "address",
+              )
+            expect(member.firstName)
+              .to.equal("FirstNameChanged")
+            expect(member.lastName)
+              .to.equal("LastNameChanged")
+            expect(member.gender)
+              .to.equal("f")
+            expect(member.username)
+              .to.equal("usernamechanged")
+            expect(member.email)
+              .to.equal("email@changed")
+            expect(new Date(member.birthdate).toISOString())
+              .to.equal(newBirth.toISOString())
+            expect(member.address)
+              .to.equal("Address has changed")
+            done()
+          }).catch(e => {
+            done(e)
+          })
+      })
+  })
+
+  it("should not update member detail of unauthorzied member", done => {
+    request(app)
+      .patch("/member/detail")
+      .set("authorization", "Bearer " + tokenUser)
+      .send({
+        id: 3,
+        lastName: "Hmmm"
+      })
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not update member with wrong fields", done => {
+    request(app)
+      .patch("/member/detail")
+      .set("authorization", "Bearer " + token3)
+      .send({
+        id: 3,
+        what: "Hmmm"
+      })
+      .expect(500)
       .end((err, res) => {
         if (err) return done(err)
         done()

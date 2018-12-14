@@ -186,11 +186,14 @@ describe("GET /member/id", () => {
   it("should return the member with id 2", done => {
     request(app)
       .get("/member/2")
-      .expect("content-type", /json/)
       .expect(200)
+      .expect("content-type", /json/)
       .expect(res => {
-        expect(res.body).to.have.a.property("id")
-        expect(res.body.id).to.be.equal(2)
+        expect(res.body).to.have.all.keys(
+          "firstName",
+          "lastName",
+          "avatar",
+        )
       })
       .end((err, res) => {
         if (err) return done(err)

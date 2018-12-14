@@ -4,7 +4,8 @@ export default () => new Vuex.Store({
   state: {
     // authenticated data
     user: {
-      cart: {},
+      cart: null,
+      details: null,
     },
 
     // authenticated data
@@ -101,6 +102,9 @@ export default () => new Vuex.Store({
     userCart(state) {
       return state.user.cart
     },
+    userDetails(state) {
+      return state.user.details
+    },
     adminMembers(state) {
       return state.admin.members
     },
@@ -148,6 +152,9 @@ export default () => new Vuex.Store({
   mutations: {
     setUserCart(state, cart) {
       state.user.cart = cart
+    },
+    setUserDetails(state, details) {
+      state.user.details = details
     },
     setAdminMembers(state, members) {
       state.admin.members = members
@@ -198,6 +205,18 @@ export default () => new Vuex.Store({
       }
 
       commit("setUserCart", cart)
+    },
+    async setUserDetails({ commit }) {
+      const id = this.$auth.$state.user.userId
+      let details
+
+      try {
+        details = await this.$axios.$get("/member/" + id)
+      } catch (e) {
+        return Promise.reject(e)
+      }
+
+      commit("setUserDetails", details)
     },
     async addToCart({ commit, dispatch }, item) {
       let items
@@ -321,7 +340,8 @@ export default () => new Vuex.Store({
       commit("signUpUser", user)
     },
     signOutUser({ commit }) {
-      commit("setUserCart", {})
+      commit("setUserCart", null)
+      commit("setUserDetails", null)
     }
   },
 })

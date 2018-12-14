@@ -17,9 +17,13 @@ exports.up = function(knex, Promise) {
       table.text("password").notNullable()
       table.date("birthdate")
       table.text("address")
-      table.timestamp("created_at").notNullable().defaultTo(knex.fn.now())
+      table.timestamp("created_at").notNullable()
+        .defaultTo(knex.fn.now())
       table.integer("role_id").notNullable()
       table.foreign("role_id").references("id").inTable("role")
+      table.text("avatar")
+      table.boolean("deactivated").notNullable()
+        .defaultTo(false)
     })
 
     .createTable("category", table => {

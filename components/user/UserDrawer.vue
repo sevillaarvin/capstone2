@@ -9,12 +9,12 @@
       flat
       class="mt-3">
       <v-img
+        :src="userDetails.avatar || 'http://i.pravatar.cc/150?u=' + userDetails.firstName"
         contain
-        height="100"
-        src="https://randomuser.me/api/portraits/men/85.jpg" />
+        height="100" />
       <v-card-title
         class="justify-center">
-        Juan dela Cruz
+        {{ `${userDetails.firstName} ${userDetails.lastName}` }}
       </v-card-title>
       <v-card-text>
         <v-text-field
@@ -66,9 +66,9 @@
         type: Boolean,
         default: false
       },
-      user: {
-        type: String,
-        default: null
+      userDetails: {
+        type: Object,
+        required: true,
       }
     },
     data() {

@@ -140,16 +140,16 @@ router.get("/member", authenticate, authorizeAdmin, async (req, res, next) => {
 
   try {
     members = await db.select([
-      "member.id",
-      "member.firstName",
-      "member.lastName",
-      "member.gender",
-      "member.email",
-      "member.username",
-      "member.birthdate",
-      "member.address",
-      "member.created_at",
-      "role.name as role",
+        "member.id",
+        "member.firstName",
+        "member.lastName",
+        "member.gender",
+        "member.email",
+        "member.username",
+        "member.birthdate",
+        "member.address",
+        "member.created_at",
+        "role.name as role",
       ])
       .from("member")
       .innerJoin("role", "member.role_id", "role.id")
@@ -199,10 +199,27 @@ router.patch("/member", async (req, res, next) => {
   res.status(200).send()
 })
 
-router.get("/member/:id", (req, res, next) => {
-  res.locals.table = "member"
-  next()
-}, getId)
+// Retrieve basic user info
+router.get("/member/:id", async (req, res, next) => {
+  const { id } = req.params
+  let member
+
+  try {
+    member = await db.select([
+        "firstName",
+        "lastName",
+        "avatar",
+      ])
+      .from("member")
+      .where({ id })
+      .first()
+  } catch (e) {
+    console.log(e)
+    res.status(500).send()
+  }
+
+  res.status(200).send(member)
+})
 
 // TODO: Guard this route
 router.delete("/member/:id", /*authenticate,*/ async (req, res, next) => {

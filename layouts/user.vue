@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <UserDrawer
-      :user="$route.params.user"
+      :user-details="userDetails"
       v-model="drawer" />
     <TheHeader
       :gen-navs="allNavs.genNavs"
@@ -41,9 +41,15 @@
     computed: {
       allNavs() {
         return this.$store.getters.allNavs
+      },
+      userDetails() {
+        return this.$store.getters.userDetails
       }
     },
-    middleware: ["auth"]
+    middleware: [
+      "auth",
+      "user",
+    ]
   }
 </script>
 

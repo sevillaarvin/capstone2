@@ -9,12 +9,12 @@
       flat
       class="mt-3">
       <v-img
+        :src="userInfo.avatar"
         contain
-        height="100"
-        src="https://randomuser.me/api/portraits/men/85.jpg" />
+        height="100" />
       <v-card-title
         class="justify-center">
-        Juan dela Cruz
+        {{ userInfo.firstName }} {{ userInfo.lastName }}
       </v-card-title>
       <v-card-text>
         <v-text-field
@@ -53,6 +53,10 @@
       value: {
         type: Boolean,
         default: false
+      },
+      userInfo: {
+        type: Object,
+        required: true,
       }
     },
     data() {

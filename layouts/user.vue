@@ -43,7 +43,11 @@
         return this.$store.getters.allNavs
       },
       userInfo() {
-        return this.$store.getters.userInfo
+        const user = this.$store.getters.userInfo
+        if (!user.avatar) {
+          user.avatar = "http://i.pravatar.cc/150?u=Anonymous'"
+        }
+        return user
       }
     },
     middleware: [

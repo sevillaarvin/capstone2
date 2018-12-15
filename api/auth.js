@@ -5,7 +5,9 @@ const db = require("../db/knex")
 // { userId, roleId, username }
 const generateUserToken = user => {
   // TODO: Move secret to config file
-  return jwt.sign(user, "secret")
+  return jwt.sign(user, "secret", {
+    expiresIn: "1h",
+  })
 }
 
 const verifyUserToken = async token => {

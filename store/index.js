@@ -22,12 +22,16 @@ export default () => new Vuex.Store({
       items: [],
       offset: 0,
       limit: 24,
+      sort: "",
+      sortDirection: "asc",
     },
     categories: [],
     currentCategory: {
       items: [],
       offset: 0,
       limit: 24,
+      sort: "",
+      sortDirection: "asc",
     },
     currentItem: null,
     allNavs: {
@@ -199,7 +203,7 @@ export default () => new Vuex.Store({
         await vuexContext.dispatch("setCategories", context)
         await vuexContext.dispatch("setUserCart")
       } catch (e) {
-        console.log(e.message)
+        console.log("nuxtServerInit", e.message)
       }
     },
     async setUserCart({ commit }) {
@@ -208,27 +212,42 @@ export default () => new Vuex.Store({
       try {
         cart = await this.$axios.$get("/cart/" + this.$auth.$state.user.userId)
       } catch (e) {
-        return Promise.reject(e)
+        // User is not logged in
+        return
       }
 
       commit("setUserCart", cart)
     },
+    // Method is called even if not logged in when in layout/store
     async setUserInfo({ commit }) {
-      const id = this.$auth.$state.user.userId
+      // Might not be set if not logged in
+      let id
       let info
+
+      try {
+        id = this.$auth.$state.user.userId
+      } catch (e) {
+        // Member is not logged in
+        return Promise.reject(e)
+      }
 
       try {
         info = await this.$axios.$get("/member/" + id)
       } catch (e) {
-        console.log(e)
         return Promise.reject(e)
       }
 
       commit("setUserInfo", info)
     },
     async setUserDetails({ commit }) {
-      const id = this.$auth.$state.user.userId
+      let id
       let details
+      
+      try {
+        id = this.$auth.$state.user.userId
+      } catch (e) {
+        return Promise.reject(e)
+      }
 
       try {
         details = await this.$axios.$get("/member/detail/" + id)
@@ -371,6 +390,7 @@ export default () => new Vuex.Store({
     },
     signOutUser({ commit }) {
       commit("setUserCart", null)
+      commit("setUserInfo", null)
       commit("setUserDetails", null)
     }
   },

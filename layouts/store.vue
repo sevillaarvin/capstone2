@@ -1,6 +1,8 @@
 <template>
   <v-app>
-    <MainDrawer v-model="drawer" />
+    <MainDrawer
+      v-model="drawer"
+      :user-info="userInfo" />
     <TheHeader
       :gen-navs="allNavs.genNavs"
       :user-navs="allNavs.userNavs"
@@ -39,8 +41,19 @@
     computed: {
       allNavs() {
         return this.$store.getters.allNavs
+      },
+      userInfo() {
+        return this.$store.getters.userInfo || {
+          firstName: "Anonymous",
+          lastName: "",
+          username: "",
+          avatar: "http://i.pravatar.cc/150?u=Anonymous'"
+        }
       }
-    }
+    },
+    middleware: [
+      "user",
+    ]
   }
 </script>
 

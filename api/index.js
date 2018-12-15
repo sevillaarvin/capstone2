@@ -325,7 +325,6 @@ router.delete("/member/:id", /*authenticate,*/ async (req, res, next) => {
     return
   }
 
-  // console.log(result)
   res.status(200).send()
 })
 

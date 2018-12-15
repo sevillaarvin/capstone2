@@ -9,7 +9,7 @@
       flat
       class="mt-3">
       <v-img
-        :src="userInfo.avatar || 'http://i.pravatar.cc/150?u=' + userInfo.firstName"
+        :src="userInfo.avatar"
         contain
         height="100" />
       <v-card-title

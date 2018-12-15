@@ -7,6 +7,7 @@ export default async ({ store, app, error }) => {
       // error(e)
       // console.log(e)
       // User might not be logged in
+      return
     }
   }
 }

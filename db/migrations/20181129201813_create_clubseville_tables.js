@@ -86,6 +86,7 @@ exports.up = function(knex, Promise) {
       table.foreign("item_id").references("id").inTable("item")
       table.integer("quantity").notNullable()
       table.decimal("price", 15, 6).notNullable()
+      table.decimal("discount", 15, 6).defaultTo(0)
     })
 
     .createTable("cart", table => {

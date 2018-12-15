@@ -2,7 +2,8 @@
   <v-layout>
     <v-flex xs12>
       <v-container fluid>
-        <Sorter />
+        <Sorter
+          :items="featuredItems" />
         <v-layout>
           <v-flex>
             <v-container
@@ -41,8 +42,12 @@
     },
     async asyncData(context) {
       await context.store.dispatch("setFeaturedItems", {
+        /*
         offset: context.store.getters.featuredOffset,
         limit: context.store.getters.featuredLimit,
+        */
+        offset: 0,
+        limit: 24,
         featured: true,
       })
     },

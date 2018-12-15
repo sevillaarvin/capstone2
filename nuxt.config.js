@@ -130,6 +130,7 @@ module.exports = {
       callback: false,
       logout: "/",
       home: "/"
-    }
+    },
+    resetOnError: true,
   }
 }

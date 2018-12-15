@@ -48,7 +48,11 @@
     },
     computed: {
       items() {
-        return this.$store.getters.userCart.items
+        if (this.$store.getters.userCart) {
+          return this.$store.getters.userCart.items
+        } else {
+          return []
+        }
       }
     },
     layout: "store",

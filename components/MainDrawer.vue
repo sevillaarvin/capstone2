@@ -24,6 +24,8 @@
     <v-list>
       <v-list-tile
         to="/store"
+        exact
+        active-class="default-class secondary--text"
         nuxt>
         <v-list-tile-content>
           All
@@ -35,6 +37,7 @@
         <v-list-tile
           :key="category.id"
           :to="'/store/' + category.name"
+          active-class="default-class secondary--text"
           nuxt>
           <v-list-tile-content>
             {{ category.name }}

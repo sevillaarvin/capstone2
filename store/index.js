@@ -22,16 +22,12 @@ export default () => new Vuex.Store({
       items: [],
       offset: 0,
       limit: 24,
-      sort: "",
-      sortDirection: "asc",
     },
     categories: [],
     currentCategory: {
       items: [],
       offset: 0,
       limit: 24,
-      sort: "",
-      sortDirection: "asc",
     },
     currentItem: null,
     allNavs: {
@@ -190,6 +186,13 @@ export default () => new Vuex.Store({
     setCurrentCategoryItems(state, currentCategory) {
       state.currentCategory = currentCategory
     },
+    /*
+    setCurrentCategoryItems(state, { items, offset, limit }) {
+      state.currentCategory.items = items
+      state.currentCategory.offset = offset
+      state.currentCategory.limit = limit
+    },
+    */
     setCurrentItem(state, item) {
       state.currentItem = item
     },
@@ -338,10 +341,16 @@ export default () => new Vuex.Store({
         context.error(e)
         return
       }
+
+      // If initial load, set items
+      if (offset === 0) {
+        items = storeItems
+      } else { // Add items to item list
+        items = items.concat(storeItems)
+      }
+
       offset += storeItems.length
       limit = 12
-
-      items = items.concat(storeItems)
       commit("setFeaturedItems", { items, offset, limit })
     },
     async setCategories({ commit }, context) {
@@ -354,28 +363,36 @@ export default () => new Vuex.Store({
       }
     },
     async setCurrentCategoryItems({ commit, getters }, category) {
+      let { name, offset, limit } = category
+      let items = getters.currentCategoryItems
+      let categoryItems
+
       try {
-        const { name, offset, limit, initial } = category
-        let items = await this.$axios.$get("/category/" + name, {
+        categoryItems = await this.$axios.$get("/category/" + name, {
           params: {
             offset,
             limit,
           }
         })
-
-        if (!initial) {
-          getters.currentCategoryItems.push(...items)
-          items = getters.currentCategoryItems
-        }
-
-        commit("setCurrentCategoryItems", {
-          items,
-          offset: items.length,
-          limit: 12,
-        })
       } catch (e) {
         return Promise.reject(e)
       }
+
+        // If initial load, set items
+        if (offset === 0) {
+          items = categoryItems
+        } else { // Add items to item list
+          items = items.concat(categoryItems)
+        }
+
+        offset += categoryItems.length
+        limit = 12
+
+        commit("setCurrentCategoryItems", {
+          items,
+          offset,
+          limit,
+        })
     },
     setCurrentItem({ commit }, item) {
       commit("setCurrentItem", item)

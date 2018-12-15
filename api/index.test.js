@@ -860,7 +860,7 @@ describe("GET /order/id", () => {
 
   it("should not return order items of different user", done => {
     request(app)
-      .get("/order/4")
+      .get("/order/3")
       .set("authorization", "Bearer " + tokenUser)
       .expect(401)
       .end((err, res) => {

@@ -3,7 +3,8 @@
     class="min-height-scroll">
     <v-flex xs12>
       <v-container fluid>
-        <Sorter />
+        <Sorter
+          :items="items" />
         <v-layout>
           <v-flex>
             <v-container
@@ -49,7 +50,6 @@
           name: category,
           offset: 0,
           limit: 24,
-          initial: true,
         })
       } catch (e) {
         context.error(e)
@@ -66,9 +66,9 @@
     },
     methods: {
       async onScroll() {
-        const nearEndOfPage = window.innerHeight +
-          (window.pageYOffset || document.documentElement.scrollTop) >=
-          document.body.offsetHeight * 0.90
+        const nearEndOfPage = window.innerHeight
+          + (window.pageYOffset || document.documentElement.scrollTop)
+          >= document.body.offsetHeight * 0.90
 
         if (nearEndOfPage) {
           try {
@@ -76,7 +76,6 @@
               name: this.category,
               offset: this.$store.getters.currentCategoryOffset,
               limit: this.$store.getters.currentCategoryLimit,
-              initial: false,
             })
           } catch (e) {
             console.log(e)

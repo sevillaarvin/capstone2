@@ -8,7 +8,17 @@
       height="150" />
     <v-card-title
       class="justify-center font-weight-bold">
-      {{ item.name }}
+      <span
+        class="pr-1">
+        {{ item.name }}
+      </span>
+      <v-badge
+        v-if="item.quantity">
+        <span
+          slot="badge">
+          {{ item.quantity }}
+        </span>
+      </v-badge>
     </v-card-title>
     <v-card-text
       class="text-xs-center">
@@ -38,7 +48,6 @@
     },
     methods: {
       onClick() {
-        console.log(JSON.stringify(this.item, null, 2))
         this.$store.dispatch("setCurrentItem", this.item)
         this.$router.push(this.itemLink)
       }

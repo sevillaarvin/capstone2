@@ -91,16 +91,21 @@
     },
     methods: {
       async onSubmit() {
-        await this.$auth.loginWith("local", {
-          data: this.user
-        }).catch(e => {
+        try {
+          await this.$auth.loginWith("local", {
+            data: this.user
+          })
+        } catch (e) {
           const status = e.response.status
           const message = e.response.data
           if (status == 400 || status == 404) {
             this.errorMessage = message
             this.showError = true
           }
-        })
+          return
+        }
+        // Execute since member not yet logged in
+        await this.$store.dispatch("setUserCart")
       }
     }
   }

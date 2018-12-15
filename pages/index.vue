@@ -46,7 +46,7 @@ export default {
       ]
     }
   },
-  created() {
+  beforeCreate() {
     if (this.$auth.$state.loggedIn) {
       this.$router.replace("/" + this.$auth.$state.user.username)
     }

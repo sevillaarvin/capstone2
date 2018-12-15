@@ -1,7 +1,6 @@
 const express = require("express")
 const bodyParser = require("body-parser")
 const db = require("../db/knex")
-
 const router = express.Router()
 const app = express()
 const {
@@ -10,6 +9,7 @@ const {
   findUserCredentials,
   hashPassword,
 } = require("./auth")
+
 router.use((req, res, next) => {
   Object.setPrototypeOf(req, app.request)
   Object.setPrototypeOf(res, app.response)
@@ -88,7 +88,7 @@ const authorizeAdmin = async (req, res, next) => {
   if (userRole.name === "admin") {
     next()
   } else {
-    res.status(401).send()
+    res.status(403).send()
     return
   }
 }
@@ -592,6 +592,55 @@ router.get("/item/:sku", async (req, res, next) => {
   res.status(200).send(item)
 })
 
+router.post("/cart", authenticate, async (req, res, next) => {
+  const { user } = res.locals
+  const {
+    cartId: cart_id,
+    itemId: item_id,
+    quantity
+  } = req.body
+  let result
+
+  try {
+    const { member_id: memberId } = await db.select("member_id")
+      .from("cart")
+      .where({ id: cart_id })
+      .first()
+
+    if (memberId !== user.userId) {
+      res.status(403).send()
+      return
+    }
+
+    // Check if already existing
+    const cartItem = await db.select("quantity")
+      .from("cart_item")
+      .where({ cart_id, item_id })
+      .first()
+
+    if (!cartItem) {
+      // Add if not existing
+      result = await db.insert({
+          cart_id,
+          item_id,
+          quantity,
+        }, "id")
+        .into("cart_item")
+    } else {
+      result = await db("cart_item")
+        .where({ cart_id, item_id })
+        .update({
+          quantity: cartItem.quantity + quantity,
+        }, "id")
+    }
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  res.status(200).send(result)
+})
+
 router.get("/cart/:member_id", authenticate, async (req, res, next) => {
   const { user } = res.locals
   const { member_id } = req.params
@@ -673,11 +722,6 @@ router.get("/cart/:member_id", authenticate, async (req, res, next) => {
     cartId: cart.id,
     items,
   })
-})
-
-router.post("/cart", authenticate, async (req, res, next) => {
-
-  res.status(200).send()
 })
 
 router.get("/order", async (req, res, next) => {

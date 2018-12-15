@@ -90,6 +90,13 @@ export default () => new Vuex.Store({
           auth: false
         },
         {
+          name: "Profile",
+          path: "/",
+          icon: "person",
+          guard: true,
+          auth: true
+        },
+        {
           name: "Signout",
           path: "/signout",
           icon: "exit_to_app",
@@ -204,19 +211,20 @@ export default () => new Vuex.Store({
     async nuxtServerInit(vuexContext, context) {
       try {
         await vuexContext.dispatch("setCategories", context)
+        // Execute if member already logged in
         await vuexContext.dispatch("setUserCart")
       } catch (e) {
         console.log("nuxtServerInit", e.message)
       }
     },
-    async setUserCart({ commit }) {
-      let cart
-      
-      try {
-        cart = await this.$axios.$get("/cart/" + this.$auth.$state.user.userId)
-      } catch (e) {
-        // User is not logged in
-        return
+    async setUserCart({ commit }, cart) {
+      if (!cart) {
+        try {
+          cart = await this.$axios.$get("/cart/" + this.$auth.$state.user.userId)
+        } catch (e) {
+          // User is not logged in
+          return
+        }
       }
 
       commit("setUserCart", cart)
@@ -270,13 +278,18 @@ export default () => new Vuex.Store({
         return Promise.reject(e)
       }
     },
-    async addToCart({ commit, dispatch }, item) {
-      let items
-
-      try {
-        await this.$axios.$post("/cart", item) 
-      } catch (e) {
-        return Promise.reject(e)
+    async addToCart({ getters, state, dispatch }, item) {
+      if (this.$auth.$state.loggedIn) {
+        try {
+          await this.$axios.$post("/cart", {
+            cartId: getters.userCart.cartId,
+            ...item,
+          })
+        } catch (e) {
+          return Promise.reject(e)
+        }
+      } else {
+        // TODO: Implement not loggedIn add to cart
       }
 
       dispatch("setUserCart")

@@ -57,11 +57,11 @@ describe("GET /role", () => {
       })
   })
 
-  it("should not return members if only authenticated as user", done => {
+  it("should not return members if only authorized as user", done => {
     request(app)
       .get("/role")
       .set("authorization", "Bearer " + tokenUser)
-      .expect(401)
+      .expect(403)
       .end((err, res) => {
         if (err) return done(err)
         done()
@@ -95,11 +95,11 @@ describe("GET /member", () => {
       })
   })
 
-  it("should not return members if only authenticated as user", done => {
+  it("should not return members if only authorized as user", done => {
     request(app)
       .get("/member")
       .set("authorization", "Bearer " + tokenUser)
-      .expect(401)
+      .expect(403)
       .end((err, res) => {
         if (err) return done(err)
         done()
@@ -745,6 +745,50 @@ describe("GET /item/id", () => {
       .end((err, res) => {
         if (err) return done(err)
         done()
+      })
+  })
+})
+
+describe("POST /cart", () => {
+  it("should add item to cart", done => {
+    request(app)
+      .post("/cart")
+      .set("authorization", "Bearer " + tokenUser)
+      .send({
+        cartId: 2,
+        itemId: 2,
+        quantity: 3,
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.body).to.be.an("array").with.lengthOf(1)
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should update item quantity of cart if it already exists", done => {
+    request(app)
+      .post("/cart")
+      .set("authorization", "Bearer " + tokenUser)
+      .send({
+        cartId: 2,
+        itemId: 2,
+        quantity: 3,
+      })
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err)
+        db.select("quantity")
+          .from("cart_item")
+          .where({ id: res.body[0] })
+          .first()
+          .then(result => {
+            expect(result.quantity).to.equal(6)
+            done()
+          }).catch(e => done(e))
       })
   })
 })

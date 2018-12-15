@@ -63,6 +63,12 @@
         </v-layout>
       </v-container>
     </v-flex>
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      top>
+      {{ addToCartResult }}
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -82,10 +88,13 @@
         } catch (e) {
           context.error(e)
         }
+      }
 
-        return {
-          quantity: 0
-        }
+      return {
+        quantity: 1,
+        snackbar: false,
+        snackbarColor: "",
+        addToCartResult: "",
       }
     },
     computed: {
@@ -94,12 +103,20 @@
       }
     },
     methods: {
-      addToCart() {
-        this.$store.dispatch("addToCart", {
-          cartId: this.$store.getters.userCart.cartId,
-          itemId: this.item.id,
-          quantity: this.quantity,
-        })
+      async addToCart() {
+        try {
+          await this.$store.dispatch("addToCart", {
+            itemId: this.item.id,
+            quantity: this.quantity,
+          })
+          this.snackbarColor="success"
+          this.addToCartResult = "Item added to cart"
+        } catch (e) {
+          console.log(e)
+          this.snackbarColor="error"
+          this.addToCartResult = "Something went wrong"
+        }
+        this.snackbar = true
       }
     },
     layout: "store"

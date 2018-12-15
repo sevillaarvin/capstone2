@@ -31,6 +31,7 @@
               v-for="item in nav.items"
               :key="item.name"
               :to="item.path"
+              exact
               class="cursor-pointer">
               <v-list-tile-content>
                 {{ item.name }}
@@ -42,6 +43,7 @@
           v-else
           :key="nav.name"
           :to="nav.path"
+          exact
           flat>
           {{ nav.name }}
         </v-btn>
@@ -57,7 +59,13 @@
           :key="nav.name"
           :to="nav.path"
           flat>
-          {{ nav.name }}
+          <v-badge>
+            <span
+              slot="badge">
+              {{ totalItemCount }}
+            </span>
+            {{ nav.name }}
+          </v-badge>
         </v-btn>
         <v-btn
           v-else-if="nav.auth == $auth.$state.loggedIn"
@@ -95,6 +103,22 @@
     },
     data() {
       return {
+      }
+    },
+    computed: {
+      totalItemCount() {
+        const cart = this.$store.getters.userCart
+        if (cart) {
+          const { items } = cart
+          try {
+            return items.reduce((total, item) => {
+              return total + item.quantity
+            }, 0)
+          } catch (e) {
+            return 0
+          }
+        }
+        return  0
       }
     },
   }

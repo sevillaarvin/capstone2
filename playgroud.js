@@ -254,7 +254,12 @@ async function result8() {
 
 //result8()
 
-for (let i = 0; i < 1000; ++i) {
-  console.log(uuidv4() + "-" + i)
+async function result9 () {
+  try {
+    await Promise.reject("asdf")
+  } catch (e) {
+    console.log(e)
+  }
 }
 
+result9()

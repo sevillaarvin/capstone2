@@ -597,7 +597,8 @@ router.post("/cart", authenticate, async (req, res, next) => {
   const {
     cartId: cart_id,
     itemId: item_id,
-    quantity
+    quantity,
+    update,
   } = req.body
   let result
 
@@ -627,10 +628,12 @@ router.post("/cart", authenticate, async (req, res, next) => {
         }, "id")
         .into("cart_item")
     } else {
+      const newQuantity = update ? quantity : cartItem.quantity + quantity
+
       result = await db("cart_item")
         .where({ cart_id, item_id })
         .update({
-          quantity: cartItem.quantity + quantity,
+          quantity: newQuantity,
         }, "id")
     }
   } catch (e) {
@@ -639,6 +642,33 @@ router.post("/cart", authenticate, async (req, res, next) => {
   }
 
   res.status(200).send(result)
+})
+
+router.delete("/cart/:cartItemId", authenticate, async (req, res, next) => {
+  const { user } = res.locals
+  const { cartItemId } = req.params
+
+  try {
+    const { member_id } = await db.select("cart.member_id")
+      .from("cart_item")
+      .where({ "cart_item.id": cartItemId })
+      .innerJoin("cart", "cart.id", "cart_item.cart_id")
+      .first()
+
+    if (user.userId !== member_id) {
+      res.status(403).send()
+      return
+    }
+
+    await db("cart_item")
+      .where({ id: cartItemId })
+      .del()
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  res.status(200).send()
 })
 
 router.get("/cart/:member_id", authenticate, async (req, res, next) => {

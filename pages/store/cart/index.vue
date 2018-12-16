@@ -5,11 +5,17 @@
         fluid
         grid-list-xl>
         <Title :title="'Your Cart'" />
-        <v-layout>
+        <v-layout
+          row
+          wrap>
           <v-flex
             v-for="item in items"
-            :key="item.name">
-            <Item :item="item" />
+            :key="item.id"
+            xs12>
+            <CartItem
+              :item="item"
+              @update="onUpdate"
+              @remove="onRemove" />
           </v-flex>
         </v-layout>
         <v-layout>
@@ -24,16 +30,22 @@
         </v-layout>
       </v-container>
     </v-flex>
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      top>
+      {{ snackbarResult }}
+    </v-snackbar>
   </v-layout>
 </template>
 
 <script>
-  import Item from "~/components/store/Item"
   import Title from "~/components/TheTitle"
+  import CartItem from "~/components/store/CartItem"
 
   export default {
     components: {
-      Item,
+      CartItem,
       Title,
     },
     async asyncData(context) {
@@ -45,6 +57,11 @@
         console.log(e.message)
       }
       */
+      return {
+        snackbar: false,
+        snackbarColor: "",
+        snackbarResult: "",
+      }
     },
     computed: {
       items() {
@@ -53,6 +70,28 @@
         } else {
           return []
         }
+      }
+    },
+    methods: {
+      onUpdate(success) {
+        if (success) {
+          this.snackbarResult = "Item updated successfully"
+          this.snackbarColor = "success"
+        } else {
+          this.snackbarResult = "Something went wrong"
+          this.snackbarColor = "error"
+        }
+        this.snackbar = true
+      },
+      onRemove(success) {
+        if (success) {
+          this.snackbarResult = "Item has been removed"
+          this.snackbarColor = "success"
+        } else {
+          this.snackbarResult = "Something went wrong"
+          this.snackbarColor = "error"
+        }
+        this.snackbar = true
       }
     },
     layout: "store",

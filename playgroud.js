@@ -252,7 +252,7 @@ async function result8() {
   console.log(JSON.stringify(orders, null, 2))
 }
 
-//result8()
+// result8()
 
 async function result9 () {
   try {
@@ -262,4 +262,20 @@ async function result9 () {
   }
 }
 
-result9()
+// result9()
+
+async function result10 () {
+  let result
+
+  try {
+    result = await db.select("cart.member_id")
+      .from("cart_item")
+      .where({ "cart_item.id": 7 })
+      .innerJoin("cart", "cart.id", "cart_item.cart_id")
+    console.log(result)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+result10()

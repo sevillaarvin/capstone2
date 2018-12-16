@@ -769,7 +769,7 @@ describe("POST /cart", () => {
       })
   })
 
-  it("should update item quantity of cart if it already exists", done => {
+  it("should add to item quantity of cart if it already exists", done => {
     request(app)
       .post("/cart")
       .set("authorization", "Bearer " + tokenUser)
@@ -790,6 +790,87 @@ describe("POST /cart", () => {
             done()
           }).catch(e => done(e))
       })
+  })
+
+  it("should change item quantity of cart if it already exists", done => {
+    request(app)
+      .post("/cart")
+      .set("authorization", "Bearer " + tokenUser)
+      .send({
+        cartId: 4,
+        itemId: 100,
+        quantity: 100,
+        update: true,
+      })
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err)
+        db.select("quantity")
+          .from("cart_item")
+          .where({ id: res.body[0] })
+          .first()
+          .then(result => {
+            expect(result.quantity).to.equal(100)
+            done()
+          }).catch(e => done(e))
+      })
+  })
+})
+
+describe("DELETE /cart/cartItemId", () => {
+  it("should delete cart_item", async () => {
+    const [ sampleCartItem ] = await db.insert({
+        cart_id: 4,
+        item_id: 3,
+        quantity: 1,
+      }, "id")
+      .into("cart_item")
+
+    try {
+      await request(app)
+        .delete("/cart/" + sampleCartItem)
+        .set("authorization", "Bearer " + tokenUser)
+        .expect(200)
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
+  })
+
+  it("should send status 500 for nonexistent cart_item", (done) => {
+    request(app)
+      .delete("/cart/123123123")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(500)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not delete cart_item for unauthorized user", async () => {
+    const [ sampleCartItem ] = await db.insert({
+        cart_id: 4,
+        item_id: 3,
+        quantity: 1,
+      }, "id")
+      .into("cart_item")
+
+    const token3 = generateUserToken({
+      userId: 3,
+      roleId: 2,
+      username: "anotheruser",
+    })
+
+    try {
+      await request(app)
+        .delete("/cart/" + sampleCartItem)
+        .set("authorization", "Bearer " + token3)
+        .expect(403)
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
   })
 })
 

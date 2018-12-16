@@ -294,6 +294,18 @@ export default () => new Vuex.Store({
 
       dispatch("setUserCart")
     },
+    async removeFromCart({ dispatch }, cartItemId) {
+      if (this.$auth.state.loggedIn) {
+        try {
+          await this.$axios.$delete("/cart/" + cartItemId)
+        } catch (e) {
+          return Promise.reject(e)
+        }
+      } else {
+        // TODO: Implement not loggedIn add to cart
+      }
+      dispatch("setUserCart")
+    },
     async setAdminMembers({ commit }) {
       let members
       try {

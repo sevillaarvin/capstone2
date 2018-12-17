@@ -297,7 +297,7 @@ export default () => new Vuex.Store({
     async removeFromCart({ dispatch }, cartItemId) {
       if (this.$auth.state.loggedIn) {
         try {
-          await this.$axios.$delete("/cart/" + cartItemId)
+          await this.$axios.$delete("/cart/item/" + cartItemId)
         } catch (e) {
           return Promise.reject(e)
         }

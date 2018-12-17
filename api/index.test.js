@@ -817,63 +817,6 @@ describe("POST /cart", () => {
   })
 })
 
-describe("DELETE /cart/cartItemId", () => {
-  it("should delete cart_item", async () => {
-    const [ sampleCartItem ] = await db.insert({
-        cart_id: 4,
-        item_id: 3,
-        quantity: 1,
-      }, "id")
-      .into("cart_item")
-
-    try {
-      await request(app)
-        .delete("/cart/" + sampleCartItem)
-        .set("authorization", "Bearer " + tokenUser)
-        .expect(200)
-    } catch (e) {
-      console.log(e)
-      throw e
-    }
-  })
-
-  it("should send status 500 for nonexistent cart_item", (done) => {
-    request(app)
-      .delete("/cart/123123123")
-      .set("authorization", "Bearer " + tokenUser)
-      .expect(500)
-      .end((err, res) => {
-        if (err) return done(err)
-        done()
-      })
-  })
-
-  it("should not delete cart_item for unauthorized user", async () => {
-    const [ sampleCartItem ] = await db.insert({
-        cart_id: 4,
-        item_id: 3,
-        quantity: 1,
-      }, "id")
-      .into("cart_item")
-
-    const token3 = generateUserToken({
-      userId: 3,
-      roleId: 2,
-      username: "anotheruser",
-    })
-
-    try {
-      await request(app)
-        .delete("/cart/" + sampleCartItem)
-        .set("authorization", "Bearer " + token3)
-        .expect(403)
-    } catch (e) {
-      console.log(e)
-      throw e
-    }
-  })
-})
-
 describe("GET /cart/memberId", () => {
   it("should get active cart of member with id 1 when authorized", done => {
     request(app)
@@ -948,6 +891,103 @@ describe("GET /cart/memberId", () => {
         if (err) return done(err)
         done()
       })
+  })
+})
+
+describe("DELETE /cart/memberId", () => {
+  const token3 = generateUserToken({
+    userId: 3,
+    roleId: 2,
+    username: "anotheruser",
+  })
+
+  it("should not remove cart_items of unauthenticated member", done => {
+    request(app)
+      .delete("/cart/3")
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not remove cart_items of unauthorized member", done => {
+    request(app)
+      .delete("/cart/3")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(403)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should remove all cart_items of member with id 3", done => {
+    request(app)
+      .delete("/cart/3")
+      .set("authorization", "Bearer " + token3)
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("DELETE /cart/item/cartItemId", () => {
+  it("should delete cart_item", async () => {
+    const [ sampleCartItem ] = await db.insert({
+        cart_id: 4,
+        item_id: 3,
+        quantity: 1,
+      }, "id")
+      .into("cart_item")
+
+    try {
+      await request(app)
+        .delete("/cart/item/" + sampleCartItem)
+        .set("authorization", "Bearer " + tokenUser)
+        .expect(200)
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
+  })
+
+  it("should send status 500 for nonexistent cart_item", (done) => {
+    request(app)
+      .delete("/cart/item/123123123")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(500)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not delete cart_item for unauthorized user", async () => {
+    const [ sampleCartItem ] = await db.insert({
+        cart_id: 4,
+        item_id: 3,
+        quantity: 1,
+      }, "id")
+      .into("cart_item")
+
+    const token3 = generateUserToken({
+      userId: 3,
+      roleId: 2,
+      username: "anotheruser",
+    })
+
+    try {
+      await request(app)
+        .delete("/cart/item/" + sampleCartItem)
+        .set("authorization", "Bearer " + token3)
+        .expect(403)
+    } catch (e) {
+      console.log(e)
+      throw e
+    }
   })
 })
 

@@ -1,10 +1,11 @@
-import Vuex from 'vuex'
-
-export default () => new Vuex.Store({
-  state: {
+// TODO: Fix strict, vuex mutation outside store
+export const strict = false
+// import Vuex from 'vuex'
+// export default () => new Vuex.Store({
+  export const state = () => ({
     // authenticated data
     user: {
-      cart: null,
+      cart: null, // { cartId, items }
       info: null,
       details: null,
     },
@@ -105,8 +106,8 @@ export default () => new Vuex.Store({
         },
       ]
     },
-  },
-  getters: {
+  })
+export const getters = {
     userCart(state) {
       return state.user.cart
     },
@@ -159,8 +160,8 @@ export default () => new Vuex.Store({
     allNavs(state) {
       return state.allNavs
     },
-  },
-  mutations: {
+  }
+export const mutations = {
     setUserCart(state, cart) {
       state.user.cart = cart
     },
@@ -183,36 +184,32 @@ export default () => new Vuex.Store({
       state.admin.events = events
     },
     setFeaturedItems(state, { items, offset, limit }) {
-      state.featured.items = items
+      state.featured.items = state.featured.items.concat(items)
       state.featured.offset = offset
       state.featured.limit = limit
     },
     setCategories(state, categories) {
       state.categories = categories
     },
-    setCurrentCategoryItems(state, currentCategory) {
-      state.currentCategory = currentCategory
-    },
-    /*
     setCurrentCategoryItems(state, { items, offset, limit }) {
-      state.currentCategory.items = items
+      state.currentCategory.items = state.currentCategory.items.concat(items)
       state.currentCategory.offset = offset
       state.currentCategory.limit = limit
     },
-    */
     setCurrentItem(state, item) {
       state.currentItem = item
     },
     signUpUser(state, user) {
       state.user = user
     }
-  },
-  actions: {
+  }
+export const actions = {
     async nuxtServerInit(vuexContext, context) {
       try {
         await vuexContext.dispatch("setCategories", context)
         // Execute if member already logged in
         await vuexContext.dispatch("setUserCart")
+        await vuexContext.dispatch("setUserDetails")
       } catch (e) {
         console.log("nuxtServerInit", e.message)
       }
@@ -223,7 +220,7 @@ export default () => new Vuex.Store({
           cart = await this.$axios.$get("/cart/" + this.$auth.$state.user.userId)
         } catch (e) {
           // User is not logged in
-          return
+          return Promise.reject(e)
         }
       }
 
@@ -306,6 +303,19 @@ export default () => new Vuex.Store({
       }
       dispatch("setUserCart")
     },
+    async clearCart({ dispatch }) {
+      if (this.$auth.state.loggedIn) {
+        try {
+          const id = this.$auth.$state.user.userId
+          await this.$axios.$delete("/cart/" + id)
+        } catch (e) {
+          return Promise.reject(e)
+        }
+      } else {
+        // TODO: Implement not loggedIn clearCart
+      }
+      dispatch("setUserCart")
+    },
     async setAdminMembers({ commit }) {
       let members
       try {
@@ -349,9 +359,9 @@ export default () => new Vuex.Store({
       }
       commit("setAdminOrders", orders)
     },
-    async setFeaturedItems({ commit, getters }, query) {
+    async setFeaturedItems({ commit, /* getters */ }, query) {
       let { offset, limit, featured } = query
-      let items = getters.featuredItems
+      // let items = getters.featuredItems
       let storeItems
 
       try {
@@ -368,15 +378,17 @@ export default () => new Vuex.Store({
       }
 
       // If initial load, set items
+      /*
       if (offset === 0) {
         items = storeItems
       } else { // Add items to item list
         items = items.concat(storeItems)
       }
+      */
 
       offset += storeItems.length
       limit = 12
-      commit("setFeaturedItems", { items, offset, limit })
+      commit("setFeaturedItems", { items: storeItems, offset, limit })
     },
     async setCategories({ commit }, context) {
       try {
@@ -387,9 +399,9 @@ export default () => new Vuex.Store({
         context.error(e)
       }
     },
-    async setCurrentCategoryItems({ commit, getters }, category) {
+    async setCurrentCategoryItems({ commit, /* getters */ }, category) {
       let { name, offset, limit } = category
-      let items = getters.currentCategoryItems
+      // let items = getters.currentCategoryItems
       let categoryItems
 
       try {
@@ -404,17 +416,19 @@ export default () => new Vuex.Store({
       }
 
         // If initial load, set items
+        /*
         if (offset === 0) {
           items = categoryItems
         } else { // Add items to item list
           items = items.concat(categoryItems)
         }
+        */
 
         offset += categoryItems.length
         limit = 12
 
         commit("setCurrentCategoryItems", {
-          items,
+          items: categoryItems,
           offset,
           limit,
         })
@@ -434,6 +448,6 @@ export default () => new Vuex.Store({
       commit("setUserCart", null)
       commit("setUserInfo", null)
       commit("setUserDetails", null)
-    }
-  },
-})
+    },
+  }
+// })

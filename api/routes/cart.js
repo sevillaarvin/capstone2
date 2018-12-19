@@ -204,4 +204,124 @@ router.delete("/cart/item/:cartItemId", authenticate, async (req, res) => {
   res.status(200).send()
 })
 
+router.post("/checkout", authenticate, async (req, res) => {
+  const { user } = res.locals
+  const { userId: member_id } = user
+  // receive cartId
+  const {
+    cartId: cart_id,
+    address,
+    shipMethod, // Economy, VIP
+    payMethod, // COD, PayPal
+  } = req.body
+  // TODO: Validate address and other inputs
+  let order_summary
+  let order_items
+
+  try {
+    // confirm that user is authorized
+    const cart = await db.select("id")
+      .from("cart")
+      .where({
+        id: cart_id,
+        member_id,
+        // confirm that cartId order_id is null
+        order_id: null,
+      })
+      .first()
+
+    if (!cart) {
+      res.status(400).send()
+      return
+    }
+
+    // assign order_id for cartId
+    const { id: ship_method_id } = await db.select("id")
+      .from("ship_method")
+      .where({ name: shipMethod })
+      .first()
+
+    const { id: pay_method_id } = await db.select("id")
+      .from("pay_method")
+      .where({ name: payMethod })
+      .first()
+
+    const [ order_id ] = await db.insert({
+        member_id,
+        ship_to: address,
+        ship_method_id,
+        pay_method_id,
+      }, "id")
+      .into("order")
+
+    // update order_id in cart
+    await db("cart")
+      .where({ id: cart_id })
+      .update({ order_id })
+
+    // assign order_detail for cart_item
+    let cartItems = await db.select([
+        "cart_item.item_id",
+        "cart_item.quantity",
+        "item.price",
+        "item.discount",
+      ])
+      .from("cart_item")
+      .where({ cart_id })
+      .innerJoin("item", "item.id", "cart_item.item_id")
+
+    cartItems = cartItems.map(item => {
+      item.order_id = order_id
+      return item
+    })
+
+    await db.insert(cartItems)
+      .into("order_detail")
+
+    // send back order details
+    order_summary = await db.select([
+        "member.firstName as firstName",
+        "member.lastName as lastName",
+        "order.id as orderId",
+        "order_at as orderAt",
+        "ship_to as shipTo",
+        "status.name as status",
+        "ship_method.name as shipMethod",
+        "pay_method.name as payMethod",
+      ])
+      .from("order")
+      .where({ "order.id": order_id })
+      .innerJoin("member", "member.id", "order.member_id")
+      .innerJoin("status", "status.id", "order.status_id")
+      .innerJoin("ship_method", "ship_method.id", "order.ship_method_id")
+      .innerJoin("pay_method", "pay_method.id", "order.pay_method_id")
+      .first()
+
+    order_items = await db.select([
+        "item.sku",
+        "item.name",
+        "category.name as category",
+        "item.description",
+        "item.img",
+        "size.name as size",
+        "order_detail.quantity",
+        "order_detail.price",
+        "order_detail.discount",
+      ])
+      .from("order_detail")
+      .where({ order_id })
+      .innerJoin("item", "item.id", "order_detail.item_id")
+      .innerJoin("category", "category.id", "item.category_id")
+      .leftJoin("size", "size.id", "item.size_id")
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  res.status(200).send({
+    ...order_summary,
+    items: order_items
+  })
+})
+
 module.exports = router

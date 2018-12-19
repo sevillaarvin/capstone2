@@ -33,8 +33,6 @@
       const { user: unauthorizedUser } = this.$route.params
       const { username: authorizedUser } = this.$auth.$state.user
     },
-    asyncData(context) {
-    },
     layout: "user",
   }
 </script>

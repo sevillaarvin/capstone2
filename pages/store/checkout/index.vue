@@ -63,13 +63,50 @@
                                   xs12
                                   sm3
                                   md4>
-                                  {{ item.name }}
+                                  <div>
+                                    {{ item.name }}
+                                  </div>
+                                  <div>
+                                    <span>
+                                      {{ item.price - item.discount | currency }}
+                                    </span>
+                                    <span>
+                                      x {{ item.quantity }}
+                                    </span>
+                                  </div>
                                 </v-flex>
                                 <v-flex
                                   xs12
                                   sm3
-                                  md4>
-                                  {{ item.price | currency }}
+                                  md4
+                                  class="text-xs-right">
+                                  <span>
+                                    {{ (item.price - item.discount) * item.quantity | currency }}
+                                  </span>
+                                </v-flex>
+                              </v-layout>
+                            </v-container>
+                          </v-card>
+                        </v-flex>
+                        <v-flex
+                          xs12>
+                          <v-card>
+                            <v-container
+                              fluid>
+                              <v-layout>
+                                <v-flex
+                                  xs6>
+                                  <v-card-title
+                                    class="title">
+                                    TOTAL:
+                                  </v-card-title>
+                                </v-flex>
+                                <v-flex
+                                  xs6>
+                                  <v-card-text
+                                    class="text-xs-right font-weight-bold">
+                                    {{ total | currency }}
+                                  </v-card-text>
                                 </v-flex>
                               </v-layout>
                             </v-container>
@@ -97,62 +134,94 @@
                   </v-card>
                 </v-stepper-content>
                 <v-stepper-content step="2">
-                  <v-container
-                    fluid>
-                    <v-layout>
-                      <v-flex xs12>
-                        <v-card-title
-                          class="justify-center pt-0">
-                          <h3 class="header">Select Shipping</h3>
-                        </v-card-title>
-                      </v-flex>
-                    </v-layout>
-                    <v-layout>
-                      <v-flex
-                        xs12>
-                        <v-card-actions>
-                          <v-btn
-                            @click="previousStep">
-                            Back
-                          </v-btn>
-                          <v-spacer />
-                          <v-btn
-                            @click="nextStep">
-                            Continue
-                          </v-btn>
-                        </v-card-actions>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
+                  <v-card
+                    flat>
+                    <v-container
+                      fluid>
+                      <v-layout>
+                        <v-flex xs12>
+                          <v-card-title
+                            class="justify-center pt-0">
+                            <h3 class="header">Select Shipping</h3>
+                          </v-card-title>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex
+                          xs12>
+                          <v-card>
+                            <v-card-text>
+                              Economy
+                            </v-card-text>
+                            <v-card-text>
+                              VIP
+                            </v-card-text>
+                          </v-card>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex
+                          xs12>
+                          <v-card-actions>
+                            <v-btn
+                              @click="previousStep">
+                              Back
+                            </v-btn>
+                            <v-spacer />
+                            <v-btn
+                              @click="nextStep">
+                              Continue
+                            </v-btn>
+                          </v-card-actions>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card>
                 </v-stepper-content>
                 <v-stepper-content step="3">
-                  <v-container
-                    fluid>
-                    <v-layout>
-                      <v-flex xs12>
-                        <v-card-title
-                          class="justify-center pt-0">
-                          <h3 class="header">Select Payment</h3>
-                        </v-card-title>
-                      </v-flex>
-                    </v-layout>
-                    <v-layout>
-                      <v-flex
-                        xs12>
-                        <v-card-actions>
-                          <v-btn
-                            @click="previousStep">
-                            Back
-                          </v-btn>
-                          <v-spacer />
-                          <v-btn
-                            @click="onPay">
-                            Payment
-                          </v-btn>
-                        </v-card-actions>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
+                  <v-card
+                    flat>
+                    <v-container
+                      fluid>
+                      <v-layout>
+                        <v-flex xs12>
+                          <v-card-title
+                            class="justify-center pt-0">
+                            <h3 class="header">Select Payment</h3>
+                          </v-card-title>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex
+                          xs12>
+                          <v-card>
+                            <v-card-text>
+                              COD
+                            </v-card-text>
+                            <v-card-text>
+                              Paypal
+                            </v-card-text>
+                          </v-card>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout>
+                        <v-flex
+                          xs12>
+                          <v-card-actions>
+                            <v-btn
+                              @click="previousStep">
+                              Back
+                            </v-btn>
+                            <v-spacer />
+                            <v-btn
+                              @click="onPay">
+                              Payment
+                            </v-btn>
+                          </v-card-actions>
+                        </v-flex>
+                      </v-layout>
+                    </v-container>
+                  </v-card>
                 </v-stepper-content>
               </v-stepper-items>
             </v-stepper>
@@ -173,8 +242,25 @@
     data() {
       return {
         step: 0,
-        items: this.$store.getters.featuredItems.slice(0,3)
       }
+    },
+    computed: {
+      items() {
+        if (this.$store.getters.userCart) {
+          return this.$store.getters.userCart.items
+        } else {
+          return []
+        }
+      },
+      total() {
+        try {
+          return this.items
+            .map(item => (item.price - item.discount) * item.quantity)
+            .reduce((a,b) => a + b)
+        } catch (e) {
+          return 0
+        }
+      },
     },
     methods: {
       nextStep() {
@@ -187,8 +273,18 @@
           this.step--
         }
       },
-      onPay() {
-        console.log("Link paypal")
+      async onPay() {
+        try {
+          await this.$store.dispatch("cart/approveCheckout", {
+            cartId: this.$store.getters.userCart.cartId,
+            address: this.$store.getters.userDetails.address,
+            shipMethod: "Economy",
+            payMethod: "COD",
+          })
+          this.$router.push("/store/checkout/thanks")
+        } catch (e) {
+          console.log(e)
+        }
       }
     },
     layout: "store"

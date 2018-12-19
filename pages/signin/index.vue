@@ -106,6 +106,7 @@
         }
         // Execute since member not yet logged in
         await this.$store.dispatch("setUserCart")
+        await this.$store.dispatch("setUserDetails")
         this.$router.replace("/")
       }
     }

@@ -19,12 +19,22 @@
           </v-flex>
         </v-layout>
         <v-layout>
-          <v-flex xs12>
+          <v-flex
+            xs6>
             <v-btn
-              block
+              :disabled="items.length <= 0"
               nuxt
               to="/store/checkout">
               Checkout
+            </v-btn>
+          </v-flex>
+          <v-flex
+            xs6
+            class="text-xs-right">
+            <v-btn
+              v-if="items.length > 0"
+              @click="clearCart">
+              Remove all items
             </v-btn>
           </v-flex>
         </v-layout>
@@ -92,7 +102,18 @@
           this.snackbarColor = "error"
         }
         this.snackbar = true
-      }
+      },
+      async clearCart() {
+        try {
+          await this.$store.dispatch("clearCart")
+          this.snackbarResult = "Cart has been cleared"
+          this.snackbarColor = "success"
+        } catch (e) {
+          this.snackbarResult = "Something went wrong"
+          this.snackbarColor = "error"
+        }
+        this.snackbar = true
+      },
     },
     layout: "store",
   }

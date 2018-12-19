@@ -3,6 +3,7 @@ const bodyParser = require("body-parser")
 const db = require("../db/knex")
 const router = express.Router()
 const cart = require("./routes/cart")
+const admin = require("./routes/admin")
 const app = express()
 const {
   generateUserToken,
@@ -28,6 +29,7 @@ router.use((req, res, next) => {
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended: false}))
 router.use(cart)
+router.use(admin)
 app.use(router)
 
 const getId = async (req, res) => {
@@ -76,90 +78,6 @@ router.get("/user", async (req, res) => {
 
   // Send an object with property user for nuxt/auth
   res.send({ user })
-})
-
-router.get("/role", authenticate, authorizeAdmin, async (req, res, next) => {
-  let roles
-  try {
-    roles = await db.select([
-        "id",
-        "name",
-      ])
-      .from("role")
-  } catch (e) {
-    res.status(500).send()
-  }
-
-  if (!roles) {
-    res.status(400).send()
-  }
-
-  res.status(200).send(roles)
-})
-
-// Member page for admin
-router.get("/member", authenticate, authorizeAdmin, async (req, res, next) => {
-  let members
-
-  try {
-    members = await db.select([
-        "member.id",
-        "member.firstName",
-        "member.lastName",
-        "member.gender",
-        "member.email",
-        "member.username",
-        "member.birthdate",
-        "member.address",
-        "member.created_at",
-        "role.name as role",
-      ])
-      .from("member")
-      .innerJoin("role", "member.role_id", "role.id")
-
-    convertGender(members)
-  } catch (e) {
-    res.status(500).send()
-    return
-  }
-
-  res.status(200).send(members)
-})
-
-// TODO: Guard this route
-router.post("/member", async (req, res, next) => {
-  const member = req.body
-  // TODO: Fix random password
-  member.password = await hashPassword("a")
-  try {
-    result = await db.insert(member, "id")
-      .into("member")
-  } catch (e) {
-    res.status(500).send()
-  }
-
-  res.status(200).send(result)
-})
-
-router.patch("/member", authenticate, authorizeAdmin, async (req, res, next) => {
-  const { id, ...member } = req.body
-  let result
-
-  try {
-    result = await db("member")
-      .where({ id })
-      .update(member)
-  } catch (e) {
-    res.status(500).send()
-    return
-  }
-
-  if (!result) {
-    res.status(404).send()
-    return
-  }
-
-  res.status(200).send()
 })
 
 // Retrieve basic member info

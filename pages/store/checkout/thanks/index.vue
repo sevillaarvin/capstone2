@@ -12,6 +12,7 @@
                 class="headline justify-center">
                 Thank you for your purchase!
               </v-card-title>
+              <v-divider />
             </v-flex>
           </v-layout>
           <v-layout>

@@ -90,7 +90,8 @@
                         </v-flex>
                         <v-flex
                           xs12>
-                          <v-card>
+                          <v-card
+                            flat>
                             <v-container
                               fluid>
                               <v-layout>
@@ -98,7 +99,7 @@
                                   xs6>
                                   <v-card-title
                                     class="title">
-                                    TOTAL:
+                                    Total:
                                   </v-card-title>
                                 </v-flex>
                                 <v-flex
@@ -149,13 +150,18 @@
                       <v-layout>
                         <v-flex
                           xs12>
-                          <v-card>
-                            <v-card-text>
-                              Economy
-                            </v-card-text>
-                            <v-card-text>
-                              VIP
-                            </v-card-text>
+                          <v-card
+                            flat>
+                            <v-card-actions>
+                              <v-radio-group
+                                v-model="selectedShipMethod">
+                                <v-radio
+                                  v-for="method in shipMethods"
+                                  :key="method.name"
+                                  :label="method.name"
+                                  :value="method.name" />
+                              </v-radio-group>
+                            </v-card-actions>
                           </v-card>
                         </v-flex>
                       </v-layout>
@@ -194,13 +200,18 @@
                       <v-layout>
                         <v-flex
                           xs12>
-                          <v-card>
-                            <v-card-text>
-                              COD
-                            </v-card-text>
-                            <v-card-text>
-                              Paypal
-                            </v-card-text>
+                          <v-card
+                            flat>
+                            <v-card-actions>
+                              <v-radio-group
+                                v-model="selectedPayMethod">
+                                <v-radio
+                                  v-for="method in payMethods"
+                                  :key="method.name"
+                                  :label="method.name"
+                                  :value="method.name" />
+                              </v-radio-group>
+                            </v-card-actions>
                           </v-card>
                         </v-flex>
                       </v-layout>
@@ -239,9 +250,23 @@
     components: {
       Title
     },
-    data() {
+    async asyncData({ app, error }) {
+      let shipMethods,
+        payMethods
+
+      try {
+        shipMethods = await app.$axios.$get("/ship_method")
+        payMethods = await app.$axios.$get("/pay_method")
+      } catch (e) {
+        error(e)
+      }
+
       return {
         step: 0,
+        shipMethods,
+        selectedShipMethod: "Economy",
+        payMethods,
+        selectedPayMethod: "COD",
       }
     },
     computed: {
@@ -278,8 +303,8 @@
           await this.$store.dispatch("cart/approveCheckout", {
             cartId: this.$store.getters.userCart.cartId,
             address: this.$store.getters.userDetails.address,
-            shipMethod: "Economy",
-            payMethod: "COD",
+            shipMethod: this.selectedShipMethod,
+            payMethod: this.selectedPayMethod,
           })
           this.$router.push("/store/checkout/thanks")
         } catch (e) {

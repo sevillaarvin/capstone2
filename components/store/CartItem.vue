@@ -6,7 +6,9 @@
         <v-flex
           xs3>
           <v-img
-            :src="item.img || ''" />
+            :src="item.img || ''"
+            contain
+            height="150" />
         </v-flex>
         <v-flex
           xs6>

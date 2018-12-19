@@ -204,6 +204,26 @@ router.delete("/cart/item/:cartItemId", authenticate, async (req, res) => {
   res.status(200).send()
 })
 
+router.get("/ship_method", authenticate, async (req, res) => {
+  try {
+    const ship_methods = await db.select("name")
+      .from("ship_method")
+    res.status(200).send(ship_methods)
+  } catch (e) {
+    res.status(500).send()
+  }
+})
+
+router.get("/pay_method", authenticate, async (req, res) => {
+  try {
+    const pay_methods = await db.select("name")
+      .from("pay_method")
+    res.status(200).send(pay_methods)
+  } catch (e) {
+    res.status(500).send()
+  }
+})
+
 router.post("/checkout", authenticate, async (req, res) => {
   const { user } = res.locals
   const { userId: member_id } = user

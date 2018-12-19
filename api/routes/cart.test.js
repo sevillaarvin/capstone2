@@ -255,6 +255,60 @@ describe("DELETE /cart/item/cartItemId", () => {
   })
 })
 
+describe("GET /ship_method", () => {
+  it("should get all ship methods if authenticated", (done) => {
+    request(app)
+      .get("/ship_method")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body).to.be.an("array")
+          .to.have.lengthOf(2)
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not get ship methods if not authenticated", (done) => {
+    request(app)
+      .get("/ship_method")
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("GET /pay_method", () => {
+  it("should get all pay methods if authenticated", (done) => {
+    request(app)
+      .get("/pay_method")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body).to.be.an("array")
+          .to.have.lengthOf(2)
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not get pay methods if not authenticated", (done) => {
+    request(app)
+      .get("/pay_method")
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
 describe("POST /checkout", () => {
   const token3 = generateUserToken({
     userId: 3,

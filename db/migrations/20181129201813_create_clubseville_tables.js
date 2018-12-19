@@ -66,6 +66,16 @@ exports.up = function(knex, Promise) {
       table.text("name").notNullable()
     })
 
+    .createTable("ship_method", table => {
+      table.increments()
+      table.text("name").notNullable()
+    })
+
+    .createTable("pay_method", table => {
+      table.increments()
+      table.text("name").notNullable()
+    })
+
     .createTable("order", table => {
       table.increments()
       table.integer("member_id").notNullable()
@@ -76,6 +86,10 @@ exports.up = function(knex, Promise) {
       table.foreign("status_id").references("id").inTable("status")
       table.timestamp("ship_at")
       table.timestamp("deliver_at")
+      table.integer("ship_method_id")
+      table.foreign("ship_method_id").references("id").inTable("ship_method")
+      table.integer("pay_method_id")
+      table.foreign("pay_method_id").references("id").inTable("pay_method")
     })
 
     .createTable("order_detail", table => {
@@ -134,6 +148,8 @@ const dropTables = (knex, Promise) => {
     .dropTableIfExists("cart")
     .dropTableIfExists("order_detail")
     .dropTableIfExists("order")
+    .dropTableIfExists("pay_method")
+    .dropTableIfExists("ship_method")
     .dropTableIfExists("status")
     .dropTableIfExists("rating")
     .dropTableIfExists("item")

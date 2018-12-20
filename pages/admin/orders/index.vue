@@ -118,7 +118,7 @@
         this.dialog = true
       }
     },
-    layout: "user",
+    layout: "admin",
   }
 </script>
 

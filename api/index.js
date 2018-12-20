@@ -11,12 +11,13 @@ const {
   findUserCredentials,
   hashPassword,
   authenticate,
-  authorizeAdmin,
 } = require("./auth")
 const {
   convertRating,
   convertGender,
   revertGender,
+  convertNullToString,
+  convertStringToNumber,
 } = require("./utilities")
 
 router.use((req, res, next) => {
@@ -95,6 +96,8 @@ router.get("/member/:id", async (req, res, next) => {
       .from("member")
       .where({ id })
       .first()
+
+    convertNullToString([member], "avatar")
   } catch (e) {
     res.status(500).send()
     return
@@ -341,73 +344,61 @@ router.get("/size/:id", (req, res, next) => {
   next()
 }, getId)
 
+// This route is publicly available for store page
 router.get("/item", async (req, res, next) => {
+  const { featured, offset, limit } = req.query
+  let total
   let items
 
-  const { featured, offset, limit } = req.query
-  if (featured) {
-    // TODO: retrieve featured items only
-    try {
-      items = await db.select([
-          "item.id",
-          "item.sku",
-          "item.name",
-          "category.name as category",
-          "item.description",
-          "item.img",
-          "item.price",
-          "item.discount",
-          "size.name as size"
-        ])
-        .avg("rating.stars as rating")
-        .from("item")
-        // Category is required
-        .innerJoin("category", "item.category_id", "category.id")
-        // Size is not required
-        .leftJoin("size", "item.size_id", "size.id")
-        .leftJoin("rating", "item.id", "rating.item_id")
-        .offset(offset)
-        .limit(limit)
-        .groupBy(["item.id", "category.name", "size.name"])
-        .orderBy("item.id")
+  try {
+    const { count } = await db("item")
+      .count("id")
+      .first()
+    total = Number(count)
 
-      convertRating(items)
-    } catch (e) {
-      res.status(500).send()
-      return
-    }
-  } else {
-    try {
-      items = await db.select([
-          "item.id",
-          "item.sku",
-          "item.name",
-          "category.name as category",
-          "item.description",
-          "item.img",
-          "item.price",
-          "item.discount",
-          "size.name as size"
-        ])
-        .avg("rating.stars as rating")
-        .from("item")
-        // Category is required
-        .innerJoin("category", "item.category_id", "category.id")
-        // Size is not required
-        .leftJoin("size", "item.size_id", "size.id")
-        .leftJoin("rating", "item.id", "rating.item_id")
-        .offset(offset)
-        .limit(limit)
-        .groupBy(["item.id", "category.name", "size.name"])
-        .orderBy("item.id")
+    itemQuery = db.select([
+        "item.id",
+        "item.sku",
+        "item.name",
+        "category.name as category",
+        "item.description",
+        "item.img",
+        "item.price",
+        "item.discount",
+        "size.name as size"
+      ])
+      .avg("rating.stars as rating")
+      .from("item")
+      // Category is required
+      .innerJoin("category", "item.category_id", "category.id")
+      // Size is not required
+      .leftJoin("size", "item.size_id", "size.id")
+      .leftJoin("rating", "item.id", "rating.item_id")
+      .offset(offset)
+      .limit(limit)
+      .groupBy(["item.id", "category.name", "size.name"])
+      .orderBy("item.id")
 
-      convertRating(items)
-    } catch (e) {
-      res.status(500).send()
-      return
+    if (featured) {
+      // TODO: retrieve featured items only
+      items = await itemQuery
+    } else {
+      items = await itemQuery
     }
+  } catch (e) {
+    res.status(500).send()
+    return
   }
-  res.status(200).send(items)
+
+  convertRating(items)
+  convertNullToString(items, "img")
+  convertStringToNumber(items, "price")
+  convertStringToNumber(items, "discount")
+
+  res.status(200).send({
+    total,
+    items,
+  })
 })
 
 router.get("/item/:sku", async (req, res, next) => {

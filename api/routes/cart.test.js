@@ -427,10 +427,12 @@ describe("POST /checkout", () => {
         .where({ id: result.orderId })
         .first()
 
-      expect(order.ship_to).to.equal("Test address")
-      expect(order.status_id).to.equal(1)
-      expect(order.ship_method_id).to.equal(1)
-      expect(order.pay_method_id).to.equal(1)
+      expect(order).to.eql({
+        ship_to: "Test address",
+        status_id: 1,
+        ship_method_id: 1,
+        pay_method_id: 1,
+      })
 
       const order_detail = await db.select([
           "item_id",
@@ -438,12 +440,17 @@ describe("POST /checkout", () => {
         ])
         .from("order_detail")
         .where({ order_id: result.orderId })
-        .orderBy("id")
       
-      expect(order_detail[0].item_id).to.equal(1)
-      expect(order_detail[0].quantity).to.equal(1)
-      expect(order_detail[1].item_id).to.equal(2)
-      expect(order_detail[1].quantity).to.equal(2)
+      expect(order_detail).to.have.deep.members([
+        {
+          item_id: 1,
+          quantity: 1,
+        },
+        {
+          item_id: 2,
+          quantity: 2,
+        },
+      ])
     } catch (e) {
       throw e
     }

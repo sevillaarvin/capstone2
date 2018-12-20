@@ -56,7 +56,7 @@
               <v-btn
                 color="blue darken-1"
                 flat
-                @click="dialog.new = false">Cancel</v-btn>
+                @click="dismissCreate">Cancel</v-btn>
               <v-btn
                 color="blue darken-1"
                 flat
@@ -149,14 +149,12 @@
     components: {
       Title
     },
-    async asyncData(context) {
-      let roles
+    async asyncData({ error, store }) {
       try {
-        await context.store.dispatch("setAdminMembers")
-        roles = await context.app.$axios.$get("/role")
+        await store.dispatch("admin/setRoles")
+        await store.dispatch("admin/setMembers")
       } catch (e) {
-        context.error(e)
-        return
+        error(e)
       }
 
       return {
@@ -166,7 +164,6 @@
         },
         newMember: {},
         currentMember: {},
-        roles,
         headers: [
           {
             text: "ID",
@@ -201,16 +198,17 @@
     },
     computed: {
       members() {
-        return this.$store.getters.adminMembers
+        return this.$store.getters["admin/members"]
       },
       roleNames() {
-        return this.roles.map(role => role.name)
+        return this.$store.getters["admin/roles"]
+          .map(role => role.name)
       },
     },
     methods: {
       async createMember() {
         const { role: roleName, ...member } = this.newMember
-        const role_id = this.roles.find(role => role.name === roleName).id
+        const role_id = this.$store.getters["admin/roles"].find(role => role.name === roleName).id
         let result
 
         try { result = await this.$axios.$post("/member", {
@@ -221,6 +219,10 @@
           console.log(e)
         }
         console.log(result)
+      },
+      dismissCreate() {
+        this.dialog.new = false
+        this.newMember = {}
       },
       selectMember(member) {
         this.currentMember = member
@@ -259,13 +261,13 @@
         }
         // TODO: Optimize this
         try {
-          await this.$store.dispatch("setAdminMembers")
+          await this.$store.dispatch("admin/setMembers")
         } catch (e) {
           console.log(e)
         }
       },
     },
-    layout: "user",
+    layout: "admin",
   }
 </script>
 

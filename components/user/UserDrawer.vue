@@ -22,6 +22,7 @@
       </v-card-text>
     </v-card>
     <v-list>
+      <!--
       <template
         v-for="link in userLinks">
         <v-list-group
@@ -54,6 +55,20 @@
         </v-list-tile>
         <v-divider
           :key="link.name + '1'" />
+      </template>
+      -->
+      <template
+        v-for="link in userLinks">
+        <v-list-tile
+          :key="link.name"
+          :to="userLink(link.path)"
+          nuxt>
+          <v-list-tile-content>
+            {{ link.name }}
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-divider
+          :key="link.name + '0'" />
       </template>
     </v-list>
   </v-navigation-drawer>
@@ -89,29 +104,29 @@
             path: "/events",
             admin: false,
           },
-          {
-            name: "Admin",
-            path: "/admin",
-            admin: true,
-            pages: [
-              {
-                name: "Members",
-                path: "/members",
-              },
-              {
-                name: "Items",
-                path: "/items",
-              },
-              {
-                name: "Orders",
-                path: "/orders",
-              },
-              {
-                name: "Events",
-                path: "/events",
-              },
-            ],
-          },
+          // {
+          //   name: "Admin",
+          //   path: "/admin",
+          //   admin: true,
+          //   pages: [
+          //     {
+          //       name: "Members",
+          //       path: "/members",
+          //     },
+          //     {
+          //       name: "Items",
+          //       path: "/items",
+          //     },
+          //     {
+          //       name: "Orders",
+          //       path: "/orders",
+          //     },
+          //     {
+          //       name: "Events",
+          //       path: "/events",
+          //     },
+          //   ],
+          // },
         ]
       }
     },
@@ -119,9 +134,9 @@
       userLink(link) {
         return '/' + encodeURIComponent(this.userInfo.username) + link
       },
-      adminLink(link) {
-        return this.userLink("/admin") + link
-      }
+      // adminLink(link) {
+      //   return this.userLink("/admin") + link
+      // }
     },
   }
 </script>

@@ -26,8 +26,25 @@ const revertGender = members => {
   })
 }
 
+const convertNullToString = (items, property) => {
+  items.forEach((item) => {
+    if (!item[property]) {
+      item[property] = ""
+    }
+  })
+}
+
+const convertStringToNumber = (items, property) => {
+  items.forEach((item) => {
+    item[property] = Number(item[property])
+  })
+}
+  
+
 module.exports = {
   convertRating,
   convertGender,
-  revertGender
+  revertGender,
+  convertNullToString,
+  convertStringToNumber,
 }

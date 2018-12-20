@@ -136,7 +136,7 @@ describe("PATCH /member", () => {
             expect(res).to.be.an("object")
             expect(res.username).to.be.equal("changed")
             done()
-        }).catch(e => done(e))
+        }).catch(done)
       })
   })
 
@@ -164,6 +164,225 @@ describe("PATCH /member", () => {
         wrong: "field",
       })
       .expect(500)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("POST /item", () => {
+  it("should add a new item for authorized admin", (done) => {
+    request(app)
+      .post("/item")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .send({
+        sku: "abc123",
+        name: "Item abc 123",
+        category: "Swimsuits",
+        description: "Item abc 123 is a swimsuit",
+        img: "",
+        price: 1000,
+        discount: 0,
+        size: "sm",
+      })
+      .expect(201)
+      .end((err, res) => {
+        if (err) return done(err)
+        db.select([
+            "sku",
+            "name",
+            "category_id",
+            "description",
+            "img",
+            "price",
+            "discount",
+            "size_id",
+          ])
+          .from("item")
+          .where({ sku: "abc123" })
+          .first()
+          .then((item) => {
+            expect(item).to.eql({
+              sku: "abc123",
+              name: "Item abc 123",
+              category_id: 4,
+              description: "Item abc 123 is a swimsuit",
+              img: "",
+              price: "1000.000000",
+              discount: "0.000000",
+              size_id: 2,
+            })
+            done()
+          }).catch(done)
+      })
+  })
+
+  it("should not add item for unauthorized user", (done) => {
+    request(app)
+      .post("/item")
+      .set("authorization", "Bearer " + tokenUser)
+      .send({
+        sku: "abc123",
+        name: "Item abc 123",
+        category: "Swimsuits",
+        description: "Item abc 123 is a swimsuit",
+        img: "",
+        price: 1000,
+        discount: 0,
+        size: "sm",
+      })
+      .expect(403)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not add item for unauthenticated user", (done) => {
+    request(app)
+      .post("/item")
+      .send({
+        sku: "abc123",
+        name: "Item abc 123",
+        category: "Swimsuits",
+        description: "Item abc 123 is a swimsuit",
+        img: "",
+        price: 1000,
+        discount: 0,
+        size: "sm",
+      })
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not add item with abnormal fields", (done) => {
+    request(app)
+      .post("/item")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .send({
+        what: "is this",
+        a: 1,
+      })
+      .expect(500)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("PATCH /item/id", () => {
+  it("should update item with id 1", (done) => {
+    request(app)
+      .patch("/item/1")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .send({
+        name: "Changed Item Name"
+      })
+      .expect(204)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not update item if not authorized as admin", (done) => {
+    request(app)
+      .patch("/item/1")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(403)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not update item if not authenticated", (done) => {
+    request(app)
+      .patch("/item/1")
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not update invalid item id", (done) => {
+    request(app)
+      .patch("/item/19999999")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .expect(500)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not update invalid item fields", (done) => {
+    request(app)
+      .patch("/item/19999999")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .send({
+        asdf: "hehe"
+      })
+      .expect(500)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("DELETE /item/id", () => {
+  const insertQuery = db.insert({
+      sku: "testskufordeletion",
+      name: "testnamefordeletion",
+      category_id: 1,
+      description: "testdescription",
+      price: 1,
+    }, "id")
+    .into("item")
+
+  it("should delete item", async function() {
+    const [ insertedId ] = await insertQuery
+
+    const insertedItem = await db.select("id")
+      .from("item")
+      .where({ id: insertedId })
+      .first()
+    expect(insertedItem).to.eql({ id: insertedId })
+
+    await request(app)
+      .delete(`/item/${insertedId}`)
+      .set("authorization", "Bearer " + tokenAdmin)
+      .expect(204)
+
+    const deletedItem = await db.select("id")
+      .from("item")
+      .where({ id: insertedId })
+      .first()
+    expect(deletedItem).to.be.undefined
+  })
+
+  it("should not delete item if not authorized as admin", function(done) {
+    request(app)
+      .delete("/item/100")
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(403)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not delete item if not authenticated", function(done) {
+    request(app)
+      .delete("/item/100")
+      .expect(401)
       .end((err, res) => {
         if (err) return done(err)
         done()

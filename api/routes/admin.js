@@ -71,8 +71,6 @@ router.post("/member", authenticate, authorizeAdmin, async (req, res, next) => {
   res.status(200).send(result)
 })
 
-module.exports = router
-
 router.patch("/member", authenticate, authorizeAdmin, async (req, res, next) => {
   const { id, ...member } = req.body
   let result
@@ -93,3 +91,68 @@ router.patch("/member", authenticate, authorizeAdmin, async (req, res, next) => 
 
   res.status(200).send()
 })
+
+router.post("/item", authenticate, authorizeAdmin, async (req, res) => {
+  const { category, size, ...item } = req.body
+  let size_id
+
+  try {
+    const { id: category_id } = await db.select("id")
+      .from("category")
+      .where({ name: category })
+      .first()
+
+    if (size) {
+      ({ id: size_id } = await db.select("id")
+        .from("size")
+        .where({ name: size })
+        .first())
+    }
+
+    await db.insert({
+        ...item,
+        category_id,
+        size_id,
+      })
+      .into("item")
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+
+  res.status(201).send()
+})
+
+router.patch("/item/:id", authenticate, authorizeAdmin, async (req, res) => {
+  const { id } = req.params
+  const itemDetails = req.body
+
+  try {
+    await db("item")
+      .where({ id })
+      .update(itemDetails)
+
+    res.status(204).send()
+    return
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+})
+
+router.delete("/item/:id", authenticate, authorizeAdmin, async (req, res) => {
+  const { id } = req.params
+
+  try {
+    await db("item")
+      .where({ id })
+      .del()
+    res.status(204).send()
+    return
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+})
+
+module.exports = router

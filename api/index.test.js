@@ -513,6 +513,15 @@ describe("GET /item", () => {
       .get("/item")
       .expect(200)
       .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.have.keys([
+          "total",
+          "items",
+        ])
+        expect(res.body.total).to.be.a("number")
+          .above(0)
+          .that.satisfy(Number.isInteger)
+      })
       .end((err, res) => {
         if (err) return done(err)
         done()
@@ -526,7 +535,10 @@ describe("GET /item", () => {
       .expect(200)
       .expect("content-type", /json/)
       .expect(res => {
-        expect(res.body).to.be.an("array")
+        expect(res.body).to.have.keys([
+          "total",
+          "items",
+        ])
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -541,7 +553,7 @@ describe("GET /item", () => {
       .expect(200)
       .expect("content-type", /json/)
       .expect(res => {
-        expect(res.body).to.be.an("array").with.lengthOf(10)
+        expect(res.body).to.have.property("items").with.lengthOf(10)
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -556,8 +568,30 @@ describe("GET /item", () => {
       .expect(200)
       .expect("content-type", /json/)
       .expect(res => {
-        expect(res.body).to.be.an("array")
-        expect(res.body[0]).to.be.an("object")
+        expect(res.body).to.have.property("items")
+        expect(res.body.items[0]).to.be.an("object")
+          .with.property("id")
+          .to.equal(11)
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should return 5 items, skipping 10 items", (done) => {
+    request(app)
+      .get("/item")
+      .query({
+        "offset": "10",
+        limit: 5,
+      })
+      .expect(200)
+      .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.have.property("items")
+          .with.lengthOf(5)
+        expect(res.body.items[0]).to.be.an("object")
           .with.property("id")
           .to.equal(11)
       })

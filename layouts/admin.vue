@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <UserDrawer
-      :user-info="userInfo"
+    <AdminDrawer
+      :admin-info="userInfo"
       v-model="drawer" />
     <TheHeader
       :gen-navs="allNavs.genNavs"
@@ -23,13 +23,13 @@
 
 <script>
   import TheHeader from "~/components/TheHeader"
-  import UserDrawer from "@/components/user/UserDrawer"
+  import AdminDrawer from "@/components/admin/AdminDrawer"
   import NavDrawer from "@/components/NavDrawer"
 
   export default {
     components: {
       TheHeader,
-      UserDrawer,
+      AdminDrawer,
       NavDrawer,
     },
     data() {
@@ -44,11 +44,6 @@
       },
       userInfo() {
         return this.$store.getters.userInfo
-        // const user = this.$store.getters.userInfo
-        // if (!user.avatar) {
-        //   user.avatar = "http://i.pravatar.cc/150?u=Anonymous'"
-        // }
-        // return user
       }
     },
     middleware: [

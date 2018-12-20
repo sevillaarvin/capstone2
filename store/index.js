@@ -1,5 +1,5 @@
 // TODO: Fix strict, vuex mutation outside store
-export const strict = false
+// export const strict = false
 // import Vuex from 'vuex'
 // export default () => new Vuex.Store({
   export const state = () => ({
@@ -8,15 +8,6 @@ export const strict = false
       cart: null, // { cartId, items }
       info: null,
       details: null,
-    },
-
-    // authenticated data
-    // authorized data
-    admin: {
-      members: [],
-      items: [],
-      orders: [],
-      events: [],
     },
 
     featured: {
@@ -112,22 +103,15 @@ export const getters = {
       return state.user.cart
     },
     userInfo(state) {
-      return state.user.info
+      return state.user.info || {
+        firstName: "Anonymous",
+        lastName: "",
+        username: "",
+        avatar: "http://i.pravatar.cc/150?u=Anonymous",
+      }
     },
     userDetails(state) {
       return state.user.details
-    },
-    adminMembers(state) {
-      return state.admin.members
-    },
-    adminItems(state) {
-      return state.admin.items
-    },
-    adminOrders(state) {
-      return state.admin.orders
-    },
-    adminEvents(state) {
-      return state.admin.events
     },
     featuredItems(state) {
       // TODO: Should return x items at a time
@@ -170,18 +154,6 @@ export const mutations = {
     },
     setUserDetails(state, details) {
       state.user.details = details
-    },
-    setAdminMembers(state, members) {
-      state.admin.members = members
-    },
-    setAdminItems(state, items) {
-      state.admin.items = items
-    },
-    setAdminOrders(state, orders) {
-      state.admin.orders = orders
-    },
-    setAdminEvents(state, events) {
-      state.admin.events = events
     },
     setFeaturedItems(state, { items, offset, limit }) {
       state.featured.items = state.featured.items.concat(items)
@@ -315,49 +287,6 @@ export const actions = {
         // TODO: Implement not loggedIn clearCart
       }
       dispatch("setUserCart")
-    },
-    async setAdminMembers({ commit }) {
-      let members
-      try {
-        members = await this.$axios.$get("/member", {
-          params: {
-            offset: 0,
-            limit: 20,
-          }
-        })
-      } catch (e) {
-        return Promise.reject(e)
-      }
-      commit("setAdminMembers", members)
-    },
-    async setAdminItems({ commit }) {
-      let items
-      try {
-        items = await this.$axios.$get("/item", {
-          params: {
-            offset: 0,
-            limit: 20,
-          }
-        })
-      } catch (e) {
-        return Promise.reject(e)
-      }
-      commit("setAdminItems", items)
-    },
-    async setAdminOrders({ commit }, context) {
-      let orders
-      try {
-        orders = await this.$axios.$get("/order", {
-          params: {
-            offset: 0,
-            limit: 20,
-          }
-        })
-      } catch (e) {
-        context.error(e)
-        return
-      }
-      commit("setAdminOrders", orders)
     },
     async setFeaturedItems({ commit, /* getters */ }, query) {
       let { offset, limit, featured } = query

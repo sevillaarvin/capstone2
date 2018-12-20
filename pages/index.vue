@@ -48,7 +48,16 @@ export default {
   },
   beforeCreate() {
     if (this.$auth.$state.loggedIn) {
-      this.$router.replace("/" + this.$auth.$state.user.username)
+      let link
+
+      // TODO: Fix admin authorization
+      if (this.$auth.$state.user.roleId === 1) {
+        link = "/" + encodeURIComponent(this.$auth.$state.user.username)
+      } else {
+        link = "/admin"
+      }
+
+      this.$router.replace(link)
     }
   },
   layout: "landing"

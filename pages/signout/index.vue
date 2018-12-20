@@ -11,6 +11,7 @@
     created() {
       this.$store.dispatch("signOutUser")
       this.$auth.logout()
+      this.$router.replace("/")
     }
   }
 </script>

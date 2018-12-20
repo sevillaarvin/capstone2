@@ -151,6 +151,21 @@
         }
       }
     },
+    async asyncData({ error, route, store }) {
+      const {
+        paymentId,
+        token,
+        PayerID,
+      } = route.query
+
+      if (paymentId && PayerID) {
+        try {
+          const result = await store.dispatch("cart/executePayment", { paymentId, PayerID })
+        } catch (e) {
+          error(e)
+        }
+      }
+    },
     layout: "store",
   }
 </script>

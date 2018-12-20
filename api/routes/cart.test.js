@@ -349,7 +349,7 @@ describe("POST /checkout", () => {
       })
   })
 
-  it("should checkout items for user 3", async () => {
+  it("should checkout items for user 3 using COD", async () => {
     let result
 
     const [ cartId ] = await db.insert({
@@ -448,4 +448,44 @@ describe("POST /checkout", () => {
       throw e
     }
   })
+
+  // it("should checkout items for user 3 using PayPal", async function() {
+  //   this.timeout(10000)
+
+  //   let result
+
+  //   const [ cartId ] = await db.insert({
+  //       member_id: 3,
+  //     }, "id")
+  //     .into("cart")
+
+  //   await db.insert([
+  //       {
+  //         cart_id: cartId,
+  //         item_id: 1,
+  //         quantity: 1,
+  //       },
+  //       {
+  //         cart_id: cartId,
+  //         item_id: 2,
+  //         quantity: 2,
+  //       },
+  //     ])
+  //     .into("cart_item")
+
+  //   try {
+  //     await request(app)
+  //       .post("/checkout")
+  //       .set("authorization", "Bearer " + token3)
+  //       .send({
+  //         cartId,
+  //         address: "Test address",
+  //         shipMethod: "Economy",
+  //         payMethod: "PayPal",
+  //       })
+  //       .expect(202)
+  //   } catch (e) {
+  //     throw e
+  //   }
+  // })
 })

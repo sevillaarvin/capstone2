@@ -90,6 +90,7 @@ exports.up = function(knex, Promise) {
       table.foreign("ship_method_id").references("id").inTable("ship_method")
       table.integer("pay_method_id")
       table.foreign("pay_method_id").references("id").inTable("pay_method")
+      table.text("paypal_payment_sid").unique()
     })
 
     .createTable("order_detail", table => {

@@ -1,6 +1,22 @@
 const db = require("./db/knex")
 const uuidv4 = require("uuid/v4")
 
+const paypal = require("paypal-rest-sdk")
+// let paypalStr = JSON.stringify(paypal, null, 2)
+// console.log("before", paypalStr)
+
+paypal.configure({
+  mode: "sandbox",
+  client_id: "ATMKYQa1aWKtz0hXtOKoqyVwBFNymL_vLtw-5yj-gpqOGjga0tBi8rmfQhEuPjFbYK2k7JLUSGEezkWw",
+  client_secret: "EOW_xX6znUykGPpGjRnVCXbnqBFBSJa2bnSc-2Egd4izyz7rEr993iN3l_5L3rKYw9-gD768TWb83ort",
+})
+
+// paypalStr = JSON.stringify(paypal, null, 2)
+// console.log("after", paypalStr)
+
+//console.log(paypalStr)
+
+
 async function result1() {
   let result = await db.select().from("item")
   // console.log(result)
@@ -278,4 +294,54 @@ async function result10 () {
   }
 }
 
-result10()
+// result10()
+
+async function result11 () {
+  const paymentDetails = {
+    intent: "sale",
+    payer: {
+      payment_method: "paypal",
+    },
+    redirect_urls: {
+      return_url: "http://localhost:3000",
+      cancel_url: "http://localhost:3000",
+    },
+    transactions: [
+      {
+        amount: {
+          currency: "PHP",
+          total: "100.99",
+        },
+        description: "This is the description",
+      },
+    ]
+  }
+
+  paypal.payment.create(paymentDetails, (err, payment) => {
+    if (err) {
+      console.log(JSON.stringify(err, null, 2))
+    } else {
+      //console.log(JSON.stringify(payment, null, 2))
+      console.log(payment.links[1].href)
+      console.log(payment.links[2].href)
+    }
+  })
+}
+
+// result11()
+
+async function result12() {
+  let paymentId= "PAY-02357375CM3270014LQNE7BI",
+    token= "EC-9C262168YN3309511",
+    PayerID= "K4CRHX5AM8PVQ"
+
+  paypal.payment.execute(paymentId, { payer_id: PayerID }, (err, payment) => {
+    if (err) {
+      console.log(JSON.stringify(err, null, 2))
+    } else {
+      console.log(JSON.stringify(payment, null, 2))
+    }
+  })
+}
+
+result12()

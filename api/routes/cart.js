@@ -1,6 +1,7 @@
 const express = require("express")
 const router = express.Router()
 const { authenticate } = require("../auth")
+const { createPayment, executePayment } = require("../paypal")
 const db = require("../../db/knex")
 const {
   convertRating,
@@ -224,6 +225,45 @@ router.get("/pay_method", authenticate, async (req, res) => {
   }
 })
 
+const getOrderDetails = async (order_id) => {
+  const order_summary = await db.select([
+      "member.firstName as firstName",
+      "member.lastName as lastName",
+      "order.id as orderId",
+      "order_at as orderAt",
+      "ship_to as shipTo",
+      "status.name as status",
+      "ship_method.name as shipMethod",
+      "pay_method.name as payMethod",
+    ])
+    .from("order")
+    .where({ "order.id": order_id })
+    .innerJoin("member", "member.id", "order.member_id")
+    .innerJoin("status", "status.id", "order.status_id")
+    .innerJoin("ship_method", "ship_method.id", "order.ship_method_id")
+    .innerJoin("pay_method", "pay_method.id", "order.pay_method_id")
+    .first()
+
+  const order_items = await db.select([
+      "item.sku",
+      "item.name",
+      "category.name as category",
+      "item.description",
+      "item.img",
+      "size.name as size",
+      "order_detail.quantity",
+      "order_detail.price",
+      "order_detail.discount",
+    ])
+    .from("order_detail")
+    .where({ order_id })
+    .innerJoin("item", "item.id", "order_detail.item_id")
+    .innerJoin("category", "category.id", "item.category_id")
+    .leftJoin("size", "size.id", "item.size_id")
+
+  return { order_summary, order_items }
+}
+
 router.post("/checkout", authenticate, async (req, res) => {
   const { user } = res.locals
   const { userId: member_id } = user
@@ -255,7 +295,7 @@ router.post("/checkout", authenticate, async (req, res) => {
       return
     }
 
-    // assign order_id for cartId
+    // prepare order details
     const { id: ship_method_id } = await db.select("id")
       .from("ship_method")
       .where({ name: shipMethod })
@@ -266,6 +306,7 @@ router.post("/checkout", authenticate, async (req, res) => {
       .where({ name: payMethod })
       .first()
 
+    // assign order_id for cartId
     const [ order_id ] = await db.insert({
         member_id,
         ship_to: address,
@@ -295,44 +336,35 @@ router.post("/checkout", authenticate, async (req, res) => {
       return item
     })
 
+    // https://stackoverflow.com/a/1169596
+    // An ambiguous case that breaks in the absence of a semicolon:
     await db.insert(cartItems)
-      .into("order_detail")
+      .into("order_detail");
 
     // send back order details
-    order_summary = await db.select([
-        "member.firstName as firstName",
-        "member.lastName as lastName",
-        "order.id as orderId",
-        "order_at as orderAt",
-        "ship_to as shipTo",
-        "status.name as status",
-        "ship_method.name as shipMethod",
-        "pay_method.name as payMethod",
-      ])
-      .from("order")
-      .where({ "order.id": order_id })
-      .innerJoin("member", "member.id", "order.member_id")
-      .innerJoin("status", "status.id", "order.status_id")
-      .innerJoin("ship_method", "ship_method.id", "order.ship_method_id")
-      .innerJoin("pay_method", "pay_method.id", "order.pay_method_id")
-      .first()
+    // https://stackoverflow.com/questions/48714689/javascript-re-assign-let-variable-with-destructuring
+    // Destructuring needs to be either after a let, const or var declaration
+    // or it needs to be in an expression context to distinguish it from a block statement.
+    ({ order_summary, order_items } = await getOrderDetails(order_id))
 
-    order_items = await db.select([
-        "item.sku",
-        "item.name",
-        "category.name as category",
-        "item.description",
-        "item.img",
-        "size.name as size",
-        "order_detail.quantity",
-        "order_detail.price",
-        "order_detail.discount",
-      ])
-      .from("order_detail")
-      .where({ order_id })
-      .innerJoin("item", "item.id", "order_detail.item_id")
-      .innerJoin("category", "category.id", "item.category_id")
-      .leftJoin("size", "size.id", "item.size_id")
+    if (payMethod === "PayPal") {
+      const total = order_items
+        .map(item => item.quantity * (item.price - item.discount))
+        .reduce((a, b) => a + b)
+
+      const { id: paymentId, links } = await createPayment({ total, items: order_items })
+      const result = await db("order")
+        .where({ id: order_id })
+        .update({ paypal_payment_sid: paymentId })
+
+      if (!result) {
+        throw new Error(`Couldn't update paypal payment id: ${paymentId} for order no: ${order_id}`)
+      }
+
+      const approval_url = links.find(link => link.rel === "approval_url").href
+      res.status(202).send(approval_url)
+      return
+    }
   } catch (e) {
     res.status(500).send()
     return
@@ -340,7 +372,32 @@ router.post("/checkout", authenticate, async (req, res) => {
 
   res.status(200).send({
     ...order_summary,
-    items: order_items
+    items: order_items,
+  })
+})
+
+router.post("/paypal", authenticate, async (req, res) => {
+  // TODO: Fix architecture, anyone can execute payment ?
+  const { paymentId, PayerID } = req.body
+  let order_summary
+  let order_items
+
+  try {
+    const payment = await executePayment(paymentId, PayerID)
+    const { id: orderId } = await db.select("id")
+      .from("order")
+      .where({ paypal_payment_sid: paymentId })
+      .first();
+
+    ({ order_summary, order_items } = await getOrderDetails(orderId))
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+  
+  res.status(201).send({
+    ...order_summary,
+    items: order_items,
   })
 })
 

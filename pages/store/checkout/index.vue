@@ -300,13 +300,19 @@
       },
       async onPay() {
         try {
-          await this.$store.dispatch("cart/approveCheckout", {
+          const result = await this.$store.dispatch("cart/approveCheckout", {
             cartId: this.$store.getters.userCart.cartId,
             address: this.$store.getters.userDetails.address,
             shipMethod: this.selectedShipMethod,
             payMethod: this.selectedPayMethod,
           })
-          this.$router.push("/store/checkout/thanks")
+
+          if (!result) {
+            this.$router.push("/store/checkout/thanks")
+          } else {
+            // expect approval url
+            window.location.replace(result)
+          }
         } catch (e) {
           console.log(e)
         }

@@ -371,4 +371,85 @@ async function result13() {
     .orderBy(orderBy || "item.id", descending ? "desc" : "asc")
 }
 
-result13()
+// result13()
+
+async function result14() {
+  const nodemailer = require("nodemailer")
+
+  console.log(nodemailer)
+
+  nodemailer.createTestAccount((err, account) => {
+    console.log(JSON.stringify(account, null, 2))
+    const transporter = nodemailer.createTransport({
+      // host: "smtp.ethereal.email",
+      host: "smtp.zoho.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "info@clubseville.icu",
+        pass: "",
+      },
+    })
+    console.log(transporter)
+
+    const mailOptions = {
+      // from: "example@example.com",
+      from: "info@clubseville.icu",
+      // to: "admin@clubseville.icu",
+      to: "",
+      subject: "Hello",
+      text: "Test msg",
+      html: "<strong>Test msg</strong>",
+    }
+
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.log(err)
+        return
+      }
+
+      console.log(JSON.stringify(info, null, 2))
+      // console.log(nodemailer.getTestMessageUrl(info))
+    })
+  })
+
+}
+
+result14()
+
+function result15() {
+  {
+    const user = {
+      id: 339,
+      name: 'Fred',
+      age: 42,
+      education: {
+        degree: 'Masters'
+      }
+    };
+    const {education: {degree}} = user;
+    console.log(degree)
+  }
+  
+  {
+    const user = {
+      id: 339,
+      name: 'Fred',
+      age: 42
+    };
+    const {education: {degree} = {}} = user;  // TypeError: Cannot match against 'undefined' or 'null'.
+    console.log(degree)
+  }
+
+  {
+    const user = {
+      id: 339,
+      name: 'Fred',
+      age: 42
+    };
+    const {education: {school: {name: {huh}}} = {school: {name: {}}}} = user;
+    console.log(huh); //prints: undefined
+  }
+}
+
+// result15()

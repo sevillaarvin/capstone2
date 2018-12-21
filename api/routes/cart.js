@@ -1,11 +1,10 @@
 const express = require("express")
 const router = express.Router()
+const db = require("../../db/knex")
 const { authenticate } = require("../auth")
 const { createPayment, executePayment } = require("../paypal")
-const db = require("../../db/knex")
-const {
-  convertRating,
-} = require("../utilities")
+const { sendMail } = require("../mail")
+const { convertRating } = require("../utilities")
 
 router.post("/cart", authenticate, async (req, res, next) => {
   const { user } = res.locals
@@ -265,8 +264,9 @@ const getOrderDetails = async (order_id) => {
 }
 
 router.post("/checkout", authenticate, async (req, res) => {
-  const { user } = res.locals
-  const { userId: member_id } = user
+  const { user: { userId: member_id } } = res.locals
+  let email
+
   // receive cartId
   const {
     cartId: cart_id,
@@ -279,6 +279,11 @@ router.post("/checkout", authenticate, async (req, res) => {
   let order_items
 
   try {
+    ({ email } = await db.select("email")
+      .from("member")
+      .where({ id: member_id })
+      .first())
+
     // confirm that user is authorized
     const cart = await db.select("id")
       .from("cart")
@@ -296,6 +301,18 @@ router.post("/checkout", authenticate, async (req, res) => {
     }
 
     // prepare order details
+    const statuses = await db.select([
+        "id",
+        "name",
+      ])
+      .from("status")
+
+    const { id: statusIdPending } = statuses
+      .find((status) => status.name === "Pending")
+
+    const { id: statusIdApproved } = statuses.
+      find((status) => status.name === "Approved")
+
     const { id: ship_method_id } = await db.select("id")
       .from("ship_method")
       .where({ name: shipMethod })
@@ -310,6 +327,7 @@ router.post("/checkout", authenticate, async (req, res) => {
     const [ order_id ] = await db.insert({
         member_id,
         ship_to: address,
+        status_id: statusIdPending,
         ship_method_id,
         pay_method_id,
       }, "id")
@@ -364,41 +382,76 @@ router.post("/checkout", authenticate, async (req, res) => {
       const approval_url = links.find(link => link.rel === "approval_url").href
       res.status(202).send(approval_url)
       return
+    } else {
+      const orderDetails = {
+        ...order_summary,
+        items: order_items,
+      }
+
+      await db("order")
+        .where({ id: order_id })
+        .update({ status_id: statusIdApproved })
+
+      sendMail(email, orderDetails)
+        .then(console.log)
+        .catch(console.log)
+
+      res.status(200).send(orderDetails)
+      return
     }
   } catch (e) {
     res.status(500).send()
     return
   }
 
-  res.status(200).send({
-    ...order_summary,
-    items: order_items,
-  })
 })
 
 router.post("/paypal", authenticate, async (req, res) => {
-  // TODO: Fix architecture, anyone can execute payment ?
-  const { paymentId, PayerID } = req.body
-  let order_summary
-  let order_items
-
   try {
+    // TODO: Fix architecture, anyone can execute payment ?
+    const { paymentId, PayerID } = req.body
+
     const payment = await executePayment(paymentId, PayerID)
-    const { id: orderId } = await db.select("id")
+    const { id: orderId, member_id: memberId } = await db.select([
+        "id",
+        "member_id",
+      ])
       .from("order")
       .where({ paypal_payment_sid: paymentId })
-      .first();
+      .first()
 
-    ({ order_summary, order_items } = await getOrderDetails(orderId))
+    const { id: statusIdApproved } = await db.select("id")
+      .from("status")
+      .where({ name: "Approved" })
+      .first()
+
+    const { order_summary, order_items } = await getOrderDetails(orderId)
+
+    const { email } = await db.select("email")
+      .from("member")
+      .where({ id: memberId })
+      .first()
+
+    const orderDetails = {
+      ...order_summary,
+      items: order_items,
+    }
+
+    await db("order")
+      .where({ id: orderId })
+      .update({ status_id: statusIdApproved })
+
+    sendMail(email, orderDetails)
+      .then(console.log)
+      .catch(console.log)
+
+    res.status(201).send(orderDetails)
+    return
   } catch (e) {
     res.status(500).send()
     return
   }
   
-  res.status(201).send({
-    ...order_summary,
-    items: order_items,
-  })
 })
 
 module.exports = router

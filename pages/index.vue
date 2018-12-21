@@ -52,9 +52,9 @@ export default {
 
       // TODO: Fix admin authorization
       if (this.$auth.$state.user.roleId === 1) {
-        link = "/" + encodeURIComponent(this.$auth.$state.user.username)
-      } else {
         link = "/admin"
+      } else {
+        link = "/" + encodeURIComponent(this.$auth.$state.user.username)
       }
 
       this.$router.replace(link)

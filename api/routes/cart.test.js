@@ -429,7 +429,8 @@ describe("POST /checkout", () => {
 
       expect(order).to.eql({
         ship_to: "Test address",
-        status_id: 1,
+        // status of COD automatically approved
+        status_id: 2,
         ship_method_id: 1,
         pay_method_id: 1,
       })

@@ -521,6 +521,20 @@ describe("GET /item", () => {
         expect(res.body.total).to.be.a("number")
           .above(0)
           .that.satisfy(Number.isInteger)
+        expect(res.body)
+          .to.have.nested.property("items[0]")
+          .with.keys([
+            "id",
+            "sku",
+            "name",
+            "category",
+            "description",
+            "img",
+            "price",
+            "discount",
+            "size",
+            "rating",
+          ])
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -600,6 +614,73 @@ describe("GET /item", () => {
         done()
       })
   })
+
+  it("should return 10 items sorted by category", function(done) {
+    request(app)
+      .get("/item")
+      .query({
+        limit: 10,
+        orderBy: "category",
+      })
+      .expect(200)
+      .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.have.property("items")
+          .with.lengthOf(10)
+        const isSorted = res.body.items
+          .map((item) => item.category)
+          .reduce((sorted, category, index, categories) => {
+            if (index === 0) {
+              return true
+            }
+
+            if (sorted === false) {
+              return sorted
+            }
+
+            return categories[index-1] <= category
+          }, true)
+        expect(isSorted).to.be.true
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should return 10 items sorted by id descending", function(done) {
+    request(app)
+      .get("/item")
+      .query({
+        limit: 10,
+        orderBy: "id",
+        descending: true,
+      })
+      .expect(200)
+      .expect("content-type", /json/)
+      .expect(res => {
+        expect(res.body).to.have.property("items")
+          .with.lengthOf(10)
+        const isSortedDescending = res.body.items
+          .map((item) => item.id)
+          .reduce((sorted, id, index, ids) => {
+            if (index === 0) {
+              return true
+            }
+
+            if (sorted === false) {
+              return sorted
+            }
+
+            return ids[index-1] >= id
+          }, true)
+        expect(isSortedDescending).to.be.true
+      })
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
 })
 
 describe("GET /item/id", () => {
@@ -622,22 +703,6 @@ describe("GET /item/id", () => {
     request(app)
       .get("/item/asdfasdf")
       .expect(404)
-      .end((err, res) => {
-        if (err) return done(err)
-        done()
-      })
-  })
-})
-
-describe("GET /order", () => {
-  it("should get all orders", done => {
-    request(app)
-      .get("/order")
-      .expect(200)
-      .expect("content-type", /json/)
-      .expect(res => {
-        expect(res.body).to.be.an("array")
-      })
       .end((err, res) => {
         if (err) return done(err)
         done()

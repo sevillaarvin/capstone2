@@ -346,7 +346,7 @@ router.get("/size/:id", (req, res, next) => {
 
 // This route is publicly available for store page
 router.get("/item", async (req, res, next) => {
-  const { featured, offset, limit } = req.query
+  const { featured, offset, limit, orderBy, descending } = req.query
   let total
   let items
 
@@ -377,7 +377,8 @@ router.get("/item", async (req, res, next) => {
       .offset(offset)
       .limit(limit)
       .groupBy(["item.id", "category.name", "size.name"])
-      .orderBy("item.id")
+      .orderBy(orderBy || "item.id", descending === "true" ? "desc" : "asc")
+
 
     if (featured) {
       // TODO: retrieve featured items only
@@ -439,28 +440,6 @@ router.get("/item/:sku", async (req, res, next) => {
   }
 
   res.status(200).send(item)
-})
-
-router.get("/order", async (req, res, next) => {
-  let orders
-
-  try {
-    orders = await db.select([
-        "id",
-        "member_id",
-        "order_at",
-        "ship_to",
-        "status_id",
-        "ship_at",
-        "deliver_at",
-      ])
-      .from("order")
-  } catch (e) {
-    res.status(500).send()
-    return
-  }
-
-  res.status(200).send(orders)
 })
 
 // Retrieve orders of given member id

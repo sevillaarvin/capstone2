@@ -4,6 +4,9 @@ export const state = () => ({
   categories: [],
   sizes: [],
   items: [],
+  statuses: [],
+  shipMethods: [],
+  payMethods: [],
   orders: [],
   events: [],
 })
@@ -23,6 +26,15 @@ export const getters = {
   },
   items(state) {
     return state.items
+  },
+  statuses(state) {
+    return state.statuses
+  },
+  shipMethods(state) {
+    return state.shipMethods
+  },
+  payMethods(state) {
+    return state.payMethods
   },
   orders(state) {
     return state.orders
@@ -47,6 +59,15 @@ export const mutations = {
   },
   setItems(state, items) {
     state.items = items
+  },
+  setStatuses(state, statuses) {
+    state.statuses = statuses
+  },
+  setShipMethods(state, shipMethods) {
+    state.shipMethods = shipMethods
+  },
+  setPayMethods(state, payMethods) {
+    state.payMethods = payMethods
   },
   setOrders(state, orders) {
     state.orders = orders
@@ -102,7 +123,7 @@ export const actions = {
   },
   async setItems({ commit }, pagination) {
     try {
-      const { page, rowsPerPage, sortBy, descending } = pagination
+      const { page, rowsPerPage, sortBy: orderBy, descending } = pagination
       const offset = (page - 1) * rowsPerPage || 0
       let limit = rowsPerPage || 5
       if (limit < 0) {
@@ -113,30 +134,10 @@ export const actions = {
         params: {
           offset,
           limit,
+          orderBy,
+          descending,
         }
       })
-
-      if (sortBy) {
-        items.sort((a, b) => {
-          if (descending) {
-            if (a[sortBy] < b[sortBy]) {
-              return 1
-            } else if (a[sortBy] > b[sortBy]) {
-              return -1
-            } else {
-              return 0
-            }
-          } else {
-            if (a[sortBy] < b[sortBy]) {
-              return -1
-            } else if (a[sortBy] > b[sortBy]) {
-              return 1
-            } else {
-              return 0
-            }
-          }
-        })
-      }
 
       commit("setItems", items)
       return total
@@ -151,7 +152,7 @@ export const actions = {
       return Promise.reject(e)
     }
   },
-  async updateItem({ commit }, { id, ...item }) {
+  async updateItem({ commit, getters }, { id, ...item }) {
     try {
       await this.$axios.$patch(`/item/${id}`, item)
     } catch (e) {
@@ -165,20 +166,59 @@ export const actions = {
       return Promise.reject(e)
     }
   },
-  async setOrders({ commit }) {
-    let orders
-
+  async setStatuses({ commit }) {
     try {
-      orders = await this.$axios.$get("/order", {
-        params: {
-          offset: 0,
-          limit: 20,
-        }
-      })
+      const statuses = await this.$axios.$get("/status")
+      commit("setStatuses", statuses)
     } catch (e) {
       return Promise.reject(e)
     }
+  },
+  async setShipMethods({ commit }) {
+    try {
+      const shipMethods = await this.$axios.$get("/ship_method")
+      commit("setShipMethods", shipMethods)
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  },
+  async setPayMethods({ commit }) {
+    try {
+      const payMethods = await this.$axios.$get("/pay_method")
+      commit("setPayMethods", payMethods)
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  },
+  async setOrders({ commit }, pagination) {
+    try {
+      const { page, rowsPerPage, sortBy: orderBy, descending } = pagination
+      const offset = (page - 1) * rowsPerPage || 0
+      let limit = rowsPerPage || 5
+      if (limit < 0) {
+        limit = null
+      }
 
-    commit("setOrders", orders)
+      const { total, items: orders } = await this.$axios.$get("/order", {
+        params: {
+          offset,
+          limit,
+          orderBy,
+          descending,
+        }
+      })
+
+      commit("setOrders", orders)
+      return total
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  },
+  async updateOrder({ commit, getters }, { id, ...order }) {
+    try {
+      await this.$axios.$patch(`/order/${id}`, order)
+    } catch (e) {
+      return Promise.reject(e)
+    }
   },
 }

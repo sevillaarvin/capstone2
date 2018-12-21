@@ -344,4 +344,31 @@ async function result12() {
   })
 }
 
-result12()
+// result12()
+
+async function result13() {
+  items = await db.select([
+      "item.id",
+      "item.sku",
+      "item.name",
+      "category.name as category",
+      "item.description",
+      "item.img",
+      "item.price",
+      "item.discount",
+      "size.name as size"
+    ])
+    .avg("rating.stars as rating")
+    .from("item")
+    // Category is required
+    .innerJoin("category", "item.category_id", "category.id")
+    // Size is not required
+    .leftJoin("size", "item.size_id", "size.id")
+    .leftJoin("rating", "item.id", "rating.item_id")
+    .offset(offset || 10)
+    .limit(limit || 10)
+    .groupBy(["item.id", "category.name", "size.name"])
+    .orderBy(orderBy || "item.id", descending ? "desc" : "asc")
+}
+
+result13()

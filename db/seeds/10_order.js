@@ -27,5 +27,16 @@ exports.seed = async function(knex, Promise) {
         ship_to: "Mexico City",
         status_id: 4,
       },
+      {
+        member_id: 1,
+        ship_to: "Nowhere",
+        status_id: 1,
+      },
+      {
+        member_id: 2,
+        ship_to: "Somewhere",
+        status_id: 2,
+        paypal_payment_sid: "test",
+      },
     ]);
 };

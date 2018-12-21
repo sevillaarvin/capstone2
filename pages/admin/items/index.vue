@@ -95,6 +95,7 @@
           <tr
             class="cursor-pointer"
             @click="selectItem(item)">
+            <td>{{ item.id }}</td>
             <td>{{ item.sku }}</td>
             <td>{{ item.name }}</td>
             <td>{{ item.description }}</td>
@@ -210,6 +211,10 @@
         // },
         headers: [
           {
+            text: "ID",
+            value: "id",
+          },
+          {
             text: "SKU",
             value: "sku",
           },
@@ -253,8 +258,8 @@
           .map((category) => category.name)
       },
       sizeNames() {
-        return this.$store.getters["admin/sizes"]
-          .map((size) => size.name)
+        return (["None"]).concat(this.$store.getters["admin/sizes"]
+          .map((size) => size.name))
       },
     },
     watch: {
@@ -293,18 +298,8 @@
           .then((total) => this.pagination.totalItems = total)
       },
       async updateItem() {
-        const { category, size, ...item } = this.currentItem
-        const { id: category_id } = this.$store.getters["admin/categories"]
-          .find((cat) => cat.name === category)
-        const { id: size_id } = this.$store.getters["admin/sizes"]
-          .find((siz) => siz.name === size)
-
         try {
-          await this.$store.dispatch("admin/updateItem", {
-            category_id,
-            size_id,
-            ...item,
-          })
+          await this.$store.dispatch("admin/updateItem", this.currentItem)
           this.showSnackbar("Item has been updated", "success")
           this.dismissUpdate()
           this.loadItems()

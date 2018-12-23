@@ -107,7 +107,7 @@ router.get("/member/:id", async (req, res, next) => {
 })
 
 // Retrieve detailed member info
-router.get("/member/detail/:id", authenticate, async (req, res, next) => {
+router.get("/profile/:id", authenticate, async (req, res, next) => {
   const { user } = res.locals
   const { id } = req.params
   let member
@@ -143,7 +143,7 @@ router.get("/member/detail/:id", authenticate, async (req, res, next) => {
 })
 
 // Update detailed member info
-router.patch("/member/detail", authenticate, async (req, res, next) => {
+router.patch("/profile", authenticate, async (req, res, next) => {
   const { user } = res.locals
   const { id, ...memberDetails } = req.body
   let result
@@ -164,23 +164,6 @@ router.patch("/member/detail", authenticate, async (req, res, next) => {
     result = await db("member")
       .where({ id })
       .update(memberDetails)
-  } catch (e) {
-    res.status(500).send()
-    return
-  }
-
-  res.status(200).send()
-})
-
-// TODO: Guard this route
-router.delete("/member/:id", /*authenticate,*/ async (req, res, next) => {
-  const { id } = req.params
-  let result
-
-  try {
-    result = await db("member")
-      .where({id})
-      .del()
   } catch (e) {
     res.status(500).send()
     return

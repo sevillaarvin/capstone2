@@ -37,35 +37,34 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      items: [
-        "https://cdn.vuetifyjs.com/images/carousel/sky.jpg",
-        "https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg"
-      ]
-    }
-  },
-  beforeCreate() {
-    if (this.$auth.$state.loggedIn) {
-      let link
+  export default {
+    async asyncData({ app, redirect, store }) {
+      const { $auth } = app
+      if ($auth.$state.loggedIn) {
+        let link
 
-      // TODO: Fix admin authorization
-      if (this.$auth.$state.user.roleId === 1) {
-        link = "/admin"
-      } else {
-        link = "/" + encodeURIComponent(this.$auth.$state.user.username)
+        if (store.getters["admin/isAdmin"]) {
+          link = '/admin'
+        } else {
+          link = '/' + encodeURIComponent($auth.$state.user.username)
+        }
+
+        redirect(link)
       }
 
-      this.$router.replace(link)
-    }
-  },
-  layout: "landing"
-}
+      return {
+        items: [
+          'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+          'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg'
+        ]
+      }
+    },
+    layout: 'landing'
+  }
 </script>
 
 <style scoped>
-.jumbotron {
-  background-color: rgba(255,255,255, 0.3);
-}
+  .jumbotron {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
 </style>

@@ -15,30 +15,6 @@ const tokenUser = generateUserToken({
   username: "user",
 })
 
-describe("POST /member", () => {
-  it("should create a new member", done => {
-    request(app)
-      .post("/member")
-      .set("authorization", "Bearer " + tokenAdmin)
-      .send({
-        firstName: "Post",
-        lastName: "Member",
-        username: "postmemberrandom",
-        email: "random@random.com",
-        role_id: 1,
-      })
-      .expect(200)
-      .expect(res => {
-        expect(res.body).to.be.an("array")
-        expect(res.body[0]).to.be.a("number")
-      })
-      .end((err, res) => {
-        if (err) return done(err)
-        done()
-      })
-  })
-})
-
 describe("GET /role", () => {
   it("should return all role names", done => {
     request(app)
@@ -116,15 +92,87 @@ describe("GET /member", () => {
   })
 })
 
-describe("PATCH /member", () => {
-  it("should update details of user with id 3 and change role to admin", done => {
-    request(app)
-      .patch("/member")
+describe("POST /member", () => {
+  it("should create a new member if authorized", async function() {
+    await request(app)
+      .post("/member")
       .set("authorization", "Bearer " + tokenAdmin)
       .send({
-        id: 3,
+        firstName: "Post",
+        lastName: "Member",
+        username: "postmemberrandom",
+        email: "random@random.com",
+        gender: "Male",
+        role: "admin",
+      })
+      .expect(201)
+
+    const insertedMember = await db.select([
+        "firstName",
+        "lastName",
+        "username",
+        "email",
+        "gender",
+        "role_id",
+      ])
+      .from("member")
+      .where({ username: "postmemberrandom" })
+      .first()
+    expect(insertedMember).to.deep.include({
+      firstName: "Post",
+      lastName: "Member",
+      username: "postmemberrandom",
+      email: "random@random.com",
+      gender: "m",
+      role_id: 1,
+    })
+  })
+
+  it("should not create a new member if not authorized as admin", done => {
+    request(app)
+      .post("/member")
+      .set("authorization", "Bearer " + tokenUser)
+      .send({
+        firstName: "Post",
+        lastName: "Member",
+        username: "shouldnotbeadded",
+        email: "shouldnotadd@member.com",
+        role: "user",
+      })
+      .expect(403)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not create a new member if not authenticated", done => {
+    request(app)
+      .post("/member")
+      .send({
+        firstName: "Post",
+        lastName: "Member",
+        username: "notauthenticatedme",
+        email: "iamnotauthenticated@member.com",
+        role: "user",
+      })
+      .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+})
+
+describe("PATCH /member/id", () => {
+  it("should update details of user with id 3 and change role to admin", done => {
+    request(app)
+      .patch("/member/3")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .send({
         username: "changed",
         role: "admin",
+        gender: "Female",
       })
       .expect(204)
       .end((err, res) => {
@@ -148,10 +196,9 @@ describe("PATCH /member", () => {
 
   it("should update details of user with id 4 and change role to user", done => {
     request(app)
-      .patch("/member")
+      .patch("/member/4")
       .set("authorization", "Bearer " + tokenAdmin)
       .send({
-        id: 4,
         username: "testroleunchanged",
       })
       .expect(204)
@@ -191,10 +238,9 @@ describe("PATCH /member", () => {
 
   it("should return 400 for wrong fields to be updated", done => {
     request(app)
-      .patch("/member")
+      .patch("/member/3")
       .set("authorization", "Bearer " + tokenAdmin)
       .send({
-        id: 3,
         wrong: "field",
       })
       .expect(500)
@@ -202,6 +248,59 @@ describe("PATCH /member", () => {
         if (err) return done(err)
         done()
       })
+  })
+})
+
+describe("DELETE /member/id", () => {
+  const insertQuery = db.insert({
+      firstName: "Test",
+      lastName: "Test",
+      email: "test@email.test",
+      username: "testusername",
+      password: "testpass",
+      role_id: 2,
+    }, "id")
+    .into("member")
+    
+  it("should delete the inserted member", async function() {
+    const [ insertedId ] = await insertQuery
+
+    const insertedMember = await db.select("id")
+      .from("member")
+      .where({ id: insertedId })
+      .first()
+    expect(insertedMember).to.eql({ id: insertedId })
+
+    await request(app)
+      .delete(`/member/${insertedId}`)
+      .set("authorization", "Bearer " + tokenAdmin)
+      .expect(204)
+
+    const deletedMember = await db.select("id")
+      .from("member")
+      .where({ id: insertedId })
+      .first()
+    expect(deletedMember).to.be.undefined
+  })
+
+  it("should not delete member if unathorized user", async function() {
+    await request(app)
+      .delete(`/member/5`)
+      .set("authorization", "Bearer " + tokenUser)
+      .expect(403)
+  })
+
+  it("should not delete member if unauthenticated", async function() {
+    await request(app)
+      .delete(`/member/5`)
+      .expect(401)
+  })
+
+  it("should return 404 for nonexistent member", async function() {
+    await request(app)
+      .delete(`/member/51239123`)
+      .set("authorization", "Bearer " + tokenAdmin)
+      .expect(404)
   })
 })
 
@@ -417,6 +516,17 @@ describe("DELETE /item/id", () => {
     request(app)
       .delete("/item/100")
       .expect(401)
+      .end((err, res) => {
+        if (err) return done(err)
+        done()
+      })
+  })
+
+  it("should not delete item if non existent", function(done) {
+    request(app)
+      .delete("/item/88899898")
+      .set("authorization", "Bearer " + tokenAdmin)
+      .expect(404)
       .end((err, res) => {
         if (err) return done(err)
         done()

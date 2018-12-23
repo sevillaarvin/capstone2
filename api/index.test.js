@@ -11,7 +11,7 @@ const tokenUser = generateUserToken({
 })
 
 before(function(done) {
-  this.timeout(10000)
+  this.timeout(20000)
   db.migrate.rollback().then(() => {
     return db.migrate.latest()
   }).then(() => {
@@ -46,7 +46,7 @@ describe("GET /member/id", () => {
   })
 })
 
-describe("GET /member/detail/id", () => {
+describe("GET /profile/id", () => {
   const token3 = generateUserToken({
     userId: 3,
     roleId: 2,
@@ -55,7 +55,7 @@ describe("GET /member/detail/id", () => {
 
   it("should return the details of member with id 2 when authorized", done => {
     request(app)
-      .get("/member/detail/2")
+      .get("/profile/2")
       .set("authorization", "Bearer " + tokenUser)
       .expect(200)
       .expect("content-type", /json/)
@@ -79,7 +79,7 @@ describe("GET /member/detail/id", () => {
 
   it("should not return the details of member with id 2 when not authorized", done => {
     request(app)
-      .get("/member/detail/2")
+      .get("/profile/2")
       .set("authorization", "Bearer " + token3)
       .expect(401)
       .end((err, res) => {
@@ -90,7 +90,7 @@ describe("GET /member/detail/id", () => {
 
   it("should not return the details of member with id 3 when not authenticated", done => {
     request(app)
-      .get("/member/detail/3")
+      .get("/profile/3")
       .expect(401)
       .end((err, res) => {
         if (err) return done(err)
@@ -99,7 +99,7 @@ describe("GET /member/detail/id", () => {
   })
 })
 
-describe("PATCH /member/detail", () => {
+describe("PATCH /profile", () => {
   const token3 = generateUserToken({
     userId: 3,
     roleId: 2,
@@ -110,7 +110,7 @@ describe("PATCH /member/detail", () => {
 
   it("should change user details with id 3", done => {
     request(app)
-      .patch("/member/detail")
+      .patch("/profile")
       .set("authorization", "Bearer " + token3)
       .send({
         id: 3,
@@ -171,7 +171,7 @@ describe("PATCH /member/detail", () => {
 
   it("should not update member detail of unauthorzied member", done => {
     request(app)
-      .patch("/member/detail")
+      .patch("/profile")
       .set("authorization", "Bearer " + tokenUser)
       .send({
         id: 3,
@@ -186,7 +186,7 @@ describe("PATCH /member/detail", () => {
 
   it("should not update member with wrong fields", done => {
     request(app)
-      .patch("/member/detail")
+      .patch("/profile")
       .set("authorization", "Bearer " + token3)
       .send({
         id: 3,
@@ -198,21 +198,6 @@ describe("PATCH /member/detail", () => {
         done()
       })
   })
-})
-
-// TODO: Complete delete member API
-describe("DELETE /member/id", () => {
-  /*
-  it("should delete the member with id 2", done => {
-    request(app)
-      .delete("/member/2")
-      .expect(200)
-      .end((err, res) => {
-        if (err) return done(err)
-        done()
-      })
-  })
-  */
 })
 
 describe("POST /signup", () => {

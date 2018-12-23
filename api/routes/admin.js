@@ -8,6 +8,7 @@ const {
 const db = require("../../db/knex")
 const {
   convertGender,
+  revertGender,
 } = require("../utilities")
 
 router.get("/role", authenticate, authorizeAdmin, async (req, res, next) => {
@@ -58,38 +59,80 @@ router.get("/member", authenticate, authorizeAdmin, async (req, res, next) => {
 })
 
 router.post("/member", authenticate, authorizeAdmin, async (req, res, next) => {
-  const member = req.body
   try {
+    const { role, ...member } = req.body
+
     // TODO: Fix random password
     member.password = await hashPassword("a")
-    result = await db.insert(member, "id")
+
+    const { id: role_id } = await db.select("id")
+      .from("role")
+      .where({ name: role })
+      .first()
+
+    revertGender([member])
+
+    const result = await db.insert({
+        role_id,
+        ...member,
+      }, "id")
       .into("member")
+
+    if (!result) {
+      res.status(404).send()
+      return
+    }
+
+    res.status(201).send()
+    return
   } catch (e) {
     res.status(500).send()
+    return
   }
-
-  res.status(200).send(result)
 })
 
-router.patch("/member", authenticate, authorizeAdmin, async (req, res, next) => {
+router.patch("/member/:id", authenticate, authorizeAdmin, async (req, res, next) => {
   try {
-    const { id, role, ...member } = req.body
+    const { id } = req.params
+    const { user: { userId } } = res.locals
+    const { role = null, ...member } = req.body
     let role_id
 
-    if (role) {
-      const roleObj = await db.select("id")
+    if (!(id == userId)) {
+      const { id } = await db.select("id")
         .from("role")
         .where({ name: role })
-        .first()
-      role_id = roleObj.id
+        .first() || {}
+      role_id = id
     }
+    revertGender([member])
 
     const result = await db("member")
       .where({ id })
       .update({
         role_id,
         ...member,
-      })
+      }, "id")
+
+    if (!result) {
+      res.status(404).send()
+      return
+    }
+
+    res.status(204).send()
+    return
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+})
+
+router.delete("/member/:id", authenticate, authorizeAdmin, async (req, res) => {
+  try {
+    const { id } = req.params
+    const result = await db("member")
+      .where({ id })
+      .del()
 
     if (!result) {
       res.status(404).send()
@@ -179,12 +222,18 @@ router.patch("/item/:id", authenticate, authorizeAdmin, async (req, res) => {
 })
 
 router.delete("/item/:id", authenticate, authorizeAdmin, async (req, res) => {
-  const { id } = req.params
-
   try {
-    await db("item")
+    const { id } = req.params
+
+    const result = await db("item")
       .where({ id })
       .del()
+    
+    if (!result) {
+      res.status(404).send()
+      return
+    }
+
     res.status(204).send()
     return
   } catch (e) {

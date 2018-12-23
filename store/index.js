@@ -65,35 +65,42 @@
         {
           name: "Cart",
           path: "/store/cart",
-          icon: "shopping_cart"
+          icon: "shopping_cart",
+          guard: false,
+          auth: false,
+          admin: false,
         },
         {
           name: "Signin",
           path: "/signin",
           icon: "person",
           guard: true,
-          auth: false
+          auth: false,
+          admin: true,
         },
         {
           name: "Signup",
           path: "/signup",
           icon: "person_add",
           guard: true,
-          auth: false
+          auth: false,
+          admin: true,
         },
         {
           name: "Profile",
           path: "/",
           icon: "person",
           guard: true,
-          auth: true
+          auth: true,
+          admin: true,
         },
         {
           name: "Signout",
           path: "/signout",
           icon: "exit_to_app",
           guard: true,
-          auth: true
+          auth: true,
+          admin: true,
         },
       ]
     },
@@ -230,7 +237,7 @@ export const actions = {
       }
 
       try {
-        details = await this.$axios.$get("/member/detail/" + id)
+        details = await this.$axios.$get("/profile/" + id)
       } catch (e) {
         return Promise.reject(e)
       }
@@ -241,7 +248,7 @@ export const actions = {
       let details
 
       try {
-        await this.$axios.$patch("/member/detail", user)
+        await this.$axios.$patch("/profile", user)
         await dispatch("setUserDetails")
       } catch (e) {
         return Promise.reject(e)
@@ -291,16 +298,20 @@ export const actions = {
     async setFeaturedItems({ commit, /* getters */ }, query) {
       let { offset, limit, featured } = query
       // let items = getters.featuredItems
+      let result
+      let total
       let storeItems
 
       try {
-        storeItems = await this.$axios.$get("/item", {
+        result = await this.$axios.$get("/item", {
           params: {
             featured,
             offset,
             limit,
           }
         })
+        total = result.total
+        storeItems = result.items
       } catch (e) {
         context.error(e)
         return

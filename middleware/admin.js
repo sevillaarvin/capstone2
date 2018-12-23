@@ -1,5 +1,5 @@
 export default async ({ app, error, redirect, store }) => {
-  if (store.getters["admin/isAdmin"]) {
+  if (!store.getters["admin/isAdmin"]) {
     redirect("/")
     return
   }

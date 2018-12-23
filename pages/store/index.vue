@@ -42,13 +42,10 @@
     },
     async asyncData(context) {
       await context.store.dispatch("setFeaturedItems", {
-        /*
-        offset: context.store.getters.featuredOffset,
-        limit: context.store.getters.featuredLimit,
-        */
         offset: 0,
         limit: 24,
         featured: true,
+        loading: false,
       })
     },
     computed: {
@@ -63,6 +60,11 @@
           >= document.body.offsetHeight * 0.90
 
         if (nearEndOfPage) {
+          if (this.loading) {
+            return
+          }
+
+          this.loading = true
           try {
             await this.$store.dispatch("setFeaturedItems", {
               offset: this.$store.getters.featuredOffset,
@@ -72,6 +74,7 @@
           } catch (e) {
             console.log(e)
           }
+          this.loading = false
         }
       }
     },

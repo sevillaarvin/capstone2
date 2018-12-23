@@ -48,7 +48,7 @@
     },
     middleware: [
       "auth",
-      "user",
+      "admin",
     ]
   }
 </script>

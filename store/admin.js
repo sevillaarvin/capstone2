@@ -42,6 +42,13 @@ export const getters = {
   events(state) {
     return state.events
   },
+  isAdmin(state, getters, rootState) {
+    if (rootState.auth.user) {
+      return rootState.auth.user.roleId === 1
+    } else {
+      return false
+    }
+  }
 }
 
 export const mutations = {
@@ -90,20 +97,38 @@ export const actions = {
     commit("setRoles", roles)
   },
   async setMembers({ commit }) {
-    let members
-
     try {
-      members = await this.$axios.$get("/member", {
-        params: {
-          offset: 0,
-          limit: 20,
-        }
+      const members = await this.$axios.$get("/member", {
+        // params: {
+        //   offset: 0,
+        //   limit: 20,
+        // }
       })
+      commit("setMembers", members)
     } catch (e) {
       return Promise.reject(e)
     }
-
-    commit("setMembers", members)
+  },
+  async createItem(context, member) {
+    try {
+      await this.$axios.$post("/member", member)
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  },
+  async updateMember({ getters }, { id, ...member }) {
+    try {
+      await this.$axios.$patch(`/member/${id}`, member)
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  },
+  async deleteMember(context, id) {
+    try {
+      await this.$axios.$delete(`/member/${id}`)
+    } catch (e) {
+      return Promise.reject(e)
+    }
   },
   async setCategories({ commit }) {
     try {
@@ -152,7 +177,7 @@ export const actions = {
       return Promise.reject(e)
     }
   },
-  async updateItem({ commit, getters }, { id, ...item }) {
+  async updateItem({ getters }, { id, ...item }) {
     try {
       await this.$axios.$patch(`/item/${id}`, item)
     } catch (e) {

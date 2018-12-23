@@ -55,7 +55,7 @@
       <template
         v-for="nav in userNavs">
         <v-btn
-          v-if="!nav.guard"
+          v-if="!nav.guard && (nav.admin == $store.getters['admin/isAdmin'])"
           :key="nav.name"
           :to="nav.path"
           flat>

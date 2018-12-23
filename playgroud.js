@@ -415,7 +415,7 @@ async function result14() {
 
 }
 
-result14()
+// result14()
 
 function result15() {
   {
@@ -445,11 +445,57 @@ function result15() {
     const user = {
       id: 339,
       name: 'Fred',
-      age: 42
+      age: 42,
+      education: "",
     };
-    const {education: {school: {name: {huh}}} = {school: {name: {}}}} = user;
-    console.log(huh); //prints: undefined
+    const {
+      education: {
+        school: {
+          name: {
+            huh
+          }
+        } = {
+          name: "Dunno Fix"
+        }
+      } = {
+        school: {
+          //name: 'Dunno'
+        }
+      }
+    } = user;
+    //console.log(name); //prints: Dunno
+    console.log(huh)
+  }
+
+  {
+    const user = {
+      id: 1123,
+      name: "adf",
+      age: 99,
+    }
+
+    const {
+      education: {
+        school: {
+          name = 1
+        } = {}
+      } = {}
+    } = user
+    console.log(name)
+
   }
 }
 
 // result15()
+
+function result16() {
+  // const member = {
+  //   
+  // }
+  let member
+
+  const { id: test = 1 } = { ...member }
+  console.log(test)
+}
+
+result16()

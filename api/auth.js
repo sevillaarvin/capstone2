@@ -25,6 +25,7 @@ const findUserCredentials = async (username, password) => {
       "email",
       "password",
       "role_id",
+      "deactivated",
     ])
     .from("member")
     .where({username: username})
@@ -45,6 +46,7 @@ const findUserCredentials = async (username, password) => {
     userId: user.id,
     roleId: user.role_id,
     username: user.username,
+    deactivated: user.deactivated,
   }
 }
 

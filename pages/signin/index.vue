@@ -98,7 +98,7 @@
         } catch (e) {
           const status = e.response.status
           const message = e.response.data
-          if (status == 400 || status == 404) {
+          if (status == 400 || status == 404 || status == 401) {
             this.errorMessage = message
             this.showError = true
           }

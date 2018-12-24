@@ -45,6 +45,7 @@ router.get("/member", authenticate, authorizeAdmin, async (req, res, next) => {
         "member.address",
         "member.created_at",
         "role.name as role",
+        "member.deactivated",
       ])
       .from("member")
       .innerJoin("role", "member.role_id", "role.id")
@@ -95,7 +96,7 @@ router.patch("/member/:id", authenticate, authorizeAdmin, async (req, res, next)
   try {
     const { id } = req.params
     const { user: { userId } } = res.locals
-    const { role = null, ...member } = req.body
+    const { role = null, deactivated = undefined, ...member } = req.body
     let role_id
 
     if (!(id == userId)) {
@@ -104,6 +105,10 @@ router.patch("/member/:id", authenticate, authorizeAdmin, async (req, res, next)
         .where({ name: role })
         .first() || {}
       role_id = id
+    } else {
+      if (deactivated) {
+        deactivated = undefined
+      }
     }
     revertGender([member])
 
@@ -111,6 +116,7 @@ router.patch("/member/:id", authenticate, authorizeAdmin, async (req, res, next)
       .where({ id })
       .update({
         role_id,
+        deactivated,
         ...member,
       }, "id")
 

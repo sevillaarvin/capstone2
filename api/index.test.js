@@ -1,7 +1,11 @@
 const request = require("supertest")
 const expect = require("chai").expect
 const app = require("./index").app
-const { generateUserToken, verifyUserToken } = require("./auth")
+const {
+  generateUserToken,
+  verifyUserToken,
+  hashPassword,
+} = require("./auth")
 const db = require("../db/knex")
 
 const tokenUser = generateUserToken({
@@ -333,7 +337,7 @@ describe("POST /signin", () => {
       .expect(404)
       .expect(res => {
         expect(res.text).to.be.a("string")
-          .to.be.equal("Invalid username or password.")
+          .to.be.equal("Invalid username or password")
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -350,11 +354,37 @@ describe("POST /signin", () => {
       .expect(400)
       .expect(res => {
         expect(res.text).to.be.a("string")
-          .to.be.equal("A valid username and password is required.")
+          .to.be.equal("A valid username and password is required")
       })
       .end((err, res) => {
         if (err) return done(err)
         done()
+      })
+  })
+
+  it("should not sign in a deactivated member", async function() {
+    const password = await hashPassword("deactivated")
+    await db.insert({
+        firstName: "Deactivate",
+        lastName: "Me",
+        email: "deactivated@test.com",
+        username: "deactivateduser",
+        password,
+        role_id: 1,
+        deactivated: true,
+      })
+      .into("member")
+
+    await request(app)
+      .post("/signin")
+      .send({
+        username: "deactivateduser",
+        password: "deactivated",
+      })
+      .expect(401)
+      .expect(res => {
+        expect(res.text).to.be.a("string")
+          .to.be.equal("User has been deactivated")
       })
   })
 })

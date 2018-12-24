@@ -1,5 +1,6 @@
 const db = require("./db/knex")
 const uuidv4 = require("uuid/v4")
+const { hashPassword } = require("./api/auth")
 
 const paypal = require("paypal-rest-sdk")
 // let paypalStr = JSON.stringify(paypal, null, 2)
@@ -498,4 +499,25 @@ function result16() {
   console.log(test)
 }
 
-result16()
+// result16()
+
+async function result17() {
+  try {
+    const password = await hashPassword("deactivated")
+    const asdf = await db.insert({
+        firstName: "Deactivate",
+        lastName: "Me",
+        email: "deactivated@test.com",
+        username: "deactivateduser",
+        password: password,
+        role_id: 1,
+        deactivated: true,
+      })
+      .into("member")
+    console.log(asdf)
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+result17()

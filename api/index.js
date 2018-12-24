@@ -227,28 +227,33 @@ router.post("/signup", async (req, res) => {
 })
 
 router.post("/signin", async (req, res) => {
-  let user
-  const { username, password } = req.body
-  // TODO: Fix validation
-  if (!username || !password) {
-    res.status(400).send("A valid username and password is required.")
-    return
-  }
-
   try {
-    user = await findUserCredentials(username, password)
+    const { username, password } = req.body
+    // TODO: Fix validation
+    if (!username || !password) {
+      res.status(400).send("A valid username and password is required")
+      return
+    }
+
+    const { deactivated, ...user } = await findUserCredentials(username, password)
+    if (deactivated) {
+      res.status(401).send("User has been deactivated")
+      return
+    }
+
+    const token = generateUserToken(user)
+    res.status(200).send({
+      userId: user.userId,
+      roleId: user.roleId,
+      username,
+      token,
+    })
+    return
   } catch (e) {
-    res.status(404).send("Invalid username or password.")
+    console.log(e)
+    res.status(404).send("Invalid username or password")
     return
   }
-
-  const token = generateUserToken(user)
-  res.status(200).send({
-    userId: user.userId,
-    roleId: user.roleId,
-    username,
-    token,
-  })
 })
 
 router.get("/category", (req, res, next) => {

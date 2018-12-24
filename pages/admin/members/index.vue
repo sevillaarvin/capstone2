@@ -50,6 +50,15 @@
                       <v-text-field
                         v-model="newMember.birthdate"
                         label="Birthdate" />
+                      <v-radio-group
+                        v-model="newMember.deactivated">
+                        <v-radio
+                          :value="false"
+                          label="No" />
+                        <v-radio
+                          :value="true"
+                          label="Yes" />
+                      </v-radio-group>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -88,6 +97,7 @@
             <td>{{ item.email }}</td>
             <td>{{ item.birthdate }}</td>
             <td>{{ item.created_at | long-date }}</td>
+            <td>{{ item.deactivated ? 'Yes' : 'No' }}</td>
           </tr>
         </template>
       </v-data-table>
@@ -126,6 +136,15 @@
                   <v-text-field
                     v-model="currentMember.birthdate"
                     label="Birthdate" />
+                  <v-radio-group
+                    v-model="currentMember.deactivated">
+                    <v-radio
+                      :value="false"
+                      label="No" />
+                    <v-radio
+                      :value="true"
+                      label="Yes" />
+                  </v-radio-group>
                   <v-card-actions>
                     <v-btn>
                       Reset Password
@@ -208,6 +227,9 @@
         }, {
           text: "Created Date",
           value: "created_at",
+        }, {
+          text: "Deactivated",
+          value: "deactivated",
         }]
       }
     },

@@ -10,8 +10,8 @@ export default async ({ app, error, redirect, store }) => {
       await store.dispatch("setUserInfo")
     } catch (e) {
       // error(e)
-      // console.log(e)
       // User might not be logged in
+      console.log(e)
       return
     }
   }

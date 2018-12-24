@@ -143,18 +143,14 @@ router.get("/profile/:id", authenticate, async (req, res, next) => {
 })
 
 // Update detailed member info
-router.patch("/profile", authenticate, async (req, res, next) => {
-  const { user } = res.locals
-  const { id, ...memberDetails } = req.body
+router.patch("/profile/:id", authenticate, async (req, res, next) => {
+  const { user: { userId } } = res.locals
+  const { id } = req.params
+  const { ...memberDetails } = req.body
   let result
 
-  if (!id) {
-    res.status(400).send()
-    return
-  }
-
   // Only deep equality since typeof userId is string
-  if (!(user.userId == id))  {
+  if (!(userId == id))  {
     res.status(401).send()
     return
   }

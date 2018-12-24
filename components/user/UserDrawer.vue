@@ -9,7 +9,7 @@
       flat
       class="mt-3">
       <v-img
-        :src="userInfo.avatar"
+        :src="userInfo.avatar || 'http://i.pravatar.cc/150?u=Anonymous'"
         contain
         height="100" />
       <v-card-title
@@ -104,29 +104,6 @@
             path: "/events",
             admin: false,
           },
-          // {
-          //   name: "Admin",
-          //   path: "/admin",
-          //   admin: true,
-          //   pages: [
-          //     {
-          //       name: "Members",
-          //       path: "/members",
-          //     },
-          //     {
-          //       name: "Items",
-          //       path: "/items",
-          //     },
-          //     {
-          //       name: "Orders",
-          //       path: "/orders",
-          //     },
-          //     {
-          //       name: "Events",
-          //       path: "/events",
-          //     },
-          //   ],
-          // },
         ]
       }
     },
@@ -134,9 +111,6 @@
       userLink(link) {
         return '/' + encodeURIComponent(this.userInfo.username) + link
       },
-      // adminLink(link) {
-      //   return this.userLink("/admin") + link
-      // }
     },
   }
 </script>

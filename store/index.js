@@ -110,12 +110,7 @@ export const getters = {
       return state.user.cart
     },
     userInfo(state) {
-      return state.user.info || {
-        firstName: "Anonymous",
-        lastName: "",
-        username: "",
-        avatar: "http://i.pravatar.cc/150?u=Anonymous",
-      }
+      return state.user.info
     },
     userDetails(state) {
       return state.user.details
@@ -244,12 +239,9 @@ export const actions = {
 
       commit("setUserDetails", details)
     },
-    async updateUserDetails({ dispatch }, user) {
-      let details
-
+    async updateUserDetails(context, { id, ...user }) {
       try {
-        await this.$axios.$patch("/profile", user)
-        await dispatch("setUserDetails")
+        await this.$axios.$patch(`/profile/${id}`, user)
       } catch (e) {
         return Promise.reject(e)
       }

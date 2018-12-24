@@ -43,21 +43,12 @@
         return this.$store.getters.allNavs
       },
       userInfo() {
-        return this.$store.getters.userInfo
-        // const member = this.$store.getters.userInfo
-        // if (member) {
-        //   if (!member.avatar) {
-        //     member.avatar = "http://i.pravatar.cc/150?u=Anonymous"
-        //   }
-        //   return member
-        // } else {
-        //   return {
-        //     firstName: "Anonymous",
-        //     lastName: "",
-        //     username: "",
-        //     avatar: "http://i.pravatar.cc/150?u=Anonymous",
-        //   }
-        // }
+        return this.$store.getters.userInfo || {
+          firstName: "Anonymous",
+          lastName: "",
+          username: "",
+          avatar: "http://i.pravatar.cc/150?u=Anonymous",
+        }
       }
     },
     middleware: [

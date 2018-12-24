@@ -99,15 +99,25 @@
       async updateMember() {
         try {
           await this.$store.dispatch("updateUserDetails", this.currentUser)
-          this.updateResult = "User updated"
-          this.snackbarColor = "success"
+          await this.loadUserDetails()
+          this.showSnackbar("User updated", "success")
         } catch (e) {
           console.log(e)
-          this.updateResult = "Something went wrong"
-          this.snackbarColor = "error"
+          this.showSnackbar("Something went wrong", "error")
         }
+      },
+      async loadUserDetails() {
+        try {
+          await context.store.dispatch("setUserDetails")
+        } catch (e) {
+          this.showSnackbar("Something went wrong", "error")
+        }
+      },
+      showSnackbar(message, color) {
+        this.updateResult = message
+        this.snackbarColor = color
         this.snackbar = true
-      }
+      },
     },
     layout: "admin"
   }

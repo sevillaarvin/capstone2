@@ -114,10 +114,9 @@ describe("PATCH /profile", () => {
 
   it("should change user details with id 3", done => {
     request(app)
-      .patch("/profile")
+      .patch("/profile/3")
       .set("authorization", "Bearer " + token3)
       .send({
-        id: 3,
         firstName: "FirstNameChanged",
         lastName: "LastNameChanged",
         gender: "Female",
@@ -175,10 +174,9 @@ describe("PATCH /profile", () => {
 
   it("should not update member detail of unauthorzied member", done => {
     request(app)
-      .patch("/profile")
+      .patch("/profile/3")
       .set("authorization", "Bearer " + tokenUser)
       .send({
-        id: 3,
         lastName: "Hmmm"
       })
       .expect(401)
@@ -190,10 +188,9 @@ describe("PATCH /profile", () => {
 
   it("should not update member with wrong fields", done => {
     request(app)
-      .patch("/profile")
+      .patch("/profile/3")
       .set("authorization", "Bearer " + token3)
       .send({
-        id: 3,
         what: "Hmmm"
       })
       .expect(500)

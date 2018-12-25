@@ -1,7 +1,9 @@
 <template>
   <v-toolbar
+    light
     app
-    clipped-left>
+    clipped-left
+    color="primary">
     <v-toolbar-side-icon
       v-if="drawer"
       @click="$emit('drawer')"/>
@@ -59,7 +61,8 @@
           :key="nav.name"
           :to="nav.path"
           flat>
-          <v-badge>
+          <v-badge
+            color="secondary">
             <span
               slot="badge">
               {{ totalItemCount }}

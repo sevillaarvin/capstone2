@@ -56,7 +56,8 @@
       }
 
       return {
-        category
+        category,
+        loading: false,
       }
     },
     computed: {
@@ -71,6 +72,11 @@
           >= document.body.offsetHeight * 0.90
 
         if (nearEndOfPage) {
+          if (this.loading) {
+            return
+          }
+
+          this.loading = true
           try {
             await this.$store.dispatch("setCurrentCategoryItems", {
               name: this.category,
@@ -80,6 +86,7 @@
           } catch (e) {
             console.log(e)
           }
+          this.loading = false
         }
       }
     },

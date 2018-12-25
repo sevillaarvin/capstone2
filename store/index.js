@@ -178,12 +178,17 @@ export const mutations = {
     }
   }
 export const actions = {
-    async nuxtServerInit(vuexContext, context) {
+    async nuxtServerInit({ dispatch }, context) {
       try {
-        await vuexContext.dispatch("setCategories", context)
+        await dispatch("setCategories")
+        await dispatch("setFeaturedItems", {
+          offset: 0,
+          limit: 24,
+          featured: true,
+        })
         // Execute if member already logged in
-        await vuexContext.dispatch("setUserCart")
-        await vuexContext.dispatch("setUserDetails")
+        await dispatch("setUserCart")
+        await dispatch("setUserDetails")
       } catch (e) {
         console.log("nuxtServerInit", e.message)
       }
@@ -322,13 +327,13 @@ export const actions = {
       limit = 12
       commit("setFeaturedItems", { items: storeItems, offset, limit })
     },
-    async setCategories({ commit }, context) {
+    async setCategories({ commit }) {
       try {
         const categories = await this.$axios.$get("/category")
         commit("setCategories", categories)
         return
       } catch (e) {
-        context.error(e)
+        return Promise.reject(e)
       }
     },
     async setCurrentCategoryItems({ commit, /* getters */ }, category) {

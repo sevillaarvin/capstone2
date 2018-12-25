@@ -1,5 +1,6 @@
 <template>
-  <v-app dark>
+  <v-app
+    dark>
     <TheHeader
       :gen-navs="allNavs.genNavs"
       :user-navs="allNavs.userNavs"
@@ -10,21 +11,26 @@
       :user-navs="allNavs.userNavs"
       v-model="navDrawer" />
     <v-content>
-      <v-container fluid>
+      <v-container
+        fluid
+        class="pa-0">
         <nuxt />
       </v-container>
     </v-content>
+    <TheFooter />
   </v-app>
 </template>
 
 <script>
   import TheHeader from "~/components/TheHeader"
   import NavDrawer from "@/components/NavDrawer"
+  import TheFooter from "~/components/TheFooter"
 
   export default {
     components: {
       TheHeader,
       NavDrawer,
+      TheFooter,
     },
     data() {
       return {

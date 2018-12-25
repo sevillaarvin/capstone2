@@ -45,8 +45,11 @@
         offset: 0,
         limit: 24,
         featured: true,
-        loading: false,
       })
+
+      return {
+        loading: false,
+      }
     },
     computed: {
       featuredItems() {

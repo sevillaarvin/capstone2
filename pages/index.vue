@@ -51,28 +51,34 @@
                           Experience Real Luxury
                         </v-card-title>
                         <v-card-actions
-                          class="justify-space-around slogan__side slogan__side--back">
-                          <v-btn
-                            large
-                            light
-                            round
-                            nuxt
-                            to="/signup"
-                            color="secondary">
-                            &laquo; Register
-                          </v-btn>
-                          <v-divider
-                            inset
-                            vertical />
-                          <v-btn
-                            large
-                            round
-                            light
-                            nuxt
-                            to="/store"
-                            color="primary black--text">
-                            Go to Shop &raquo; 
-                          </v-btn>
+                          class="justify-space-around pa-0 slogan__side slogan__side--back">
+                          <v-layout
+                            fill-height>
+                            <v-hover>
+                              <v-flex
+                                slot-scope="{ hover }"
+                                :class="{ 'darken-1': hover}"
+                                xs6
+                                class="d-flex align-center justify-center secondary cursor-pointer">
+                                <v-card-text
+                                  class="headline">
+                                  &laquo; Register
+                                </v-card-text>
+                              </v-flex>
+                            </v-hover>
+                            <v-hover>
+                              <v-flex
+                                slot-scope="{ hover }"
+                                :class="{ 'darken-1': hover}"
+                                xs6
+                                class="d-flex align-center justify-center primary cursor-pointer">
+                                <v-card-text
+                                  class="black--text headline">
+                                  Go to Shop &raquo; 
+                                </v-card-text>
+                              </v-flex>
+                            </v-hover>
+                          </v-layout>
                         </v-card-actions>
                       </v-flex>
                     </v-layout>
@@ -605,5 +611,9 @@
     // &:hover &__side--back {
     //   transform: rotateY(0);
     // }
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
   }
 </style>

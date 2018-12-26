@@ -30,9 +30,9 @@
             <v-layout
               align-self-center>
               <v-flex
-                v-if="isMediumBreakpoint"
                 xs12>
-                <v-hover>
+                <v-hover
+                  v-if="isMediumBreakpoint">
                   <v-card
                     slot-scope="{ hover }"
                     :class="{ hover: hover }"
@@ -78,15 +78,13 @@
                     </v-layout>
                   </v-card>
                 </v-hover>
-              </v-flex>
-              <v-flex
-                v-else>
                 <v-card
+                  v-else
                   flat
                   class="text-xs-center mx-auto py-3 slogan__stacked">
                   <v-card-title
                     primary-title
-                    class="justify-center display-1 slogan__stacked-title">
+                    class="justify-center display-3 slogan__stacked-title">
                     Experience Real Luxury
                   </v-card-title>
                   <v-card-actions
@@ -124,7 +122,8 @@
           xs12>
           <v-card
             flat
-            color="transparent">
+            light
+            color="white">
             <v-layout
               row
               wrap>
@@ -132,7 +131,7 @@
                 xs12>
                 <v-card-title
                   primary-title
-                  class="headline justify-center">
+                  class="display-2 justify-center">
                   Facilities
                 </v-card-title>
               </v-flex>
@@ -147,7 +146,16 @@
                     <v-flex
                       v-for="n in 3"
                       :key="n"
-                      xs12>
+                      :offset-md1="n % 2 == 1"
+                      :offset-md3="n % 2 == 0"
+                      :offset-lg2="n % 2 == 1"
+                      :offset-lg4="n % 2 == 0"
+                      xs12
+                      sm10
+                      offset-sm1
+                      md8
+                      lg6
+                      class="my-3">
                       <v-card
                         color="transparent">
                         <v-layout
@@ -156,10 +164,9 @@
                           <v-flex
                             :order-xs1="n % 2 != 1"
                             xs12
-                            sm6
-                            md4
-                            lg3
-                            xl2>
+                            md6
+                            lg4
+                            xl3>
                             <v-carousel
                               height="360"
                               hide-controls
@@ -175,16 +182,43 @@
                           <v-flex
                             :order-xs2="n % 2 == 1"
                             xs12
-                            sm6
-                            md8
-                            lg9
-                            xl10>
+                            md6
+                            lg8
+                            xl9>
+                            <v-card-title
+                              class="justify-center title">
+                              Sports center
+                            </v-card-title>
                             <v-card-text>
                               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
                             </v-card-text>
+                            <v-card-actions
+                              :class="{ 'justify-end': n % 2 == 1 }">
+                              <v-btn
+                                outline
+                                round
+                                color="secondary">
+                                Learn more
+                              </v-btn>
+                            </v-card-actions>
                           </v-flex>
                         </v-layout>
                       </v-card>
+                    </v-flex>
+                    <v-flex
+                      xs12>
+                      <v-card-actions
+                        class="justify-center">
+                        <v-btn
+                          large
+                          round
+                          nuxt
+                          to="/facilities"
+                          color="primary"
+                          class="black--text">
+                          View Facilities
+                        </v-btn>
+                      </v-card-actions>
                     </v-flex>
                   </v-layout>
                 </v-container>
@@ -197,12 +231,17 @@
         <v-flex
           xs12>
           <v-card
+            flat>
+            <!--
             height="100vh">
+            -->
             <v-layout
               fill-height
               row
               wrap>
               <v-flex
+                v-for="n of 2"
+                :key="n"
                 xs12
                 md6>
                 <v-layout
@@ -210,10 +249,11 @@
                   align-center>
                   <v-flex
                     xs12>
-                    <v-card>
+                    <v-card
+                      flat>
                       <v-card-title
                         primary-title
-                        class="headline justify-center">
+                        class="display-2 justify-center">
                         News
                       </v-card-title>
                       <v-container
@@ -226,7 +266,8 @@
                             v-for="n in 3"
                             :key="n"
                             xs12>
-                            <v-card>
+                            <v-card
+                              flat>
                               <v-layout>
                                 <v-flex
                                   xs12
@@ -251,108 +292,16 @@
                                   </v-card-title>
                                   <v-card-text>
                                     This is a new news, spectacular amazin amazon boycott nice japhet.
-                                  </v-card-text>
-                                </v-flex>
-                              </v-layout>
-                            </v-card>
-                          </v-flex>
-                        </v-layout>
-                      </v-container>
-                    </v-card>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-              <v-flex
-                xs12
-                md6>
-                <v-layout
-                  fill-height
-                  align-center>
-                  <v-flex
-                    xs12>
-                    <v-card>
-                      <v-card-title
-                        primary-title
-                        class="headline justify-center">
-                        Events
-                      </v-card-title>
-                      <v-container
-                        fluid
-                        grid-list-xs>
-                        <v-layout
-                          row
-                          wrap>
-                          <v-flex
-                            v-for="n in 3"
-                            :key="n"
-                            xs12>
-                            <v-card>
-                              <v-layout>
-                                <v-flex
-                                  class="text-xs-right"
-                                  xs12
-                                  sm6
-                                  md8
-                                  lg9
-                                  xl10>
-                                  <v-card-title
-                                    class="title py-0 justify-end">
-                                    New fan plastic
-                                  </v-card-title>
-                                  <v-card-text>
+                                    This is a new news, spectacular amazin amazon boycott nice japhet.
                                     This is a new news, spectacular amazin amazon boycott nice japhet.
                                   </v-card-text>
                                 </v-flex>
-                                <v-flex
-                                  xs12
-                                  sm6
-                                  md4
-                                  lg3
-                                  xl2>
-                                  <v-img
-                                    contain
-                                    src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"
-                                    class="mr-3" />
-                                </v-flex>
                               </v-layout>
                             </v-card>
                           </v-flex>
                         </v-layout>
                       </v-container>
                     </v-card>
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
-          </v-card>
-        </v-flex>
-      </v-layout>
-      <v-layout>
-        <v-flex
-          xs12>
-          <v-card>
-            <v-layout
-              row
-              wrap>
-              <v-flex
-                class="mb-3"
-                xs12>
-                <v-card-title
-                  primary-title
-                  class="headline justify-center">
-                  Trending Items
-                </v-card-title>
-              </v-flex>
-              <v-flex
-                xs12>
-                <v-layout
-                  row
-                  wrap>
-                  <v-flex
-                    v-for="item in items"
-                    :key="item.id"
-                    xs4>
-                    <Item :item="item"/>
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -364,21 +313,64 @@
         <v-flex
           xs12>
           <v-card
-            height="480">
+            light
+            class="py-3">
+            <v-layout
+              row
+              wrap>
+              <v-flex
+                class="mb-3"
+                xs12>
+                <v-card-title
+                  primary-title
+                  class="display-2 justify-center">
+                  Trending Items
+                </v-card-title>
+              </v-flex>
+              <v-flex
+                xs12>
+                <v-container
+                  grid-list-xl>
+                  <v-layout
+                    row
+                    wrap
+                    justify-center>
+                    <v-flex
+                      v-for="item in items"
+                      :key="item.id"
+                      xs12
+                      sm6
+                      md3>
+                      <Item :item="item"/>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-flex>
+            </v-layout>
+          </v-card>
+        </v-flex>
+      </v-layout>
+      <v-layout>
+        <v-flex
+          xs12>
+          <v-card
+            height="50vh">
             <v-layout
               fill-height
               column
               justify-center>
               <v-card-title
                 primary-title
-                class="display-2 justify-center">
+                class="display-3 justify-center">
                 What are you waiting for?
               </v-card-title>
               <v-card-actions
                 class="justify-center">
                 <v-btn
                   round
-                  large>
+                  large
+                  color="primary"
+                  class="black--text">
                   Register Now
                 </v-btn>
               </v-card-actions>
@@ -389,42 +381,109 @@
       <v-layout>
         <v-flex
           xs12>
-          <v-card>
-            <v-card-title
-              primary-title
-              class="headline justify-center">
-              Contact
-            </v-card-title>
+          <v-card
+            light>
+            <v-layout
+              row
+              wrap>
+              <v-flex
+                xs12>
+                <v-card-title
+                  primary-title
+                  class="display-2 justify-center">
+                  Contact
+                </v-card-title>
+              </v-flex>
+              <v-flex
+                xs12>
+                <v-container>
+                  <v-layout
+                    row
+                    wrap>
+                    <v-flex
+                      xs12
+                      md6>
+                      <v-card-title
+                        class="justify-center title">
+                        Club Seville International
+                      </v-card-title>
+                      <v-card-text>
+                        <v-layout
+                          row
+                          wrap>
+                          <v-flex
+                            xs12
+                            md6>
+                            <v-card
+                              flat>
+                              <v-subheader>
+                                Headquarters
+                              </v-subheader>
+                              <v-list
+                                two-line>
+                                <v-list-tile>
+                                  <v-list-tile-content>
+                                    <v-list-tile-title>
+                                      sample@sample.com
+                                    </v-list-tile-title>
+                                    <v-list-tile-sub-title>
+                                      Email
+                                    </v-list-tile-sub-title>
+                                  </v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile>
+                                  <v-list-tile-content>
+                                    <v-list-tile-title>
+                                      134 Timog Ave. Caswynn Building
+                                    </v-list-tile-title>
+                                    <v-list-tile-sub-title>
+                                      Address
+                                    </v-list-tile-sub-title>
+                                  </v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile>
+                                  <v-list-tile-content>
+                                    <v-list-tile-title>
+                                      123-1234
+                                    </v-list-tile-title>
+                                    <v-list-tile-sub-title>
+                                      Phone
+                                    </v-list-tile-sub-title>
+                                  </v-list-tile-content>
+                                </v-list-tile>
+                                <v-list-tile>
+                                  <v-list-tile-content>
+                                    <v-list-tile-title>
+                                      123-4567
+                                    </v-list-tile-title>
+                                    <v-list-tile-sub-title>
+                                      Phone
+                                    </v-list-tile-sub-title>
+                                  </v-list-tile-content>
+                                </v-list-tile>
+                              </v-list>
+                            </v-card>
+                          </v-flex>
+                        </v-layout>
+                      </v-card-text>
+                    </v-flex>
+                    <v-flex
+                      xs12
+                      md6
+                      class="d-flex justify-center">
+                      <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3860.4101322936885!2d121.04148385087574!3d14.632645089731954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397b7afe6a39331%3A0xd367e6dc5e274032!2sCaswynn+Building%2C+134+Timog+Ave%2C+Diliman%2C+Quezon+City%2C+Metro+Manila%2C+Philippines!5e0!3m2!1sen!2sin!4v1540603840894"
+                        width="600"
+                        height="450"
+                        frameborder="0"
+                        style="border:0"
+                        allowfullscreen />
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-flex>
+            </v-layout>
           </v-card>
-          <v-layout>
-            <v-flex
-              xs12
-              md6>
-              <v-card-text>
-                <v-layout
-                  row
-                  wrap>
-                  <v-flex
-                    xs12>
-                    Email
-                  </v-flex>
-                  <v-flex
-                    xs12>
-                    Address
-                  </v-flex>
-                  <v-flex
-                    xs12>
-                    Phone
-                  </v-flex>
-                </v-layout>
-              </v-card-text>
-            </v-flex>
-            <v-flex
-              xs12
-              md6>
-              ( INSERT MAPS HERE )
-            </v-flex>
-          </v-layout>
         </v-flex>
       </v-layout>
       <!--

@@ -1,10 +1,10 @@
 <template>
   <v-layout>
     <v-flex xs12>
+      <Title :title="'Membership'" />
       <v-container
-        fluid
-        grid-list-md>
-        <Title :title="'Membership'" />
+        grid-list-xl
+        class="pt-0">
         <v-layout
           justify-center
           row
@@ -13,43 +13,45 @@
             v-for="membership in memberships"
             :key="membership.name"
             xs12
-            sm6
+            sm10
+            offset-sm1
             md4
-            lg3>
+            offset-md0>
             <v-card>
               <v-card-title
-                class="justify-center">
-                <h3 class="display-1">{{ membership.name }}</h3>
+                class="justify-center headline primary black--text">
+                {{ membership.name }}
               </v-card-title>
-              <v-subheader
-                class="justify-center">
-                <v-card-text
-                  class="text-xs-center">
-                  Price: {{ membership.price }}
-                </v-card-text>
-              </v-subheader>
-              <v-subheader
-                class="justify-center">
-                <v-card-text
-                  class="text-xs-center">
-                  Net worth: {{ membership.networth }}
-                </v-card-text>
-              </v-subheader>
+              <v-card-text
+                class="text-xs-center subheading pb-0">
+                Price: {{ membership.price }}
+              </v-card-text>
+              <v-card-text
+                class="text-xs-center subheading pt-0">
+                Net worth: {{ membership.networth }}
+              </v-card-text>
+              <v-divider />
               <v-list>
                 <v-list-tile
-                  v-for="benefit in membership.benefits"
-                  :key="benefit">
+                  v-for="(benefit, i) in membership.benefits"
+                  :key="membership.name + benefit + i">
                   <v-list-tile-content>
-                    <v-card-text>
+                    <p
+                      class="text-xs-center align-self-center">
                       {{ benefit }}
-                    </v-card-text>
+                    </p>
                   </v-list-tile-content>
                 </v-list-tile>
               </v-list>
               <v-card-actions
                 class="justify-center">
-                <v-btn>
-                  Register
+                <v-btn
+                  :to="membership.path"
+                  round
+                  large
+                  nuxt
+                  color="secondary">
+                  {{ membership.cta }}
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -76,7 +78,11 @@
             networth: "None",
             benefits: [
               "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
             ],
+            path: "/signup",
+            cta: "Register",
           },
           {
             name: "Bronze",
@@ -84,7 +90,12 @@
             networth: "100 million",
             benefits: [
               "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
             ],
+            path: "/about",
+            cta: "Inquire",
           },
           {
             name: "Silver",
@@ -92,7 +103,13 @@
             networth: "500 million",
             benefits: [
               "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
             ],
+            path: "/about",
+            cta: "Inquire",
           },
           {
             name: "Gold",
@@ -100,7 +117,15 @@
             networth: "1.1 billion",
             benefits: [
               "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
             ],
+            path: "/about",
+            cta: "Inquire",
           },
           {
             name: "VIP",
@@ -108,7 +133,16 @@
             networth: "Must be a top 10 taxpayer",
             benefits: [
               "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
+              "Lap pool - 1 hour per day",
             ],
+            path: "/about",
+            cta: "Inquire",
           },
         ]
       }

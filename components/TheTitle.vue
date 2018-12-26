@@ -1,7 +1,8 @@
 <template>
   <v-layout>
     <v-flex
-      pb-3
+      :py-5="$vuetify.breakpoint.mdAndUp"
+      :py-3="!$vuetify.breakpoint.mdAndUp"
       xs12>
       <h1
         class="display-2 text-xs-center">{{ title }}</h1>

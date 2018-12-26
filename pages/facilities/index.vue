@@ -1,79 +1,76 @@
 <template>
   <v-layout>
     <v-flex xs12>
-      <v-container
-        grid-list-md>
-        <Title :title="'Facilities'" />
-        <v-layout>
-          <v-flex
-            xs12>
-            <v-tabs
-              v-model="active"
-              fixed-tabs>
-              <template
-                v-for="facility in facilities">
-                <v-tab
-                  :key="facility.name">
-                  {{ facility.name }}
-                </v-tab>
-                <v-tab-item
-                  :key="facility.name + '0'">
-                  <v-card
-                    :class="{ 'pa-5': $vuetify.breakpoint.mdAndUp }">
-                    <v-img
-                      :src="facility.img"
-                      @click="openGallery(facility)" />
-                    <v-dialog
-                      v-model="dialog"
-                      max-width="720">
-                      <v-card>
-                        <v-card-title
-                          primary-title
-                          class="justify-center title">
-                          {{ currentFacility.name }}
-                        </v-card-title>
-                        <v-container
-                          fluid
-                          grid-list-md>
-                          <v-layout
-                            row
-                            wrap>
-                            <v-flex
-                              v-for="n in 9"
-                              :key="n"
-                              xs12
-                              md4>
-                              <v-img
-                                :src="currentFacility.img" />
-                            </v-flex>
-                          </v-layout>
-                        </v-container>
-                      </v-card>
-                    </v-dialog>
-                    <v-card-title
-                      primary-title
-                      class="justify-center title">
-                      {{ facility.name }}
-                    </v-card-title>
-                    <v-card-text
-                      class="px-5">
-                      {{ facility.shortDesc }}
-                    </v-card-text>
-                  </v-card>
-                </v-tab-item>
-              </template>
-            </v-tabs>
-          </v-flex>
-        </v-layout>
-        
-        <!--
-        <Facility
-          v-for="(facility, i) in facilities"
-          :key="facility.name"
-          :facility="facility"
-          :position="i % 2 == 0 ? 'left' : 'right'" />
-        -->
-      </v-container>
+      <Title :title="'Facilities'" />
+      <v-layout>
+        <v-flex
+          xs12>
+          <v-tabs
+            v-model="active"
+            fixed-tabs>
+            <template
+              v-for="facility in facilities">
+              <v-tab
+                :key="facility.name">
+                {{ facility.name }}
+              </v-tab>
+              <v-tab-item
+                :key="facility.name + '0'">
+                <v-card
+                  :class="{ 'pa-5': $vuetify.breakpoint.mdAndUp }">
+                  <v-img
+                    :src="facility.img"
+                    class="cursor-pointer"
+                    @click="openGallery(facility)" />
+                  <v-dialog
+                    v-model="dialog"
+                    max-width="720">
+                    <v-card>
+                      <v-card-title
+                        primary-title
+                        class="justify-center title">
+                        {{ currentFacility.name }}
+                      </v-card-title>
+                      <v-container
+                        fluid
+                        grid-list-md>
+                        <v-layout
+                          row
+                          wrap>
+                          <v-flex
+                            v-for="n in 9"
+                            :key="n"
+                            xs12
+                            md4>
+                            <v-img
+                              :src="currentFacility.img" />
+                          </v-flex>
+                        </v-layout>
+                      </v-container>
+                    </v-card>
+                  </v-dialog>
+                  <v-card-title
+                    primary-title
+                    class="justify-center title">
+                    {{ facility.name }}
+                  </v-card-title>
+                  <v-card-text
+                    class="px-5">
+                    {{ facility.shortDesc }}
+                  </v-card-text>
+                </v-card>
+              </v-tab-item>
+            </template>
+          </v-tabs>
+        </v-flex>
+      </v-layout>
+      <!--
+      <Facility
+        v-for="(facility, i) in facilities"
+        :key="facility.name"
+        :facility="facility"
+        :position="i % 2 == 0 ? 'left' : 'right'" />
+      -->
     </v-flex>
   </v-layout>
 </template>
@@ -122,5 +119,9 @@
   }
 </script>
 
-<style>
+<style
+  scoped>
+  .cursor-pointer {
+    cursor: pointer;
+  }
 </style>

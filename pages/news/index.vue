@@ -1,40 +1,51 @@
 <template>
   <v-layout>
     <v-flex xs12>
-      <v-container fluid>
-        <Title :title="'News'" />
+      <v-container
+        grid-list-xl>
+        <Title
+          :title="'News'" />
         <v-layout
-          v-for="test in 5"
-          :key="test"
-          class="mb-2">
-          <v-flex>
+          row
+          wrap>
+          <v-flex
+            v-for="n in 5"
+            :key="n"
+            xs12
+            class="mb-3">
             <v-card
               :to="'/news/' + test"
-              dark
               nuxt>
-              <v-container fluid>
-                <v-layout>
-                  <v-flex
-                    xs3
-                    sm4
-                    md5>
-                    <v-img
-                      contain
-                      src="https://cdn.vuetifyjs.com/images/cards/desert.jpg" />
-                  </v-flex>
-                  <v-flex
-                    xs9
-                    sm8
-                    md7>
-                    <v-card-title>
-                      This Is The Headline
-                    </v-card-title>
-                    <v-card-text>
-                      The news is that nothing is true, everything is permitted. Here at blah blah, we have blah blah blah blah blah.
-                    </v-card-text>
-                  </v-flex>
-                </v-layout>
-              </v-container>
+              <v-layout
+                row
+                wrap>
+                <v-flex
+                  xs12
+                  sm4
+                  md5>
+                  <v-img
+                    contain
+                    src="https://cdn.vuetifyjs.com/images/cards/desert.jpg" />
+                </v-flex>
+                <v-flex
+                  xs12
+                  sm8
+                  md7>
+                  <v-card-title
+                    primary-title
+                    class="title">
+                    This Is The Headline
+                  </v-card-title>
+                  <v-card-text>
+                    The news is that nothing is true, everything is permitted. Here at blah blah, we have blah blah blah blah blah.
+                    The news is that nothing is true, everything is permitted. Here at blah blah, we have blah blah blah blah blah.
+                    The news is that nothing is true, everything is permitted. Here at blah blah, we have blah blah blah blah blah...
+                    <span>
+                      Read more
+                    </span>
+                  </v-card-text>
+                </v-flex>
+              </v-layout>
             </v-card>
           </v-flex>
         </v-layout>

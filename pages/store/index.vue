@@ -3,24 +3,36 @@
     <v-flex xs12>
       <v-container fluid>
         <Sorter
-          :items="featuredItems" />
+          :items="items" />
+        <SearchBar />
         <v-layout>
-          <v-flex>
+          <v-flex
+            xs12>
             <v-container
               fluid
-              grid-list-xl>
+              grid-list-xl
+              class="pt-0">
               <v-layout
                 v-scroll="onScroll"
                 row
                 wrap>
                 <v-flex
-                  v-for="feature in featuredItems"
-                  :key="feature.id"
+                  v-if="items.length === 0"
+                  xs12>
+                  <div
+                    class="text-xs-center red--text title">
+                    No items for {{ search }} found
+                  </div>
+                </v-flex>
+                <v-flex
+                  v-for="item in items"
+                  v-else
+                  :key="item.id"
                   xs12
                   sm6
                   md4
                   xl3>
-                  <Item :item="feature" />
+                  <Item :item="item" />
                 </v-flex>
               </v-layout>
             </v-container>
@@ -33,28 +45,29 @@
 
 <script>
   import Sorter from "@/components/store/Sorter"
+  import SearchBar from "@/components/store/SearchBar"
   import Item from "@/components/store/Item"
 
   export default {
     components: {
       Sorter,
-      Item
+      SearchBar,
+      Item,
     },
     async asyncData(context) {
-      await context.store.dispatch("setFeaturedItems", {
-        offset: 0,
-        limit: 24,
-        featured: true,
-      })
-
       return {
         loading: false,
       }
     },
     computed: {
-      featuredItems() {
-        return this.$store.getters.featuredItems
-      }
+      search() {
+        return this.$store.getters["store/searchTerm"]
+      },
+      items() {
+        const featuredItems = this.$store.getters.featuredItems
+        const searchItems = this.$store.getters["store/searchItems"]
+        return this.search ? searchItems : featuredItems
+      },
     },
     methods: {
       async onScroll() {
@@ -69,11 +82,11 @@
 
           this.loading = true
           try {
-            await this.$store.dispatch("setFeaturedItems", {
-              offset: this.$store.getters.featuredOffset,
-              limit: this.$store.getters.featuredLimit,
-              featured: true,
-            })
+            if (this.$store.getters["store/searchTerm"]) {
+              await this.$store.dispatch("store/setSearchItems", { scroll: true })
+            } else {
+              await this.$store.dispatch("setFeaturedItems")
+            }
           } catch (e) {
             console.log(e)
           }

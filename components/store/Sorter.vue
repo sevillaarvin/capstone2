@@ -1,6 +1,7 @@
 <template>
   <v-layout>
-    <v-flex xs12>
+    <v-flex
+      xs12>
       <v-toolbar
         class="transparent"
         flat>
@@ -32,7 +33,8 @@
         </v-toolbar-items>
         <v-spacer />
       </v-toolbar>
-      <v-divider />
+      <v-divider
+        class="py-3"/>
     </v-flex>
   </v-layout>
 </template>

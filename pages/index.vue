@@ -32,7 +32,7 @@
               <v-flex
                 xs12>
                 <v-hover
-                  v-if="isMediumBreakpoint">
+                  v-if="isMdScreen">
                   <v-card
                     slot-scope="{ hover }"
                     :class="{ hover: hover }"
@@ -41,47 +41,40 @@
                     height="500"
                     width="500"
                     class="text-xs-center mx-auto slogan">
-                    <v-layout
-                      align-center
-                      fill-height>
-                      <v-flex>
-                        <v-card-title
-                          primary-title
-                          class="justify-center display-3 slogan__side slogan__side--front">
-                          Experience Real Luxury
-                        </v-card-title>
-                        <v-card-actions
-                          class="justify-space-around pa-0 slogan__side slogan__side--back">
-                          <v-layout
-                            fill-height>
-                            <v-hover>
-                              <v-flex
-                                slot-scope="{ hover }"
-                                :class="{ 'darken-1': hover}"
-                                xs6
-                                class="d-flex align-center justify-center secondary cursor-pointer">
-                                <v-card-text
-                                  class="headline">
-                                  &laquo; Register
-                                </v-card-text>
-                              </v-flex>
-                            </v-hover>
-                            <v-hover>
-                              <v-flex
-                                slot-scope="{ hover }"
-                                :class="{ 'darken-1': hover}"
-                                xs6
-                                class="d-flex align-center justify-center primary cursor-pointer">
-                                <v-card-text
-                                  class="black--text headline">
-                                  Go to Shop &raquo; 
-                                </v-card-text>
-                              </v-flex>
-                            </v-hover>
-                          </v-layout>
-                        </v-card-actions>
-                      </v-flex>
-                    </v-layout>
+                    <v-card-title
+                      class="justify-center display-3 slogan__side slogan__side--front">
+                      Experience Real Luxury
+                    </v-card-title>
+                    <v-card-actions
+                      class="justify-space-around pa-0 slogan__side slogan__side--back">
+                      <v-layout
+                        fill-height>
+                        <v-hover>
+                          <v-flex
+                            slot-scope="{ hover }"
+                            :class="{ 'darken-1': hover}"
+                            xs6
+                            class="d-flex align-center justify-center secondary cursor-pointer">
+                            <v-card-text
+                              class="headline">
+                              &laquo; Register
+                            </v-card-text>
+                          </v-flex>
+                        </v-hover>
+                        <v-hover>
+                          <v-flex
+                            slot-scope="{ hover }"
+                            :class="{ 'darken-1': hover}"
+                            xs6
+                            class="d-flex align-center justify-center primary cursor-pointer">
+                            <v-card-text
+                              class="black--text headline">
+                              Go to Shop &raquo; 
+                            </v-card-text>
+                          </v-flex>
+                        </v-hover>
+                      </v-layout>
+                    </v-card-actions>
                   </v-card>
                 </v-hover>
                 <v-card
@@ -163,7 +156,7 @@
                       lg6
                       class="my-3">
                       <v-card
-                        color="transparent">
+                        dark>
                         <v-layout
                           row
                           wrap>
@@ -171,26 +164,26 @@
                             :order-xs1="n % 2 != 1"
                             xs12
                             md6
-                            lg4
-                            xl3>
-                            <v-carousel
-                              height="360"
-                              hide-controls
-                              hide-delimiters>
-                              <v-carousel-item
-                                v-for="facility in facilities"
-                                :key="facility"
-                                :src="facility">
-                                &nbsp;
-                              </v-carousel-item>
-                            </v-carousel>
+                            lg5>
+                            <v-card-text>
+                              <v-carousel
+                                height="360"
+                                hide-controls
+                                hide-delimiters>
+                                <v-carousel-item
+                                  v-for="facility in facilities"
+                                  :key="facility"
+                                  :src="facility">
+                                  &nbsp;
+                                </v-carousel-item>
+                              </v-carousel>
+                            </v-card-text>
                           </v-flex>
                           <v-flex
                             :order-xs2="n % 2 == 1"
                             xs12
                             md6
-                            lg8
-                            xl9>
+                            lg7>
                             <v-card-title
                               class="justify-center title">
                               Sports center
@@ -199,11 +192,14 @@
                               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
                             </v-card-text>
                             <v-card-actions
-                              :class="{ 'justify-end': n % 2 == 1 }">
+                              :class="{
+                                'justify-end': n % 2 == 1 && isMdScreen,
+                                'justify-center': !isMdScreen,
+                            }">
                               <v-btn
                                 outline
                                 round
-                                color="secondary">
+                                color="primary">
                                 Learn more
                               </v-btn>
                             </v-card-actions>
@@ -274,7 +270,9 @@
                             xs12>
                             <v-card
                               flat>
-                              <v-layout>
+                              <v-layout
+                                row
+                                wrap>
                                 <v-flex
                                   xs12
                                   sm6
@@ -360,7 +358,7 @@
         <v-flex
           xs12>
           <v-card
-            height="50vh">
+            class="py-5">
             <v-layout
               fill-height
               column
@@ -506,6 +504,11 @@
     components: {
       Item
     },
+    data() {
+      return {
+        isHydrated: false,
+      }
+    },
     async asyncData({ app, redirect, store }) {
       const { $auth } = app
       if ($auth.$state.loggedIn) {
@@ -529,11 +532,14 @@
     },
     computed: {
       items() {
-        return this.$store.getters.featuredItems.slice(0,3)
+        return this.$store.getters.featuredItems.slice(0,4)
       },
-      isMediumBreakpoint() {
-        return this.$vuetify.breakpoint.mdAndUp
+      isMdScreen() {
+        return this.isHydrated ? this.$vuetify.breakpoint.mdAndUp : false
       }
+    },
+    mounted() {
+      this.isHydrated = true
     },
     layout: 'default',
   }
@@ -556,6 +562,7 @@
     opacity: .5;
 
     &__content {
+      background-image: url(~@/assets/image-bg.jpg);
       height: 100%;
       width: 100%;
       object-fit: cover;
@@ -585,7 +592,8 @@
       backface-visibility: hidden;
       transition: all .7s;
       clip-path: circle(50% at 50% 50%);
-      background-color: rgba(#333, .5);
+      // background-color: rgba(#333, .5);
+      background-image: radial-gradient(rgba(#e2e2e2, .4), rgba(#333, .3));
 
       &--front {
         font-family: 'Charm', cursive !important;

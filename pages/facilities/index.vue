@@ -18,46 +18,60 @@
                 :key="facility.name + '0'">
                 <v-card
                   :class="{ 'pa-5': $vuetify.breakpoint.mdAndUp }">
-                  <v-img
-                    :src="facility.img"
-                    class="cursor-pointer"
-                    @click="openGallery(facility)" />
-                  <v-dialog
-                    v-model="dialog"
-                    max-width="720">
-                    <v-card>
+                  <v-layout
+                    row
+                    wrap>
+                    <v-flex
+                      xs12
+                      md6
+                      lg5>
+                      <v-img
+                        :src="facility.img"
+                        class="cursor-pointer"
+                        @click="openGallery(facility)" />
+                      <v-dialog
+                        v-model="dialog"
+                        max-width="720">
+                        <v-card>
+                          <v-card-title
+                            primary-title
+                            class="justify-center title">
+                            {{ currentFacility.name }}
+                          </v-card-title>
+                          <v-container
+                            fluid
+                            grid-list-md>
+                            <v-layout
+                              row
+                              wrap>
+                              <v-flex
+                                v-for="n in 9"
+                                :key="n"
+                                xs12
+                                md4>
+                                <v-img
+                                  :src="currentFacility.img" />
+                              </v-flex>
+                            </v-layout>
+                          </v-container>
+                        </v-card>
+                      </v-dialog>
+                    </v-flex>
+                    <v-flex
+                      xs12
+                      md6
+                      lg7>
                       <v-card-title
                         primary-title
                         class="justify-center title">
-                        {{ currentFacility.name }}
+                        {{ facility.name }}
                       </v-card-title>
-                      <v-container
-                        fluid
-                        grid-list-md>
-                        <v-layout
-                          row
-                          wrap>
-                          <v-flex
-                            v-for="n in 9"
-                            :key="n"
-                            xs12
-                            md4>
-                            <v-img
-                              :src="currentFacility.img" />
-                          </v-flex>
-                        </v-layout>
-                      </v-container>
-                    </v-card>
-                  </v-dialog>
-                  <v-card-title
-                    primary-title
-                    class="justify-center title">
-                    {{ facility.name }}
-                  </v-card-title>
-                  <v-card-text
-                    class="px-5">
-                    {{ facility.shortDesc }}
-                  </v-card-text>
+                      <v-card-text
+                        class="px-5">
+                        {{ facility.shortDesc }}
+                      </v-card-text>
+                    </v-flex>
+                  </v-layout>
                 </v-card>
               </v-tab-item>
             </template>

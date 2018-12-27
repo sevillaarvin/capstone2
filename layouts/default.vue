@@ -13,6 +13,7 @@
     <v-content>
       <v-container
         fluid
+        fill-height
         class="pa-0">
         <nuxt />
       </v-container>

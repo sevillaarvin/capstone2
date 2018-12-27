@@ -1,5 +1,3 @@
-// TODO: Fix strict, vuex mutation outside store
-// export const strict = false
 // import Vuex from 'vuex'
 // export default () => new Vuex.Store({
   export const state = () => ({
@@ -125,9 +123,6 @@ export const getters = {
     featuredLimit(state) {
       return state.featured.limit
     },
-    featuredIterator(state) {
-      return state.featured.iterator
-    },
     categories(state) {
       return state.categories
     },
@@ -157,10 +152,11 @@ export const mutations = {
     setUserDetails(state, details) {
       state.user.details = details
     },
-    setFeaturedItems(state, { items, offset, limit }) {
-      state.featured.items = state.featured.items.concat(items)
-      state.featured.offset = offset
-      state.featured.limit = limit
+    setFeaturedItems(state, featured) {
+      state.featured = featured
+      // state.featured.items = state.featured.items.concat(items)
+      // state.featured.offset = offset
+      // state.featured.limit = limit
     },
     setCategories(state, categories) {
       state.categories = categories
@@ -181,11 +177,8 @@ export const actions = {
     async nuxtServerInit({ dispatch }, context) {
       try {
         await dispatch("setCategories")
-        await dispatch("setFeaturedItems", {
-          offset: 0,
-          limit: 24,
-          featured: true,
-        })
+        await dispatch("setFeaturedItems")
+
         // Execute if member already logged in
         await dispatch("setUserCart")
         await dispatch("setUserDetails")
@@ -292,40 +285,27 @@ export const actions = {
       }
       dispatch("setUserCart")
     },
-    async setFeaturedItems({ commit, /* getters */ }, query) {
-      let { offset, limit, featured } = query
-      // let items = getters.featuredItems
-      let result
-      let total
-      let storeItems
-
+    async setFeaturedItems({ commit, getters }) {
       try {
-        result = await this.$axios.$get("/item", {
+        const currentOffset = getters.featuredOffset
+        const currentLimit = getters.featuredLimit
+        const currentItems = getters.featuredItems
+
+        const { total, items } = await this.$axios.$get("/item", {
           params: {
-            featured,
-            offset,
-            limit,
+            featured: true,
+            offset: currentOffset,
+            limit: currentLimit,
           }
         })
-        total = result.total
-        storeItems = result.items
+        commit("setFeaturedItems", {
+          items: currentItems.concat(items),
+          offset: currentOffset + items.length,
+          limit: 12
+        })
       } catch (e) {
-        context.error(e)
-        return
+        return Promise.reject(e)
       }
-
-      // If initial load, set items
-      /*
-      if (offset === 0) {
-        items = storeItems
-      } else { // Add items to item list
-        items = items.concat(storeItems)
-      }
-      */
-
-      offset += storeItems.length
-      limit = 12
-      commit("setFeaturedItems", { items: storeItems, offset, limit })
     },
     async setCategories({ commit }) {
       try {

@@ -693,6 +693,20 @@ describe("GET /item", () => {
         done()
       })
   })
+
+  it("should search for items with name/description mesh", async function() {
+    await request(app)
+      .get("/item")
+      .query({
+        search: "mesh"
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body).to.have.property("items")
+          // Value is dependent on current random dataset
+          .to.have.lengthOf(16)
+      })
+  })
 })
 
 describe("GET /item/id", () => {

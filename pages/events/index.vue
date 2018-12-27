@@ -2,7 +2,8 @@
   <v-layout>
     <v-flex xs12>
       <v-container
-        grid-list-xl>
+        grid-list-xl
+        class="pt-0">
         <Title
           :title="'Events'" />
         <v-layout

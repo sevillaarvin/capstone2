@@ -330,17 +330,23 @@ router.get("/size/:id", (req, res, next) => {
 
 // This route is publicly available for store page
 router.get("/item", async (req, res, next) => {
-  const { featured, offset, limit, orderBy, descending } = req.query
+  const {
+    featured,
+    offset,
+    limit,
+    orderBy,
+    descending,
+    search,
+  } = req.query
   let total
   let items
 
   try {
-    const { count } = await db("item")
+    const totalQuery = db("item")
       .count("id")
       .first()
-    total = Number(count)
 
-    itemQuery = db.select([
+    const itemQuery = db.select([
         "item.id",
         "item.sku",
         "item.name",
@@ -362,15 +368,26 @@ router.get("/item", async (req, res, next) => {
       .limit(limit)
       .groupBy(["item.id", "category.name", "size.name"])
       .orderBy(orderBy || "item.id", descending === "true" ? "desc" : "asc")
+    
+    if (search) {
+      totalQuery.where("item.name", "ilike", `%${search}%`)
+        .orWhere("item.description", "ilike", `%${search}%`)
 
+      itemQuery.where("item.name", "ilike", `%${search}%`)
+        .orWhere("item.description", "ilike", `%${search}%`)
+    }
 
+    const { count } = await totalQuery
+    total = Number(count)
+
+    // TODO: retrieve featured items only
     if (featured) {
-      // TODO: retrieve featured items only
       items = await itemQuery
     } else {
       items = await itemQuery
     }
   } catch (e) {
+    console.log(e)
     res.status(500).send()
     return
   }

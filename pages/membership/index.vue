@@ -19,7 +19,7 @@
             offset-md0>
             <v-card>
               <v-card-title
-                class="justify-center headline primary black--text">
+                class="justify-center headline secondary">
                 {{ membership.name }}
               </v-card-title>
               <v-card-text
@@ -50,7 +50,8 @@
                   round
                   large
                   nuxt
-                  color="secondary">
+                  color="primary"
+                  class="black--text">
                   {{ membership.cta }}
                 </v-btn>
               </v-card-actions>

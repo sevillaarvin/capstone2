@@ -1,5 +1,7 @@
 <template>
-  <v-layout>
+  <v-layout
+    fill-height
+    align-center>
     <v-flex
       xs12
       sm8

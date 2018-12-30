@@ -8,18 +8,27 @@
     <v-card
       flat
       class="mt-3">
-      <v-img
-        :src="userInfo.avatar || 'http://i.pravatar.cc/150?u=Anonymous'"
-        contain
-        height="100" />
+      <div
+        class="text-xs-center">
+        <v-avatar
+          v-if="userInfo.avatar"
+          size="100">
+          <v-img
+            :src="userInfo.avatar" />
+        </v-avatar>
+        <v-avatar
+          v-else
+          size="100">
+          <v-icon
+            size="100">
+            account_circle
+          </v-icon>
+        </v-avatar>
+      </div>
       <v-card-title
         class="justify-center">
-        {{ `${userInfo.firstName} ${userInfo.lastName}` }}
+        {{ userInfo.firstName }} {{ userInfo.lastName }}
       </v-card-title>
-      <v-card-text>
-        <v-text-field
-          placeholder="Search"/>
-      </v-card-text>
     </v-card>
     <v-list>
       <!--
@@ -62,6 +71,8 @@
         <v-list-tile
           :key="link.name"
           :to="userLink(link.path)"
+          exact
+          active-class="default-class secondary--text"
           nuxt>
           <v-list-tile-content>
             {{ link.name }}

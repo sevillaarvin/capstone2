@@ -31,6 +31,7 @@ router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended: false}))
 router.use(cart)
 router.use(admin)
+router.use(user)
 app.use(router)
 
 const getId = async (req, res) => {
@@ -170,6 +171,7 @@ router.patch("/profile/:id", authenticate, async (req, res, next) => {
 
 router.post("/signup", async (req, res) => {
   let member
+  let role_id
   let result
 
   const {
@@ -178,13 +180,24 @@ router.post("/signup", async (req, res) => {
     email,
     username,
     password,
-    role_id
+    // role_id
   } = req.body
 
   try {
     // TODO: Fix validation user input
-    if (!firstName || !lastName || !email || !username || !password || !role_id) {
+    if (!firstName || !lastName || !email || !username || !password /* || !role_id */) {
       throw new Error("Incomplete fields.")
+    }
+
+    try {
+      const { id } = await db.select("id")
+        .from("role")
+        .where({ name: "user" })
+        .first()
+      role_id = id
+    } catch (e) {
+      res.status(500).send()
+      return
     }
 
     member = {

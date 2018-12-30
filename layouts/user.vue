@@ -45,9 +45,6 @@
       userInfo() {
         return this.$store.getters.userInfo || {
           firstName: "Anonymous",
-          lastName: "",
-          username: "",
-          avatar: "http://i.pravatar.cc/150?u=Anonymous",
         }
         // const user = this.$store.getters.userInfo
         // if (!user.avatar) {

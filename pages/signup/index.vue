@@ -86,6 +86,12 @@
         </v-form>
       </v-card>
     </v-flex>
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      top>
+      {{ snackbarMessage }}
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -100,7 +106,10 @@
           username: "",
           password: "",
           confirmPassword: "",
-        }
+        },
+        snackbar: false,
+        snackbarMessage: "",
+        snackbarColor: "",
       }
     },
     created() {
@@ -109,15 +118,27 @@
       }
     },
     methods: {
-      onSubmit() {
+      async onSubmit() {
         const { confirmPassword, ...user } = this.user
-        this.$store.dispatch("signUpUser", user)
-        .then(res => {
-          this.$router.push("/signin")
-        })
-        .catch(e => {
-        })
-      }
+        try {
+          await this.$store.dispatch("signUpUser", user)
+          // this.$router.push("/signin")
+          this.$auth.loginWith("local", {
+            data: {
+              username: user.username,
+              password: user.password,
+            },
+          })
+          this.showSnackbar("Signed up successfully", "success")
+        } catch(e) {
+          this.showSnackbar("Something went wrong", "error")
+        }
+      },
+      showSnackbar(message, color) {
+        this.snackbarMessage = message
+        this.snackbarColor = color
+        this.snackbar = true
+      },
     }
   }
 </script>

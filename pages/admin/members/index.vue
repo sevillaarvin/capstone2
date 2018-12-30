@@ -41,6 +41,10 @@
                       <v-text-field
                         v-model="newMember.lastName"
                         label="Last Name" />
+                      <v-select
+                        :items="genders"
+                        v-model="newMember.gender"
+                        label="Gender" />
                       <v-text-field
                         v-model="newMember.username"
                         label="Username" />
@@ -51,7 +55,9 @@
                         v-model="newMember.birthdate"
                         label="Birthdate" />
                       <v-radio-group
-                        v-model="newMember.deactivated">
+                        v-model="newMember.deactivated"
+                        row
+                        label="Deactivated">
                         <v-radio
                           :value="false"
                           label="No" />
@@ -93,6 +99,7 @@
             <td>{{ item.role }}</td>
             <td>{{ item.firstName }}</td>
             <td>{{ item.lastName }}</td>
+            <td>{{ item.gender }}</td>
             <td>{{ item.username }}</td>
             <td>{{ item.email }}</td>
             <td>{{ item.birthdate }}</td>
@@ -127,6 +134,10 @@
                   <v-text-field
                     v-model="currentMember.lastName"
                     label="Last Name" />
+                  <v-select
+                    :items="genders"
+                    v-model="currentMember.gender"
+                    label="Gender" />
                   <v-text-field
                     v-model="currentMember.username"
                     label="Username" />
@@ -137,7 +148,9 @@
                     v-model="currentMember.birthdate"
                     label="Birthdate" />
                   <v-radio-group
-                    v-model="currentMember.deactivated">
+                    v-model="currentMember.deactivated"
+                    row
+                    label="Deactivated">
                     <v-radio
                       :value="false"
                       label="No" />
@@ -216,6 +229,9 @@
           text: "Last Name",
           value: "lastName",
         }, {
+          text: "Gender",
+          value: "gender",
+        }, {
           text: "Username",
           value: "username",
         }, {
@@ -240,6 +256,9 @@
       roleNames() {
         return this.$store.getters["admin/roles"]
           .map((role) => role.name)
+      },
+      genders() {
+        return this.$store.getters["user/genders"]
       },
     },
     methods: {

@@ -411,8 +411,9 @@ describe("GET /category/name", () => {
       .expect(200)
       .expect("content-type", /json/)
       .expect(res => {
-        expect(res.body).to.be.an("array")
-        expect(res.body[0]).to.include.all.keys(
+        expect(res.body).to.be.an("object")
+          .with.property("items")
+        expect(res.body.items[0]).to.include.all.keys(
           "id",
           "sku",
           "name",
@@ -444,7 +445,9 @@ describe("GET /category/name", () => {
       .query({ limit: 5 })
       .expect(200)
       .expect(res => {
-        expect(res.body).to.be.an("array").with.lengthOf(5)
+        expect(res.body).to.be.an("object")
+          .with.property("items")
+          .with.lengthOf(5)
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -458,7 +461,11 @@ describe("GET /category/name", () => {
       .query({ offset: 10 })
       .expect(200)
       .expect(res => {
-        expect(res.body).to.be.an("array")
+        expect(res.body).to.be.an("object")
+          .with.keys([
+            "total",
+            "items",
+          ])
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -467,10 +474,24 @@ describe("GET /category/name", () => {
           .where({ "category.name": "Swimming Equipment" })
           .innerJoin("category", "item.category_id", "category.id")
           .then(dbres => {
-            expect(dbres).to.be.an("array")
-            expect(dbres[10].id).to.equal(res.body[0].id)
+            expect(res.body.items[0].id).to.equal(dbres[10].id)
             done()
         }).catch(e => done(e))
+      })
+  })
+
+  it("should return 69 items for search term 'z'", async function() {
+    await request(app)
+      .get("/category/Swimming Equipment")
+      .query({
+        search: "z",
+      })
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body).to.have.property("total")
+          .to.equal(69)
+        expect(body).to.have.property("items")
+          .to.have.lengthOf(69)
       })
   })
 })

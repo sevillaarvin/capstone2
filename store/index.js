@@ -12,12 +12,16 @@
       items: [],
       offset: 0,
       limit: 24,
+      total: 0,
+      unsortedItems: null,
     },
     categories: [],
     currentCategory: {
       items: [],
       offset: 0,
       limit: 24,
+      total: 0,
+      unsortedItems: null,
     },
     currentItem: null,
     allNavs: {
@@ -123,6 +127,9 @@ export const getters = {
     featuredLimit(state) {
       return state.featured.limit
     },
+    featuredUnsortedItems(state) {
+      return state.featured.unsortedItems
+    },
     categories(state) {
       return state.categories
     },
@@ -134,6 +141,12 @@ export const getters = {
     },
     currentCategoryLimit(state) {
       return state.currentCategory.limit
+    },
+    currentCategoryTotal(state) {
+      return state.currentCategory.total
+    },
+    currentCategoryUnsortedItems(state) {
+      return state.currentCategory.unsortedItems
     },
     currentItem(state) {
       return state.currentItem
@@ -154,17 +167,12 @@ export const mutations = {
     },
     setFeaturedItems(state, featured) {
       state.featured = featured
-      // state.featured.items = state.featured.items.concat(items)
-      // state.featured.offset = offset
-      // state.featured.limit = limit
     },
     setCategories(state, categories) {
       state.categories = categories
     },
-    setCurrentCategoryItems(state, { items, offset, limit }) {
-      state.currentCategory.items = state.currentCategory.items.concat(items)
-      state.currentCategory.offset = offset
-      state.currentCategory.limit = limit
+    setCurrentCategoryItems(state, currentCategory) {
+      state.currentCategory = currentCategory
     },
     setCurrentItem(state, item) {
       state.currentItem = item
@@ -285,11 +293,16 @@ export const actions = {
       }
       dispatch("setUserCart")
     },
-    async setFeaturedItems({ commit, getters }) {
+    async setFeaturedItems({ commit, getters }, { scroll } = {}) {
       try {
-        const currentOffset = getters.featuredOffset
-        const currentLimit = getters.featuredLimit
-        const currentItems = getters.featuredItems
+        const currentItems = scroll ? getters.featuredItems : []
+        const currentOffset = scroll ? getters.featuredOffset : 0
+        const currentLimit = scroll ? getters.featuredLimit : 24
+        const currentTotal = scroll ? getters.featuredTotal : 0
+
+        if (scroll && currentOffset >= currentTotal) {
+          return
+        }
 
         const { total, items } = await this.$axios.$get("/item", {
           params: {
@@ -298,14 +311,38 @@ export const actions = {
             limit: currentLimit,
           }
         })
+
         commit("setFeaturedItems", {
           items: currentItems.concat(items),
           offset: currentOffset + items.length,
-          limit: 12
+          limit: 12,
+          total,
         })
       } catch (e) {
         return Promise.reject(e)
       }
+    },
+    sortFeaturedItems({ commit, getters }, { sortBy, descending }) {
+      const offset = getters.featuredOffset
+      const limit = getters.featuredLimit
+      const total = getters.featuredTotal
+      const unsortedItems = getters.featuredUnsortedItems || getters.featuredItems
+      let items = []
+
+      if (sortBy === null) {
+        items = unsortedItems
+      } else {
+        items = [...unsortedItems]
+        sortInPlace(items, sortBy, descending)
+      }
+
+      commit("setFeaturedItems", {
+        items,
+        offset,
+        limit,
+        total,
+        unsortedItems,
+      })
     },
     async setCategories({ commit }) {
       try {
@@ -316,39 +353,56 @@ export const actions = {
         return Promise.reject(e)
       }
     },
-    async setCurrentCategoryItems({ commit, /* getters */ }, category) {
-      let { name, offset, limit } = category
-      // let items = getters.currentCategoryItems
-      let categoryItems
-
+    async setCurrentCategoryItems({ commit, getters }, { name, scroll }) {
       try {
-        categoryItems = await this.$axios.$get("/category/" + name, {
+        const currentCategoryItems = scroll ? getters.currentCategoryItems : []
+        const currentCategoryOffset = scroll ? getters.currentCategoryOffset : 0
+        const currentCategoryLimit = scroll ? getters.currentCategoryLimit : 24
+        const currentCategoryTotal = scroll ? getters.currentCategoryTotal : 0
+
+        // If no more items, stop requesting
+        if (scroll && currentCategoryOffset >= currentCategoryTotal) {
+          return
+        }
+
+        const { total, items } = await this.$axios.$get(`/category/${name}`, {
           params: {
-            offset,
-            limit,
+            offset: currentCategoryOffset,
+            limit: currentCategoryLimit,
           }
+        })
+
+        commit("setCurrentCategoryItems", {
+          items: currentCategoryItems.concat(items),
+          offset: currentCategoryOffset + items.length,
+          limit: 12,
+          total,
         })
       } catch (e) {
         return Promise.reject(e)
       }
+    },
+    sortCurrentCategoryItems({ commit, getters }, { sortBy, descending }) {
+      const offset = getters.currentCategoryOffset
+      const limit = getters.currentCategoryLimit
+      const total = getters.currentCategoryTotal
+      const unsortedItems = getters.currentCategoryUnsortedItems || getters.currentCategoryItems
+      let items = []
 
-        // If initial load, set items
-        /*
-        if (offset === 0) {
-          items = categoryItems
-        } else { // Add items to item list
-          items = items.concat(categoryItems)
-        }
-        */
+      if (sortBy === null) {
+        items = unsortedItems
+      } else {
+        items = [...unsortedItems]
+        sortInPlace(items, sortBy, descending)
+      }
 
-        offset += categoryItems.length
-        limit = 12
-
-        commit("setCurrentCategoryItems", {
-          items: categoryItems,
-          offset,
-          limit,
-        })
+      commit("setCurrentCategoryItems", {
+        items,
+        offset,
+        limit,
+        total,
+        unsortedItems,
+      })
     },
     setCurrentItem({ commit }, item) {
       commit("setCurrentItem", item)
@@ -368,3 +422,43 @@ export const actions = {
     },
   }
 // })
+const sortInPlace = (items, sortBy, descending) => {
+  switch (sortBy) {
+    case "price":
+      if (descending) {
+        items.sort((a, b) => {
+          return b.price - a.price
+        })
+      } else {
+        items.sort((a, b) => {
+          return a.price - b.price
+        })
+      }
+      break
+    // TODO: Determine popular products
+    case "popularity":
+      if (descending) {
+        items.sort((a, b) => {
+          return b.price * b.rating - a.price * a.rating
+        })
+      } else {
+        items.sort((a, b) => {
+          return a.price * a.rating - b.price * b.rating
+        })
+      }
+      break
+    case "rating":
+      if (descending) {
+        items.sort((a, b) => {
+          return b.rating - a.rating
+        })
+      } else {
+        items.sort((a, b) => {
+          return a.rating - b.rating
+        })
+      }
+      break
+    default:
+      throw new Error("Invalid sort value.")
+  }
+}

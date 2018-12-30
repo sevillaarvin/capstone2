@@ -265,22 +265,32 @@ router.get("/category/:id", (req, res, next) => {
 */
 
 router.get("/category/:name", async (req, res, next) => {
-  const category = req.params.name
-  let results
-
   try {
-    const catObj = await db.select("id")
+    const { name: category } = req.params
+    const {
+      offset,
+      limit,
+      orderBy,
+      descending,
+      search,
+    } = req.query
+
+    const { id: category_id } = await db.select("id")
       .from("category")
       .where({ name: category })
-      .first()
+      .first() || {}
 
-    if (!catObj) {
+    if (!category_id) {
       res.status(404).send("Category not found.")
       return
     }
 
-    const { offset, limit } = req.query
-    results = await db.select([
+    const totalQuery = db("item")
+      .count("id")
+      .where({ category_id })
+      .first()
+
+    const itemQuery = db.select([
         "item.id",
         "item.sku",
         "item.name",
@@ -293,7 +303,7 @@ router.get("/category/:name", async (req, res, next) => {
       ])
       .avg("rating.stars as rating")
       .from("item")
-      .where({ category_id: catObj.id })
+      .where({ category_id })
       // Category is required
       .innerJoin("category", "item.category_id", "category.id")
       // Size is not required
@@ -304,18 +314,39 @@ router.get("/category/:name", async (req, res, next) => {
       .groupBy(["item.id", "category.name", "size.name"])
       .orderBy("item.id")
 
-    convertRating(results)
+    if (search) {
+      totalQuery.andWhere((queryBuilder) => {
+        queryBuilder.where("item.name", "ilike", `%${search}%`)
+          .orWhere("item.description", "ilike", `%${search}%`)
+      })
+
+      itemQuery.andWhere((queryBuilder) => {
+        queryBuilder.where("item.name", "ilike", `%${search}%`)
+          .orWhere("item.description", "ilike", `%${search}%`)
+      })
+    }
+
+    const { count } = await totalQuery
+    const total = Number(count)
+
+    const items = await itemQuery
+
+    convertRating(items)
+
+    if (!items) {
+      res.status(404).send("No items for category.")
+      return
+    }
+
+    res.status(200).send({
+      total,
+      items,
+    })
+    return
   } catch (e) {
     res.status(500).send()
     return
   }
-
-  if (!results) {
-    res.status(404).send("No items for category.")
-    return
-  }
-
-  res.status(200).send(results)
 })
 
 router.get("/size", (req, res, next) => {

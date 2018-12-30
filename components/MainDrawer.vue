@@ -8,18 +8,31 @@
     <v-card
       flat
       class="mt-3">
-      <v-img
-        :src="userInfo.avatar"
-        contain
-        height="100" />
+      <div
+        class="text-xs-center">
+        <v-avatar
+          v-if="userInfo.avatar"
+          size="100">
+          <v-img
+            :src="userInfo.avatar" />
+        </v-avatar>
+        <v-avatar
+          v-else
+          size="100">
+          <v-icon
+            size="100">
+            account_circle
+          </v-icon>
+        </v-avatar>
+      </div>
       <v-card-title
         class="justify-center">
         {{ userInfo.firstName }} {{ userInfo.lastName }}
       </v-card-title>
-      <v-card-text>
-        <v-text-field
-          placeholder="Search"/>
-      </v-card-text>
+      <v-card-actions>
+        <SearchBar
+          drawer />
+      </v-card-actions>
     </v-card>
     <v-list>
       <v-list-tile
@@ -51,7 +64,12 @@
 </template>
 
 <script>
+  import SearchBar from "@/components/store/SearchBar"
+
   export default {
+    components: {
+      SearchBar,
+    },
     props: {
       value: {
         type: Boolean,
@@ -64,13 +82,14 @@
     },
     data() {
       return {
+        search: "",
       }
     },
     computed: {
       categories() {
         return this.$store.getters.categories
       }
-    }
+    },
   }
 </script>
 

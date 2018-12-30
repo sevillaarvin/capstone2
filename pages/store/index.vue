@@ -3,6 +3,7 @@
     <v-flex xs12>
       <v-container fluid>
         <Sorter
+          :action="(sortObj) => { $store.dispatch('sortFeaturedItems', sortObj) }"
           :items="items" />
         <SearchBar />
         <v-layout>
@@ -54,7 +55,13 @@
       SearchBar,
       Item,
     },
-    async asyncData(context) {
+    async asyncData({ error, store }) {
+      try {
+        await store.dispatch("setFeaturedItems")
+      } catch (e) {
+        error(e)
+      }
+
       return {
         loading: false,
       }
@@ -85,7 +92,7 @@
             if (this.$store.getters["store/searchTerm"]) {
               await this.$store.dispatch("store/setSearchItems", { scroll: true })
             } else {
-              await this.$store.dispatch("setFeaturedItems")
+              await this.$store.dispatch("setFeaturedItems", { scroll: true })
             }
           } catch (e) {
             console.log(e)

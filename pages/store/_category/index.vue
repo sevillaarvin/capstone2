@@ -4,7 +4,9 @@
     <v-flex xs12>
       <v-container fluid>
         <Sorter
+          :action="(sortObj) => { $store.dispatch('sortCurrentCategoryItems', sortObj) }"
           :items="items" />
+        <SearchBar />
         <v-layout>
           <v-flex>
             <v-container
@@ -34,12 +36,14 @@
 
 <script>
   import Sorter from "@/components/store/Sorter"
+  import SearchBar from "@/components/store/SearchBar"
   import Item from "@/components/store/Item"
 
   export default {
     components: {
       Sorter,
-      Item
+      SearchBar,
+      Item,
     },
     async asyncData(context) {
       let category
@@ -48,8 +52,6 @@
         category = context.route.params.category
         await context.store.dispatch("setCurrentCategoryItems", {
           name: category,
-          offset: 0,
-          limit: 24,
         })
       } catch (e) {
         context.error(e)
@@ -61,8 +63,13 @@
       }
     },
     computed: {
+      search() {
+        return this.$store.getters["store/searchTerm"]
+      },
       items() {
-        return this.$store.getters.currentCategoryItems
+        const categoryItems = this.$store.getters.currentCategoryItems
+        const searchItems = this.$store.getters["store/searchItems"]
+        return this.search ? searchItems : categoryItems
       }
     },
     methods: {
@@ -78,11 +85,17 @@
 
           this.loading = true
           try {
-            await this.$store.dispatch("setCurrentCategoryItems", {
-              name: this.category,
-              offset: this.$store.getters.currentCategoryOffset,
-              limit: this.$store.getters.currentCategoryLimit,
-            })
+            if (this.$store.getters["store/searchTerm"]) {
+              await this.$store.dispatch("store/setSearchItems", {
+                scroll: true,
+                category: this.category,
+              })
+            } else {
+              await this.$store.dispatch("setCurrentCategoryItems", {
+                name: this.category,
+                scroll: true,
+              })
+            }
           } catch (e) {
             console.log(e)
           }

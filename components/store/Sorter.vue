@@ -20,7 +20,7 @@
               <v-list-tile
                 v-for="choice in sort.choices"
                 :key="choice.name"
-                @click="changeSort(choice.value)">
+                @click="changeSort({ sortBy: sort.sortBy, descending: choice.descending })">
                 <v-list-tile-content>
                   {{ choice.name }}
                 </v-list-tile-content>
@@ -44,51 +44,57 @@
     props: {
       items: {
         type: Array,
-        required: true
-      }
+        required: true,
+      },
+      action: {
+        type: Function,
+        required: true,
+      },
     },
     data() {
       return {
-        priceSort: null,
-        popularitySort: null,
-        ratingSort: null,
+        currentSort: "",
+        currentDescending: null,
         sorts: [
           {
             type: "Price",
+            sortBy: "price",
             choices: [
               {
-                name: "Low to High",
-                value: "priceAsc",
+                name: "High to Low",
+                descending: true,
               },
               {
-                name: "High to Low",
-                value: "priceDesc",
+                name: "Low to High",
+                descending: false,
               },
             ]
           },
           {
             type: "Popularity",
+            sortBy: "popularity",
             choices: [
               {
-                name: "Ascending",
-                value: "popularityAsc",
+                name: "Most Popular",
+                descending: true,
               },
               {
-                name: "Descending",
-                value: "popularityDesc",
+                name: "Least Popular",
+                descending: false,
               },
             ]
           },
           {
             type: "Rating",
+            sortBy: "rating",
             choices: [
               {
-                name: "Ascending",
-                value: "ratingAsc",
+                name: "Highest Rated",
+                descending: true,
               },
               {
-                name: "Descending",
-                value: "ratingDesc",
+                name: "Lowest Rated",
+                descending: false,
               },
             ]
           },
@@ -96,73 +102,15 @@
       }
     },
     methods: {
-      changeSort(sort) {
-        switch (sort) {
-          case "priceAsc":
-          case "priceDesc":
-            if (this.priceSort === sort) {
-              this.priceSort = null
-            } else {
-              this.priceSort = sort
-            }
-
-            if (this.priceSort === "priceAsc") {
-              this.items.sort((a, b) => {
-                return a.price - b.price
-              })
-            } else {
-              this.items.sort((a, b) => {
-                return b.price - a.price
-              })
-            }
-            break
-          // TODO: Determine popular products
-          case "popularityAsc":
-          case "popularityDesc":
-            if (this.popularitySort === sort) {
-              this.popularitySort = null
-            } else {
-              this.popularitySort = sort
-            }
-
-            if (this.popularitySort === "popularityAsc") {
-              this.items.sort((a, b) => {
-                return a.price * a.rating - b.price * b.rating
-              })
-            } else {
-              this.items.sort((a, b) => {
-                return b.price * a.rating - a.price * b.rating
-              })
-            }
-            break
-          case "ratingAsc":
-          case "ratingDesc":
-            if (this.ratingSort === sort) {
-              this.ratingSort = null
-            } else {
-              this.ratingSort = sort
-            }
-
-            if (this.ratingSort === "ratingAsc") {
-              this.items.sort((a, b) => {
-                return a.rating - b.rating
-              })
-            } else {
-              this.items.sort((a, b) => {
-                return b.rating - a.rating
-              })
-            }
-            break
-          default:
-            throw new Error("Invalid sort value.")
+      changeSort({ sortBy, descending }) {
+        if (this.currentSort === sortBy && this.currentDescending === descending) {
+          sortBy = null
         }
 
-        if (!(this.priceSort || this.popularitySort || this.ratingSort)) {
-          this.items.sort((a, b) => {
-            return a.id - b.id
-          })
-        }
+        this.action({ sortBy, descending })
 
+        this.currentSort = sortBy
+        this.currentDescending = descending
       }
     },
   }

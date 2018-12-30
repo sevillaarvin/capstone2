@@ -102,7 +102,7 @@
             <td>{{ item.gender }}</td>
             <td>{{ item.username }}</td>
             <td>{{ item.email }}</td>
-            <td>{{ item.birthdate }}</td>
+            <td>{{ item.birthdate | long-date }}</td>
             <td>{{ item.created_at | long-date }}</td>
             <td>{{ item.deactivated ? 'Yes' : 'No' }}</td>
           </tr>

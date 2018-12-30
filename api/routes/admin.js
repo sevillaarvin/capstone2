@@ -9,6 +9,7 @@ const db = require("../../db/knex")
 const {
   convertGender,
   revertGender,
+  convertISODate,
 } = require("../utilities")
 
 router.get("/role", authenticate, authorizeAdmin, async (req, res, next) => {
@@ -50,6 +51,7 @@ router.get("/member", authenticate, authorizeAdmin, async (req, res, next) => {
       .from("member")
       .innerJoin("role", "member.role_id", "role.id")
 
+    convertISODate(members, "birthdate")
     convertGender(members)
   } catch (e) {
     res.status(500).send()

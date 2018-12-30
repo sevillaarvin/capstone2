@@ -4,6 +4,7 @@ const db = require("../db/knex")
 const router = express.Router()
 const cart = require("./routes/cart")
 const admin = require("./routes/admin")
+const user = require("./routes/user")
 const app = express()
 const {
   generateUserToken,
@@ -18,6 +19,7 @@ const {
   revertGender,
   convertNullToString,
   convertStringToNumber,
+  convertISODate,
 } = require("./utilities")
 
 router.use((req, res, next) => {
@@ -134,6 +136,7 @@ router.get("/profile/:id", authenticate, async (req, res, next) => {
       .where({ "member.id": id })
       .first()
 
+    convertISODate([member], "birthdate")
     convertGender([member])
   } catch (e) {
     res.status(500).send()
@@ -259,7 +262,6 @@ router.post("/signin", async (req, res) => {
     })
     return
   } catch (e) {
-    console.log(e)
     res.status(404).send("Invalid username or password")
     return
   }
@@ -431,7 +433,6 @@ router.get("/item", async (req, res, next) => {
       items = await itemQuery
     }
   } catch (e) {
-    console.log(e)
     res.status(500).send()
     return
   }

@@ -39,49 +39,85 @@
                         label="Gender" />
                     </v-flex>
                     <v-flex
-                      xs12>
-                      <v-text-field
-                        v-model="currentUser.email"
-                        label="Email" />
-                    </v-flex>
-                    <v-flex
-                      xs12>
+                      xs12
+                      sm6>
                       <v-text-field
                         v-model="currentUser.username"
                         label="Username" />
                     </v-flex>
                     <v-flex
-                      xs12>
+                      xs12
+                      sm6>
                       <v-text-field
-                        v-model="currentUser.birthdate"
-                        label="Birthdate" />
+                        v-model="currentUser.email"
+                        label="Email" />
                     </v-flex>
                     <v-flex
-                      xs12>
+                      xs12
+                      sm6
+                      md4>
+                      <v-menu
+                        v-model="menu">
+                        <v-text-field
+                          slot="activator"
+                          v-model="currentUser.birthdate"
+                          readonly
+                          label="Birthdate" />
+                        <v-date-picker
+                          v-model="currentUser.birthdate"
+                          no-title
+                          @input="menu = false" />
+                      </v-menu>
+                    </v-flex>
+                    <v-flex
+                      xs12
+                      md8>
                       <v-text-field
                         v-model="currentUser.address"
                         label="Address" />
                     </v-flex>
-                  </v-layout>
-                  <v-card-actions>
-                    <v-container
-                      fluid>
-                      <v-layout>
-                        <v-flex
-                          xs12>
+                    <v-flex
+                      xs12>
+                      <v-card-actions
+                        class="justify-space-between">
+                        <v-btn
+                          type="submit"
+                          color="secondary">
+                          Update
+                        </v-btn>
+                        <v-dialog
+                          v-model="dialog"
+                          max-width="500px">
                           <v-btn
-                            type="submit">
-                            Update
-                          </v-btn>
-                          <v-btn
-                            color="error"
-                            @click="deactivateUser">
+                            slot="activator"
+                            color="error">
                             Deactivate
                           </v-btn>
-                        </v-flex>
-                      </v-layout>
-                    </v-container>
-                  </v-card-actions>
+                          <v-card>
+                            <v-card-title
+                              primary-title
+                              class="title">
+                              Deactivate account
+                            </v-card-title>
+                            <v-card-text>
+                              You are about to deactivate your account. Are you sure?
+                            </v-card-text>
+                            <v-card-actions>
+                              <v-btn
+                                color="error"
+                                @click="deactivateUser">
+                                Deactivate
+                              </v-btn>
+                              <v-btn
+                                @click="dialog = false">
+                                Cancel
+                              </v-btn>
+                            </v-card-actions>
+                          </v-card>
+                        </v-dialog>
+                      </v-card-actions>
+                    </v-flex>
+                  </v-layout>
                 </v-container>
               </v-form>
             </v-card>
@@ -105,15 +141,19 @@
     async asyncData({ error, store }) {
       try {
         await store.dispatch("setUserDetails")
+
+        const currentUser = { ...store.getters.userDetails }
+
+        return {
+          currentUser,
+          snackbar: false,
+          snackbarColor: "",
+          updateResult: "",
+          menu: false,
+          dialog: false,
+        }
       } catch (e) {
         error(e)
-      }
-
-      return {
-        currentUser: { ...store.getters.userDetails },
-        snackbar: false,
-        snackbarColor: "",
-        updateResult: "",
       }
     },
     components: {
@@ -151,6 +191,7 @@
           const { id } = this.currentUser
           await this.$store.dispatch("updateUserDetails", { id, deactivated: true })
           this.showSnackbar("User updated", "success")
+          this.$router.push("/signout")
         } catch (e) {
           this.showSnackbar("Something went wrong", "error")
         }

@@ -39,7 +39,17 @@ const convertStringToNumber = (items, property) => {
     item[property] = Number(item[property])
   })
 }
-  
+
+const convertISODate = (items, property) => {
+  items.forEach((item) => {
+    if (!item[property]) {
+      return
+    }
+    const isoDate = item[property]
+    const newDate = `${isoDate.getFullYear()}-${isoDate.getMonth() + 1}-${isoDate.getDate()}`
+    item[property] = newDate
+  })
+}
 
 module.exports = {
   convertRating,
@@ -47,4 +57,5 @@ module.exports = {
   revertGender,
   convertNullToString,
   convertStringToNumber,
+  convertISODate,
 }

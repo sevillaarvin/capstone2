@@ -14,13 +14,15 @@
           v-if="userInfo.avatar"
           size="100">
           <v-img
-            :src="userInfo.avatar" />
+            :src="userInfo.avatar"
+            @click="gotoDashboard" />
         </v-avatar>
         <v-avatar
           v-else
           size="100">
           <v-icon
-            size="100">
+            size="100"
+            @click="gotoDashboard">
             account_circle
           </v-icon>
         </v-avatar>
@@ -121,6 +123,9 @@
     methods: {
       userLink(link) {
         return '/' + encodeURIComponent(this.userInfo.username) + link
+      },
+      gotoDashboard() {
+        this.$router.push(this.userLink())
       },
     },
   }

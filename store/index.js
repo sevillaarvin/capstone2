@@ -259,14 +259,14 @@ export const actions = {
             cartId: getters.userCart.cartId,
             ...item,
           })
+          dispatch("setUserCart")
         } catch (e) {
           return Promise.reject(e)
         }
       } else {
         // TODO: Implement not loggedIn add to cart
+        this.$router.push("/signin")
       }
-
-      dispatch("setUserCart")
     },
     async removeFromCart({ dispatch }, cartItemId) {
       if (this.$auth.state.loggedIn) {

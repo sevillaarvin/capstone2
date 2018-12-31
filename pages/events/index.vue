@@ -15,7 +15,7 @@
             xs12
             class="mb-3">
             <v-card
-              :to="'/events/' + test"
+              :to="'/events/test'"
               nuxt>
               <v-layout
                 row

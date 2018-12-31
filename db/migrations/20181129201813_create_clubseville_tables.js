@@ -123,6 +123,16 @@ exports.up = function(knex, Promise) {
       table.integer("quantity").notNullable()
     })
 
+    .createTable("news", table => {
+      table.increments()
+      table.text("title").notNullable()
+    })
+
+    .createTable("event", table => {
+      table.increments()
+      table.text("title").notNullable()
+    })
+
     /*
     .createTable("", table => {
       table.increments()
@@ -145,6 +155,8 @@ exports.down = function(knex, Promise) {
 
 const dropTables = (knex, Promise) => {
   return knex.schema
+    .dropTableIfExists("event")
+    .dropTableIfExists("news")
     .dropTableIfExists("cart_item")
     .dropTableIfExists("cart")
     .dropTableIfExists("order_detail")

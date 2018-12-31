@@ -3,18 +3,45 @@
     <v-flex
       xs12>
       <v-container>
-        <Title
-          title="Profile" />
-        <v-layout>
-          <v-flex
-            xs12>
-            <v-card>
+        <v-card>
+          <Title
+            title="Profile" />
+          <v-layout>
+            <v-flex
+              xs12>
               <v-form
                 @submit.prevent="updateMember">
                 <v-container>
                   <v-layout
                     row
                     wrap>
+                    <v-flex
+                      xs12
+                      class="text-xs-center">
+                      <v-avatar
+                        v-if="imageUrl"
+                        size="100"
+                        @click="onPickFile">
+                        <v-img
+                          :src="imageUrl"
+                          class="cursor-pointer" />
+                      </v-avatar>
+                      <v-avatar
+                        v-else
+                        size="100">
+                        <v-icon
+                          size="100"
+                          @click="onPickFile">
+                          account_circle
+                        </v-icon>
+                      </v-avatar>
+                      <input
+                        ref="fileInput"
+                        type="file"
+                        style="display: none"
+                        accept="image/*"
+                        @change="onFilePicked">
+                    </v-flex>
                     <v-flex
                       xs12
                       sm6>
@@ -120,9 +147,9 @@
                   </v-layout>
                 </v-container>
               </v-form>
-            </v-card>
-          </v-flex>
-        </v-layout>
+            </v-flex>
+          </v-layout>
+        </v-card>
       </v-container>
     </v-flex>
     <v-snackbar
@@ -143,6 +170,7 @@
         await store.dispatch("setUserDetails")
 
         const currentUser = { ...store.getters.userDetails }
+        const { avatar } = store.getters.userInfo
 
         return {
           currentUser,
@@ -151,6 +179,7 @@
           updateResult: "",
           menu: false,
           dialog: false,
+          imageUrl: avatar,
         }
       } catch (e) {
         error(e)
@@ -167,10 +196,15 @@
     methods: {
       async updateMember() {
         try {
-          await this.$store.dispatch("updateUserDetails", this.currentUser)
+          const avatar = this.imageUrl 
+          await this.$store.dispatch("updateUserDetails", { avatar, ...this.currentUser })
           await this.loadUserDetails()
           this.showSnackbar("User updated", "success")
         } catch (e) {
+          if (e.response.status === 413) {
+            this.showSnackbar("Image too large, please select a smaller file", "error")
+            return
+          }
           this.showSnackbar("Something went wrong", "error")
         }
       },
@@ -195,11 +229,36 @@
         } catch (e) {
           this.showSnackbar("Something went wrong", "error")
         }
-      }
+      },
+      onPickFile () {
+        this.$refs.fileInput.click()
+      },
+      onFilePicked (event) {
+        const files = event.target.files
+        if (files.length === 0) {
+          return
+        }
+        let filename = files[0].name
+        if (filename.lastIndexOf('.') <= 0) {
+          return alert('Please add a valid file!')
+        }
+        const fileReader = new FileReader()
+        fileReader.addEventListener('load', () => {
+          // BUG: Doesn't allow currentUser.avatar modification
+          // Will not dynamically update images in template above
+          this.imageUrl = fileReader.result
+        })
+        fileReader.readAsDataURL(files[0])
+        this.image = files[0]
+      },
     },
     layout: "user"
   }
 </script>
 
-<style>
+<style
+  scoped>
+  .cursor-pointer {
+    cursor: pointer;
+  }
 </style>

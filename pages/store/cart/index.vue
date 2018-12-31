@@ -4,8 +4,7 @@
     <v-flex xs12>
       <Title :title="'Your Cart'" />
       <v-container
-        fluid
-        grid-list-xl>
+        grid-list-md>
         <v-layout
           v-if="items.length"
           row
@@ -27,7 +26,8 @@
                 <v-btn
                   :disabled="items.length <= 0"
                   nuxt
-                  to="/store/checkout">
+                  to="/store/checkout"
+                  color="primary dark--text">
                   Checkout
                 </v-btn>
               </v-flex>
@@ -36,8 +36,9 @@
                 class="text-xs-right">
                 <v-btn
                   v-if="items.length > 0"
+                  color="error"
                   @click="clearCart">
-                  Remove all items
+                  Clear cart
                 </v-btn>
               </v-flex>
             </v-layout>

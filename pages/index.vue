@@ -2,10 +2,6 @@
   <v-layout>
     <v-flex
       xs12>
-      <!--
-      <v-container
-        fluid>
-      -->
       <v-layout>
         <v-flex
           xs12
@@ -25,7 +21,7 @@
           <v-card
             flat
             color="transparent"
-            height="85vh"
+            height="100vh"
             class="d-flex">
             <v-layout
               align-self-center>
@@ -156,7 +152,7 @@
                       lg6
                       class="my-3">
                       <v-card
-                        dark>
+                        hover>
                         <v-layout
                           row
                           wrap>
@@ -199,7 +195,9 @@
                               <v-btn
                                 outline
                                 round
-                                color="primary">
+                                nuxt
+                                color="secondary"
+                                to="/facilities">
                                 Learn more
                               </v-btn>
                             </v-card-actions>
@@ -373,6 +371,8 @@
                 <v-btn
                   round
                   large
+                  nuxt
+                  to="/signup"
                   color="primary"
                   class="black--text">
                   Register Now
@@ -416,8 +416,7 @@
                           row
                           wrap>
                           <v-flex
-                            xs12
-                            md6>
+                            xs12>
                             <v-card
                               flat>
                               <v-subheader>
@@ -428,7 +427,7 @@
                                 <v-list-tile>
                                   <v-list-tile-content>
                                     <v-list-tile-title>
-                                      sample@sample.com
+                                      info@clubseville.icu
                                     </v-list-tile-title>
                                     <v-list-tile-sub-title>
                                       Email
@@ -490,9 +489,6 @@
           </v-card>
         </v-flex>
       </v-layout>
-      <!--
-      </v-container>
-      -->
     </v-flex>
   </v-layout>
 </template>
@@ -574,6 +570,8 @@
 
     -moz-perspective: 150rem;
     perspective: 150rem;
+    // filter: drop-shadow(0 0 0 rgba(0,0,0,1));
+    filter: drop-shadow(0 0 20px rgba(0,0,0,.3));
 
     &__stacked {
       background-color: rgba(#333, .5);
@@ -592,8 +590,8 @@
       backface-visibility: hidden;
       transition: all .7s;
       clip-path: circle(50% at 50% 50%);
-      // background-color: rgba(#333, .5);
-      background-image: radial-gradient(rgba(#e2e2e2, .4), rgba(#333, .3));
+      border-radius: 50%;
+      background-image: radial-gradient(rgba(#333, .6), rgba(#666, .4));
 
       &--front {
         font-family: 'Charm', cursive !important;

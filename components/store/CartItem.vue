@@ -2,41 +2,56 @@
   <v-card>
     <v-container
       fluid>
-      <v-layout>
+      <v-layout
+        row
+        wrap>
         <v-flex
-          xs3>
+          xs12
+          md3>
           <v-img
             :src="item.img || ''"
             contain
             height="150" />
         </v-flex>
         <v-flex
-          xs6>
-          <v-card-text>
-            <div>
-              {{ item.name }}
-            </div>
-            <div>
-              {{ item.description }}
-            </div>
+          xs12
+          sm8
+          offset-sm2
+          md6
+          offset-md0>
+          <v-card-title
+            class="title justify-center">
+            {{ item.name }}
+          </v-card-title>
+          <v-card-text
+            class="text-xs-center">
+            {{ item.description }}
           </v-card-text>
         </v-flex>
         <v-flex
-          xs3>
-          <v-card-actions>
+          xs12
+          sm8
+          offset-sm2
+          md3
+          offset-md0>
+          <v-card-actions
+            class="justify-center">
             <v-form
               @submit.prevent="updateItem(item)">
               <v-text-field
                 v-model="quantity"
                 label="Quantity" />
               <v-btn
-                type="submit">
+                type="submit"
+                color="secondary">
                 Update
               </v-btn>
               <v-dialog
+                v-model="dialog"
                 width="500">
                 <v-btn
-                  slot="activator">
+                  slot="activator"
+                  color="error">
                   Remove
                 </v-btn>
                 <v-card>
@@ -45,6 +60,12 @@
                   </v-card-title>
                   <v-card-actions>
                     <v-btn
+                      color="secondary"
+                      @click="dialog = false">
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      color="error"
                       @click="removeItem(item)">
                       Remove
                     </v-btn>
@@ -69,7 +90,8 @@
     },
     data() {
       return {
-        quantity: this.item.quantity
+        quantity: this.item.quantity,
+        dialog: false,
       }
     },
     methods: {

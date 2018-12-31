@@ -33,7 +33,7 @@ router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({extended: false}))
 router.use(cart)
 router.use(admin)
-router.use(user)
+router.use("/user", user)
 app.use(router)
 
 const getId = async (req, res) => {
@@ -489,67 +489,67 @@ router.get("/item/:sku", async (req, res, next) => {
 })
 
 // Retrieve orders of given member id
-router.get("/order/:id", authenticate, async (req, res, next) => {
-  const { user } = res.locals
-  const { id: member_id } = req.params
-  let orders
-
-  if (!(user.userId == member_id)) {
-    res.status(401).send()
-    return
-  }
-
-  try {
-    // Retrieve all orders
-    orders = await db.select([
-        "order.id",
-        "order.order_at",
-        "order.ship_to",
-        "status.name as status",
-        "order.ship_at",
-        "order.deliver_at",
-      ])
-      .from("order")
-      .where({ member_id })
-      .innerJoin("status", "status.id", "order.status_id")
-
-    // Retrieve all order details
-    orders = await Promise.all(
-      orders.map(async order => {
-        order.items = await db.select([
-            "order_detail.quantity",
-            "order_detail.price",
-            "item.id",
-            "item.sku",
-            "item.name",
-            "category.name as category",
-            "item.description",
-            "item.img",
-            "size.name as size",
-          ])
-          .from("order_detail")
-          .where({ order_id: order.id })
-          .innerJoin("item", "item.id", "order_detail.item_id")
-          .innerJoin("category", "category.id", "item.category_id")
-          .leftJoin("size", "size.id", "item.size_id")
-
-        // Retrieve ratings
-        order.items = await Promise.all(order.items.map(async item => {
-          const rating = await db("rating")
-            .where({ item_id: item.id })
-            .avg({ rating: "stars" })
-            .first()
-          item = { ...item, ...rating }
-          return item
-        }))
-
-        return order
-    }))
-  } catch (e) {
-  }
-
-  res.status(200).send(orders)
-})
+// router.get("/order/:id", authenticate, async (req, res, next) => {
+//   const { user } = res.locals
+//   const { id: member_id } = req.params
+//   let orders
+// 
+//   if (!(user.userId == member_id)) {
+//     res.status(401).send()
+//     return
+//   }
+// 
+//   try {
+//     // Retrieve all orders
+//     orders = await db.select([
+//         "order.id",
+//         "order.order_at",
+//         "order.ship_to",
+//         "status.name as status",
+//         "order.ship_at",
+//         "order.deliver_at",
+//       ])
+//       .from("order")
+//       .where({ member_id })
+//       .innerJoin("status", "status.id", "order.status_id")
+// 
+//     // Retrieve all order details
+//     orders = await Promise.all(
+//       orders.map(async order => {
+//         order.items = await db.select([
+//             "order_detail.quantity",
+//             "order_detail.price",
+//             "item.id",
+//             "item.sku",
+//             "item.name",
+//             "category.name as category",
+//             "item.description",
+//             "item.img",
+//             "size.name as size",
+//           ])
+//           .from("order_detail")
+//           .where({ order_id: order.id })
+//           .innerJoin("item", "item.id", "order_detail.item_id")
+//           .innerJoin("category", "category.id", "item.category_id")
+//           .leftJoin("size", "size.id", "item.size_id")
+// 
+//         // Retrieve ratings
+//         order.items = await Promise.all(order.items.map(async item => {
+//           const rating = await db("rating")
+//             .where({ item_id: item.id })
+//             .avg({ rating: "stars" })
+//             .first()
+//           item = { ...item, ...rating }
+//           return item
+//         }))
+// 
+//         return order
+//     }))
+//   } catch (e) {
+//   }
+// 
+//   res.status(200).send(orders)
+// })
 
 router.get("/order_detail", async (req, res, next) => {
   if (req.query && req.query.orderId) {

@@ -89,7 +89,7 @@
           admin: true,
         },
         {
-          name: "Profile",
+          name: "Dashboard",
           path: "/",
           icon: "person",
           guard: true,

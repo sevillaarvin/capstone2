@@ -757,33 +757,33 @@ describe("GET /item/id", () => {
   })
 })
 
-describe("GET /order/id", () => {
-  it("should return the orders of member with id 2", done => {
-    request(app)
-      .get("/order/2")
-      .set("authorization", "Bearer " + tokenUser)
-      .expect(200)
-      .expect("content-type", /json/)
-      .expect(res => {
-        expect(res.body).to.be.an("array")
-      })
-      .end((err, res) => {
-        if (err) return done(err)
-        done()
-      })
-  })
-
-  it("should not return order items of different user", done => {
-    request(app)
-      .get("/order/3")
-      .set("authorization", "Bearer " + tokenUser)
-      .expect(401)
-      .end((err, res) => {
-        if (err) return done(err)
-        done()
-      })
-  })
-})
+// describe("GET /order/id", () => {
+//   it("should return the orders of member with id 2", done => {
+//     request(app)
+//       .get("/order/2")
+//       .set("authorization", "Bearer " + tokenUser)
+//       .expect(200)
+//       .expect("content-type", /json/)
+//       .expect(res => {
+//         expect(res.body).to.be.an("array")
+//       })
+//       .end((err, res) => {
+//         if (err) return done(err)
+//         done()
+//       })
+//   })
+// 
+//   it("should not return order items of different user", done => {
+//     request(app)
+//       .get("/order/3")
+//       .set("authorization", "Bearer " + tokenUser)
+//       .expect(401)
+//       .end((err, res) => {
+//         if (err) return done(err)
+//         done()
+//       })
+//   })
+// })
 
 describe("GET /order_detail/id", () => {
   it("should return the order_detail with id 1", done => {

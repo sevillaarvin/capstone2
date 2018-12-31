@@ -62,6 +62,15 @@ const authenticate = async (req, res, next) => {
   try {
     token = authorization.split(" ")[1]
     user = await verifyUserToken(token)
+
+    const { id } = await db.select("id")
+      .from("member")
+      .where({ id: user.userId })
+      .first()
+
+    if (!id) {
+      throw new Error("Invalid user")
+    }
   } catch (e) {
     res.status(401).send()
     return

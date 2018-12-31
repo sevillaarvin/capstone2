@@ -12,7 +12,6 @@
             <v-data-table
               :headers="headers"
               :items="orders">
-
               <template
                 slot="items"
                 slot-scope="{ item }">
@@ -33,6 +32,19 @@
                     </span>
                   </td>
                 </tr>
+              </template>
+              <template
+                slot="no-data">
+                <v-alert
+                  :value="true"
+                  color="info">
+                  <v-icon
+                    class="v-alert__icon"
+                    @click="$router.push('/store')">
+                    shopping_cart
+                  </v-icon>
+                  You have no orders.
+                </v-alert>
               </template>
             </v-data-table>
             <v-dialog
@@ -155,18 +167,8 @@
     components: {
       Title
     },
-    async asyncData({ app, error }) {
-      let orders
-      const { $axios, $auth } = app
-
-      try {
-        orders = await $axios.$get("/order/" + $auth.$state.user.userId)
-      } catch (e) {
-        error(e)
-      }
-
+    data() {
       return {
-        orders,
         dialog: false,
         currentOrder: null,
         headers: [
@@ -202,6 +204,9 @@
       }
     },
     computed: {
+      orders() {
+        return this.$store.getters["user/orders"]
+      },
       total() {
         return this.currentOrder.items.reduce((total, current) => {
           return total + current.quantity * Number(current.price - current.discount || current.price)

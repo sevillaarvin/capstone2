@@ -144,6 +144,8 @@
             sortBy: "order_at",
             descending: true,
           },
+          eventHeaders: [],
+          paginationEvents: {},
         }
       } catch (e) {
         error(e)

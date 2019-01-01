@@ -2,19 +2,21 @@
   <v-layout>
     <v-flex
       xs12>
-      <v-container>
-        <Title
-          title="Dashboard" />
-        <v-layout>
-          <v-flex
-            xs12>
-            <v-container
-              fluid
-              grid-list-md
-              class="pa-0">
+      <v-container
+        grid-list-md>
+        <v-card>
+          <Title
+            title="Dashboard" />
+          <v-layout>
+            <v-flex
+              xs12>
               <v-layout
                 row
                 wrap>
+                <v-flex
+                  xs12>
+                  Cart
+                </v-flex>
                 <v-flex
                   xs12
                   md6>
@@ -103,9 +105,9 @@
                   </v-card>
                 </v-flex>
               </v-layout>
-            </v-container>
-          </v-flex>
-        </v-layout>
+            </v-flex>
+          </v-layout>
+        </v-card>
       </v-container>
     </v-flex>
   </v-layout>

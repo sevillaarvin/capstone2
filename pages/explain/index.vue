@@ -1,0 +1,31 @@
+<template>
+  <v-layout>
+    <v-flex
+      xs12>
+      <v-container>
+        <v-layout>
+          <v-flex
+            xs12>
+            <v-card>
+              <v-card-title
+                primary-title
+                class="display-2 justify-center">
+                EXPLAIN
+              </v-card-title>
+              <v-card-actions>
+                <v-btn
+                  to="/explain/database"
+                  nuxt>
+                  Database
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-flex>
+  </v-layout>
+</template>
+
+<script>
+</script>

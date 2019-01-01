@@ -14,7 +14,8 @@
       :user-navs="allNavs.userNavs"
       v-model="navDrawer" />
     <v-content>
-      <v-container fluid>
+      <v-container
+        fluid>
         <nuxt />
       </v-container>
     </v-content>

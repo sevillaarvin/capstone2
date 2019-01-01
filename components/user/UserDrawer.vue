@@ -15,6 +15,7 @@
           size="100">
           <v-img
             :src="userInfo.avatar"
+            class="cursor-pointer"
             @click="gotoDashboard" />
         </v-avatar>
         <v-avatar
@@ -108,6 +109,11 @@
             admin: false,
           },
           {
+            name: "Cart",
+            path: "/cart",
+            admin: false,
+          },
+          {
             name: "Orders",
             path: "/orders",
             admin: false,
@@ -131,5 +137,9 @@
   }
 </script>
 
-<style>
+<style
+  scoped>
+  .cursor-pointer {
+    cursor: pointer;
+  }
 </style>

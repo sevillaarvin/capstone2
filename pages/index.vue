@@ -139,8 +139,8 @@
                     row
                     wrap>
                     <v-flex
-                      v-for="n in 3"
-                      :key="n"
+                      v-for="(facility, n) in facilities"
+                      :key="facility.name"
                       :offset-md1="n % 2 == 1"
                       :offset-md3="n % 2 == 0"
                       :offset-lg2="n % 2 == 1"
@@ -152,7 +152,9 @@
                       lg6
                       class="my-3">
                       <v-card
-                        hover>
+                        hover
+                        nuxt
+                        to="/facilities">
                         <v-layout
                           row
                           wrap>
@@ -167,9 +169,9 @@
                                 hide-controls
                                 hide-delimiters>
                                 <v-carousel-item
-                                  v-for="facility in facilities"
-                                  :key="facility"
-                                  :src="facility">
+                                  v-for="img in facility.images"
+                                  :key="img"
+                                  :src="img">
                                   &nbsp;
                                 </v-carousel-item>
                               </v-carousel>
@@ -182,25 +184,13 @@
                             lg7>
                             <v-card-title
                               class="justify-center title">
-                              Sports center
+                              {{ facility.name }}
                             </v-card-title>
                             <v-card-text>
-                              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                              {{ facility.description | short-desc }}
+                              <span
+                                class="font-weight-bold secondary--text">Read more</span>
                             </v-card-text>
-                            <v-card-actions
-                              :class="{
-                                'justify-end': n % 2 == 1 && isMdScreen,
-                                'justify-center': !isMdScreen,
-                            }">
-                              <v-btn
-                                outline
-                                round
-                                nuxt
-                                color="secondary"
-                                to="/facilities">
-                                Learn more
-                              </v-btn>
-                            </v-card-actions>
                           </v-flex>
                         </v-layout>
                       </v-card>
@@ -520,10 +510,7 @@
       }
 
       return {
-        facilities: [
-          'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
-          'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg'
-        ]
+        facilities: store.getters.facilities//.slice(0,5)
       }
     },
     computed: {

@@ -171,7 +171,8 @@
                                 <v-carousel-item
                                   v-for="img in facility.images"
                                   :key="img"
-                                  :src="img">
+                                  :src="img"
+                                  class="skeleton">
                                   &nbsp;
                                 </v-carousel-item>
                               </v-carousel>
@@ -230,13 +231,10 @@
               row
               wrap>
               <v-flex
-                v-for="n of 2"
-                :key="n"
                 xs12
                 md6>
                 <v-layout
-                  fill-height
-                  align-center>
+                  fill-height>
                   <v-flex
                     xs12>
                     <v-card
@@ -248,13 +246,13 @@
                       </v-card-title>
                       <v-container
                         fluid
-                        grid-list-xs>
+                        grid-list-md>
                         <v-layout
                           row
                           wrap>
                           <v-flex
-                            v-for="n in 3"
-                            :key="n"
+                            v-for="article in news"
+                            :key="article.id"
                             xs12>
                             <v-card
                               flat>
@@ -268,9 +266,9 @@
                                   lg3
                                   xl2>
                                   <v-img
+                                    :src="article.cover"
                                     contain
-                                    src="https://cdn.vuetifyjs.com/images/carousel/sky.jpg"
-                                    class="mr-3" />
+                                    class="mr-3 skeleton" />
                                 </v-flex>
                                 <v-flex
                                   xs12
@@ -279,14 +277,86 @@
                                   lg9
                                   xl10>
                                   <v-card-title
+                                    primary-title
                                     class="title py-0">
-                                    Fan tast ic C'est
+                                    {{ article.title | micro-desc }}
+                                  </v-card-title>
+                                  <v-card-title
+                                    class="body-2 py-0">
+                                    {{ article.date | long-date }}
                                   </v-card-title>
                                   <v-card-text>
-                                    This is a new news, spectacular amazin amazon boycott nice japhet.
-                                    This is a new news, spectacular amazin amazon boycott nice japhet.
-                                    This is a new news, spectacular amazin amazon boycott nice japhet.
+                                    {{ article.content | mini-desc }}
                                   </v-card-text>
+                                </v-flex>
+                              </v-layout>
+                            </v-card>
+                          </v-flex>
+                        </v-layout>
+                      </v-container>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+              <v-flex
+                xs12
+                md6>
+                <v-layout
+                  fill-height>
+                  <v-flex
+                    xs12>
+                    <v-card
+                      flat>
+                      <v-card-title
+                        primary-title
+                        class="display-2 justify-center">
+                        Events
+                      </v-card-title>
+                      <v-container
+                        fluid
+                        grid-list-md>
+                        <v-layout
+                          row
+                          wrap>
+                          <v-flex
+                            v-for="event in events"
+                            :key="event.id"
+                            xs12>
+                            <v-card
+                              flat>
+                              <v-layout
+                                row
+                                wrap>
+                                <v-flex
+                                  xs12
+                                  sm6
+                                  md8
+                                  lg9
+                                  xl10>
+                                  <v-card-title
+                                    primary-title
+                                    class="title py-0 justify-end">
+                                    {{ event.name | micro-desc }}
+                                  </v-card-title>
+                                  <v-card-title
+                                    class="body-2 py-0 justify-end">
+                                    {{ event.date | long-date }}
+                                  </v-card-title>
+                                  <v-card-text
+                                    class="text-xs-right">
+                                    {{ event.description | mini-desc }}
+                                  </v-card-text>
+                                </v-flex>
+                                <v-flex
+                                  xs12
+                                  sm6
+                                  md4
+                                  lg3
+                                  xl2>
+                                  <v-img
+                                    :src="event.cover"
+                                    contain
+                                    class="mr-3 skeleton" />
                                 </v-flex>
                               </v-layout>
                             </v-card>
@@ -345,31 +415,47 @@
       <v-layout>
         <v-flex
           xs12>
-          <v-card
-            class="py-5">
+          <v-parallax
+            :src="require('~/assets/image-bg2.jpeg')">
             <v-layout
-              fill-height
+              align-center
               column
               justify-center>
-              <v-card-title
-                primary-title
-                class="display-3 justify-center">
-                What are you waiting for?
-              </v-card-title>
-              <v-card-actions
-                class="justify-center">
-                <v-btn
-                  round
-                  large
-                  nuxt
-                  to="/signup"
-                  color="primary"
-                  class="black--text">
-                  Register Now
-                </v-btn>
-              </v-card-actions>
+              <h1 class="display-2 font-weight-thin mb-3">What are you waiting for?</h1>
+              <v-btn
+                round
+                large
+                nuxt
+                to="/signup"
+                color="primary"
+                class="black--text">
+                Register Now
+              </v-btn>
             </v-layout>
+          </v-parallax>
+          <!--
+          <v-card
+            class="call-to-action"
+            height="250">
+            <v-card-title
+              primary-title
+              class="display-3 justify-center">
+              What are you waiting for?
+            </v-card-title>
+            <v-card-actions
+              class="justify-center">
+              <v-btn
+                round
+                large
+                nuxt
+                to="/signup"
+                color="primary"
+                class="black--text">
+                Register Now
+              </v-btn>
+            </v-card-actions>
           </v-card>
+          -->
         </v-flex>
       </v-layout>
       <v-layout>
@@ -490,11 +576,6 @@
     components: {
       Item
     },
-    data() {
-      return {
-        isHydrated: false,
-      }
-    },
     async asyncData({ app, redirect, store }) {
       const { $auth } = app
       if ($auth.$state.loggedIn) {
@@ -510,7 +591,10 @@
       }
 
       return {
-        facilities: store.getters.facilities//.slice(0,5)
+        facilities: store.getters.facilities.slice(0,5),
+        news: store.getters["activities/news"].slice(0,3),
+        events: store.getters["activities/events"].slice(0,3),
+        isHydrated: false,
       }
     },
     computed: {
@@ -608,5 +692,51 @@
 
   .cursor-pointer {
     cursor: pointer;
+  }
+  .skeleton {
+    /*
+      define as separate properties
+    */
+    --card-height: 340px;
+    --card-padding:24px;
+    --card-skeleton: linear-gradient(gray var(--card-height), transparent 0);
+
+    --title-height: 32px;
+    --title-width: 200px;
+    --title-position: var(--card-padding) 180px;
+    --title-skeleton: linear-gradient(white var(--title-height), transparent 0);
+
+    --avatar-size: 32px;
+    --avatar-position: var(--card-padding) var(--card-padding);
+    --avatar-skeleton: radial-gradient(
+      circle calc(var(--avatar-size) / 2), 
+      white 99%, 
+      transparent 0
+    );
+
+    /* 
+      now we can break the background up 
+      into individual shapes 
+    */
+    background-image: 
+      var(--avatar-skeleton),
+      var(--title-skeleton),
+      var(--card-skeleton);
+
+    background-size:
+      var(--avatar-size),
+      var(--title-width) var(--title-height),
+      100% 100%;
+
+    background-position:
+      var(--avatar-position),
+      var(--title-position),
+      0 0;
+  }
+  .call-to-action {
+    background-image: linear-gradient(to right bottom, rgba(0,0,0,.3), rgba(0,0,0,.4)), url(~@/assets/image-bg2.jpeg);
+    background-position: center center;
+    background-size:cover;
+    background-repeat: no-repeat;
   }
 </style>

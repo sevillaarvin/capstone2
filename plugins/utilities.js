@@ -11,5 +11,19 @@ Vue.filter("short-desc", (description) => {
   if (!description || typeof description !== "string") {
     return "Generic description"
   }
-  return description.substr(0,300) + "..."
+  return description.substr(0,300) + (description.length > 300 ? "..." : "")
+})
+
+Vue.filter("mini-desc", (description) => {
+  if (!description || typeof description !== "string") {
+    return "Generic description"
+  }
+  return description.substr(0,150) + (description.length > 150 ? "..." : "")
+})
+
+Vue.filter("micro-desc", (description) => {
+  if (!description || typeof description !== "string") {
+    return "Generic description"
+  }
+  return description.substr(0,50) + (description.length > 50 ? "..." : "")
 })

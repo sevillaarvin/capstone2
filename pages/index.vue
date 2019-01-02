@@ -153,6 +153,7 @@
                       lg6
                       class="my-3">
                       <v-card
+                        flat
                         hover
                         nuxt
                         to="/facilities">
@@ -256,6 +257,8 @@
                             :key="article.id"
                             xs12>
                             <v-card
+                              :to="`/news/${article.id}`"
+                              nuxt
                               hover
                               class="my-1">
                               <v-layout
@@ -327,6 +330,8 @@
                             :key="event.id"
                             xs12>
                             <v-card
+                              :to="`/events/${event.id}`"
+                              nuxt
                               hover
                               class="my-1">
                               <v-layout

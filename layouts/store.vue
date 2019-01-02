@@ -46,9 +46,7 @@
         return this.$store.getters.allNavs
       },
       userInfo() {
-        return this.$store.getters.userInfo || {
-          firstName: "Anonymous",
-        }
+        return this.$store.getters.userInfo
       }
     },
     middleware: [

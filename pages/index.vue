@@ -83,7 +83,7 @@
                     Experience Real Luxury
                   </v-card-title>
                   <v-card-actions
-                    class="justify-space-around">
+                    class="justify-center">
                     <v-btn
                       large
                       light
@@ -95,7 +95,8 @@
                     </v-btn>
                     <v-divider
                       inset
-                      vertical />
+                      vertical
+                      class="mx-1" />
                     <v-btn
                       large
                       round
@@ -165,7 +166,7 @@
                             lg5>
                             <v-card-text>
                               <v-carousel
-                                height="360"
+                                height="200"
                                 hide-controls
                                 hide-delimiters>
                                 <v-carousel-item
@@ -255,7 +256,8 @@
                             :key="article.id"
                             xs12>
                             <v-card
-                              flat>
+                              hover
+                              class="my-1">
                               <v-layout
                                 row
                                 wrap>
@@ -277,9 +279,11 @@
                                   lg9
                                   xl10>
                                   <v-card-title
+                                    :class="!isMdScreen ? 'text-xs-center justify-center' : ''"
                                     primary-title
                                     class="title py-0">
                                     {{ article.title | micro-desc }}
+                                    {{ isMdScreen }}
                                   </v-card-title>
                                   <v-card-title
                                     class="body-2 py-0">
@@ -323,7 +327,8 @@
                             :key="event.id"
                             xs12>
                             <v-card
-                              flat>
+                              hover
+                              class="my-1">
                               <v-layout
                                 row
                                 wrap>
@@ -334,8 +339,9 @@
                                   lg9
                                   xl10>
                                   <v-card-title
+                                    :class="!isMdScreen ? 'text-xs-center justify-center' : 'text-xs-right justify-end'"
                                     primary-title
-                                    class="title py-0 justify-end">
+                                    class="title py-0">
                                     {{ event.name | micro-desc }}
                                   </v-card-title>
                                   <v-card-title
@@ -343,7 +349,7 @@
                                     {{ event.date | long-date }}
                                   </v-card-title>
                                   <v-card-text
-                                    class="text-xs-right">
+                                    :class="isMdScreen ? 'text-xs-right' : ''">
                                     {{ event.description | mini-desc }}
                                   </v-card-text>
                                 </v-flex>
@@ -416,12 +422,14 @@
         <v-flex
           xs12>
           <v-parallax
-            :src="require('~/assets/image-bg2.jpeg')">
+            :src="require('~/assets/image-bg2.jpeg')"
+            class="pa-0">
             <v-layout
               align-center
               column
-              justify-center>
-              <h1 class="display-2 font-weight-thin mb-3">What are you waiting for?</h1>
+              justify-center
+              class="call-to-action">
+              <h1 class="display-2 font-weight-thin mb-3 text-xs-center">What are you waiting for?</h1>
               <v-btn
                 round
                 large
@@ -433,29 +441,6 @@
               </v-btn>
             </v-layout>
           </v-parallax>
-          <!--
-          <v-card
-            class="call-to-action"
-            height="250">
-            <v-card-title
-              primary-title
-              class="display-3 justify-center">
-              What are you waiting for?
-            </v-card-title>
-            <v-card-actions
-              class="justify-center">
-              <v-btn
-                round
-                large
-                nuxt
-                to="/signup"
-                color="primary"
-                class="black--text">
-                Register Now
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-          -->
         </v-flex>
       </v-layout>
       <v-layout>
@@ -488,62 +473,32 @@
                         Club Seville International
                       </v-card-title>
                       <v-card-text>
-                        <v-layout
-                          row
-                          wrap>
-                          <v-flex
-                            xs12>
-                            <v-card
-                              flat>
-                              <v-subheader>
-                                Headquarters
-                              </v-subheader>
-                              <v-list
-                                two-line>
-                                <v-list-tile>
-                                  <v-list-tile-content>
-                                    <v-list-tile-title>
-                                      info@clubseville.icu
-                                    </v-list-tile-title>
-                                    <v-list-tile-sub-title>
-                                      Email
-                                    </v-list-tile-sub-title>
-                                  </v-list-tile-content>
-                                </v-list-tile>
-                                <v-list-tile>
-                                  <v-list-tile-content>
-                                    <v-list-tile-title>
-                                      134 Timog Ave. Caswynn Building
-                                    </v-list-tile-title>
-                                    <v-list-tile-sub-title>
-                                      Address
-                                    </v-list-tile-sub-title>
-                                  </v-list-tile-content>
-                                </v-list-tile>
-                                <v-list-tile>
-                                  <v-list-tile-content>
-                                    <v-list-tile-title>
-                                      123-1234
-                                    </v-list-tile-title>
-                                    <v-list-tile-sub-title>
-                                      Phone
-                                    </v-list-tile-sub-title>
-                                  </v-list-tile-content>
-                                </v-list-tile>
-                                <v-list-tile>
-                                  <v-list-tile-content>
-                                    <v-list-tile-title>
-                                      123-4567
-                                    </v-list-tile-title>
-                                    <v-list-tile-sub-title>
-                                      Phone
-                                    </v-list-tile-sub-title>
-                                  </v-list-tile-content>
-                                </v-list-tile>
-                              </v-list>
-                            </v-card>
-                          </v-flex>
-                        </v-layout>
+                        <v-subheader>
+                          Offices
+                        </v-subheader>
+                        <v-list
+                          two-line>
+                          <v-list-tile
+                            v-for="office in offices"
+                            :key="office.address">
+                            <v-list-tile-content>
+                              <v-list-tile-title>
+                                {{ office.address }}
+                              </v-list-tile-title>
+                              <v-list-tile-sub-title>
+                                {{ office.emails[0] }}
+                              </v-list-tile-sub-title>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </v-list>
+                        <v-btn
+                          round
+                          outline
+                          nuxt
+                          to="/about"
+                          color="secondary">
+                          Contact Us
+                        </v-btn>
                       </v-card-text>
                     </v-flex>
                     <v-flex
@@ -594,13 +549,12 @@
         facilities: store.getters.facilities.slice(0,5),
         news: store.getters["activities/news"].slice(0,3),
         events: store.getters["activities/events"].slice(0,3),
+        items: store.getters.featuredItems.slice(0,4),
+        offices: store.getters.offices,
         isHydrated: false,
       }
     },
     computed: {
-      items() {
-        return this.$store.getters.featuredItems.slice(0,4)
-      },
       isMdScreen() {
         return this.isHydrated ? this.$vuetify.breakpoint.mdAndUp : false
       }
@@ -734,9 +688,6 @@
       0 0;
   }
   .call-to-action {
-    background-image: linear-gradient(to right bottom, rgba(0,0,0,.3), rgba(0,0,0,.4)), url(~@/assets/image-bg2.jpeg);
-    background-position: center center;
-    background-size:cover;
-    background-repeat: no-repeat;
+    background-image: linear-gradient(to right, rgba(0,0,0,.05), rgba(0,0,0,.35), rgba(0,0,0,.05));
   }
 </style>

@@ -37,35 +37,6 @@
                                 max-height="400"
                                 aspect-ratio="1.7"
                                 @click="openGallery(facility)" />
-                              <v-dialog
-                                v-model="dialog"
-                                max-width="720"
-                                @keydown.esc="dialog = false">
-                                <v-card>
-                                  <v-card-title
-                                    primary-title
-                                    class="justify-center title">
-                                    {{ currentFacility.name }}
-                                  </v-card-title>
-                                  <v-container
-                                    fluid
-                                    grid-list-md>
-                                    <v-layout
-                                      row
-                                      wrap>
-                                      <v-flex
-                                        v-for="img in currentFacility.images"
-                                        :key="img"
-                                        xs12
-                                        md4>
-                                        <v-img
-                                          :src="img"
-                                          height="250" />
-                                      </v-flex>
-                                    </v-layout>
-                                  </v-container>
-                                </v-card>
-                              </v-dialog>
                             </v-flex>
                             <v-flex
                               xs12
@@ -92,14 +63,36 @@
           </v-flex>
         </v-layout>
       </v-container>
-      <!--
-      <Facility
-        v-for="(facility, i) in facilities"
-        :key="facility.name"
-        :facility="facility"
-        :position="i % 2 == 0 ? 'left' : 'right'" />
-      -->
     </v-flex>
+    <v-dialog
+      v-model="dialog"
+      max-width="720"
+      @keydown.esc="dialog = false">
+      <v-card>
+        <v-card-title
+          primary-title
+          class="justify-center title">
+          {{ currentFacility.name }}
+        </v-card-title>
+        <v-container
+          fluid
+          grid-list-md>
+          <v-layout
+            row
+            wrap>
+            <v-flex
+              v-for="img in currentFacility.images"
+              :key="img"
+              xs12
+              md4>
+              <v-img
+                :src="img"
+                height="250" />
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 

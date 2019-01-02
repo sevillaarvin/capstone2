@@ -10,12 +10,12 @@
           row
           wrap>
           <v-flex
-            v-for="n in 5"
-            :key="n"
+            v-for="article in news"
+            :key="article.id"
             xs12
             class="mb-3">
             <v-card
-              :to="'/news/test'"
+              :to="`/news/${article.id}`"
               nuxt>
               <v-layout
                 row
@@ -25,8 +25,8 @@
                   sm4
                   md5>
                   <v-img
-                    contain
-                    src="https://cdn.vuetifyjs.com/images/cards/desert.jpg" />
+                    :src="article.cover"
+                    contain />
                 </v-flex>
                 <v-flex
                   xs12
@@ -35,13 +35,12 @@
                   <v-card-title
                     primary-title
                     class="title">
-                    This Is The Headline
+                    {{ article.title }}
                   </v-card-title>
                   <v-card-text>
-                    The news is that nothing is true, everything is permitted. Here at blah blah, we have blah blah blah blah blah.
-                    The news is that nothing is true, everything is permitted. Here at blah blah, we have blah blah blah blah blah.
-                    The news is that nothing is true, everything is permitted. Here at blah blah, we have blah blah blah blah blah...
-                    <span>
+                    {{ article.content | short-desc }}
+                    <span
+                      class="primary--text">
                       Read more
                     </span>
                   </v-card-text>
@@ -61,7 +60,12 @@
   export default {
     components: {
       Title
-    }
+    },
+    async asyncData({ store }) {
+      return {
+        news: store.getters["activities/news"]
+      }
+    },
   }
 </script>
 

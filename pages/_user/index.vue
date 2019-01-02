@@ -15,7 +15,7 @@
                 wrap>
                 <v-flex
                   xs12>
-                  Cart
+                  <!--Cart-->
                 </v-flex>
                 <v-flex
                   xs12
@@ -122,7 +122,7 @@
     },
     async asyncData({ error, store: { dispatch, getters } }) {
       try {
-        await dispatch("user/setOrders")
+        await dispatch("member/setOrders")
 
         return {
           orderHeaders: [{
@@ -155,7 +155,7 @@
     },
     computed: {
       orders() {
-        return this.$store.getters["user/orders"]
+        return this.$store.getters["member/orders"]
       },
       events() {
         return []

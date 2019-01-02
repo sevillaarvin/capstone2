@@ -10,12 +10,12 @@
           row
           wrap>
           <v-flex
-            v-for="n in 5"
-            :key="n"
+            v-for="event in events"
+            :key="event.id"
             xs12
             class="mb-3">
             <v-card
-              :to="'/events/test'"
+              :to="`/events/${event.id}`"
               nuxt>
               <v-layout
                 row
@@ -25,19 +25,16 @@
                   sm8
                   md7>
                   <v-card-title>
-                    What: This is name of event
+                    What: {{ event.name }}
                   </v-card-title>
                   <v-card-text class="py-0">
-                    When: 01 December 2018
+                    When: {{ event.date | long-date }}
                   </v-card-text>
                   <v-card-text class="py-0">
-                    Where: Over there
-                  </v-card-text>
-                  <v-card-text class="py-0">
-                    Why: Just Cause
+                    Where: {{ event.address }}
                   </v-card-text>
                   <v-card-text>
-                    This is a very long description about an event which will happen sometime to celebrate something happening somewhere.
+                    {{ event.description }}
                   </v-card-text>
                 </v-flex>
                 <v-flex
@@ -45,12 +42,14 @@
                   sm4
                   md5>
                   <v-img
+                    :src="event.cover"
                     contain
-                    class="align-center"
-                    src="https://cdn.vuetifyjs.com/images/cards/desert.jpg">
+                    class="align-center">
                     <v-card-actions
                       class="justify-center">
                       <v-btn
+                        round
+                        class="primary black--text"
                         @click.prevent="register">
                         Register
                       </v-btn>
@@ -71,6 +70,11 @@
   export default {
     components: {
       Title
+    },
+    async asyncData({ store }) {
+      return {
+        events: store.getters["activities/events"]
+      }
     },
     methods: {
       register() {

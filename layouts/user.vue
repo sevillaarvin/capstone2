@@ -44,14 +44,7 @@
         return this.$store.getters.allNavs
       },
       userInfo() {
-        return this.$store.getters.userInfo || {
-          firstName: "Anonymous",
-        }
-        // const user = this.$store.getters.userInfo
-        // if (!user.avatar) {
-        //   user.avatar = "http://i.pravatar.cc/150?u=Anonymous'"
-        // }
-        // return user
+        return this.$store.getters.userInfo
       }
     },
     middleware: [

@@ -258,7 +258,7 @@
           .map((role) => role.name)
       },
       genders() {
-        return this.$store.getters["user/genders"]
+        return this.$store.getters["member/genders"]
       },
     },
     methods: {

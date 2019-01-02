@@ -11,10 +11,10 @@
       <div
         class="text-xs-center">
         <v-avatar
-          v-if="userInfo.avatar"
+          v-if="user.avatar"
           size="100">
           <v-img
-            :src="userInfo.avatar"
+            :src="user.avatar"
             class="cursor-pointer"
             @click="gotoDashboard" />
         </v-avatar>
@@ -30,7 +30,7 @@
       </div>
       <v-card-title
         class="justify-center">
-        {{ userInfo.firstName }} {{ userInfo.lastName }}
+        {{ user.firstName }} {{ user.lastName }}
       </v-card-title>
       <v-card-actions>
         <SearchBar
@@ -91,7 +91,13 @@
     computed: {
       categories() {
         return this.$store.getters.categories
-      }
+      },
+      user() {
+        return this.userInfo || {
+          username: "Anonymous",
+          firstName: "Anonymous",
+        }
+      },
     },
     methods: {
       gotoDashboard() {

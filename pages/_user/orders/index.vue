@@ -205,7 +205,7 @@
     },
     computed: {
       orders() {
-        return this.$store.getters["user/orders"]
+        return this.$store.getters["member/orders"]
       },
       total() {
         return this.currentOrder.items.reduce((total, current) => {

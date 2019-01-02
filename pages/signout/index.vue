@@ -1,7 +1,7 @@
 <template>
   <v-layout>
     <v-flex xs12>
-      You will automatically be redirected.
+      &nbsp;
     </v-flex>
   </v-layout>
 </template>

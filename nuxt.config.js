@@ -48,6 +48,7 @@ module.exports = {
   */
   // TODO: Setup Loading
   loading: { color: '#fff' },
+  // loading: {color: "#333", failedColor: "#666", height: "4px", duration: 5000}
 
   /*
   ** Global CSS

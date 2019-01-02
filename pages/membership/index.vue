@@ -1,63 +1,81 @@
 <template>
   <v-layout>
     <v-flex xs12>
-      <Title :title="'Membership'" />
-      <v-container
-        grid-list-xl
-        class="pt-0">
-        <v-layout
-          justify-center
-          row
-          wrap>
-          <v-flex
-            v-for="membership in memberships"
-            :key="membership.name"
-            xs12
-            sm10
-            offset-sm1
-            md4
-            offset-md0>
-            <v-card>
-              <v-card-title
-                class="justify-center headline secondary">
-                {{ membership.name }}
-              </v-card-title>
-              <v-card-text
-                class="text-xs-center subheading pb-0">
-                Price: {{ membership.price }}
-              </v-card-text>
-              <v-card-text
-                class="text-xs-center subheading pt-0">
-                Net worth: {{ membership.networth }}
-              </v-card-text>
-              <v-divider />
-              <v-list>
-                <v-list-tile
-                  v-for="(benefit, i) in membership.benefits"
-                  :key="membership.name + benefit + i">
-                  <v-list-tile-content>
-                    <p
-                      class="text-xs-center align-self-center">
-                      {{ benefit }}
-                    </p>
-                  </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
-              <v-card-actions
-                class="justify-center">
-                <v-btn
-                  :to="membership.path"
-                  round
-                  large
-                  nuxt
-                  color="primary"
-                  class="black--text">
-                  {{ membership.cta }}
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-        </v-layout>
+      <v-container>
+        <v-card>
+          <v-layout>
+            <v-flex
+              xs12>
+              <Title :title="'Membership'" />
+              <v-container
+                grid-list-xl
+                class="pt-0">
+                <v-layout
+                  justify-center
+                  row
+                  wrap>
+                  <v-flex
+                    v-for="membership in memberships"
+                    :key="membership.name"
+                    xs12
+                    sm10
+                    offset-sm1
+                    md4
+                    offset-md0>
+                    <v-card
+                      light>
+                      <v-card-title
+                        class="justify-center headline secondary white--text">
+                        {{ membership.name }}
+                      </v-card-title>
+                      <v-card-text
+                        class="text-xs-center subheading pb-0">
+                        Price:
+                        <span
+                          class="font-weight-bold">
+                          {{ membership.price }}
+                        </span>
+                      </v-card-text>
+                      <v-card-text
+                        class="text-xs-center subheading pt-0">
+                        Net worth: 
+                        <span
+                          class="font-weight-bold">
+                          {{ membership.networth }}
+                        </span>
+                      </v-card-text>
+                      <v-divider />
+                      <v-list>
+                        <v-list-tile
+                          v-for="(benefit, i) in membership.benefits"
+                          :key="membership.name + benefit + i">
+                          <v-list-tile-content>
+                            <p
+                              class="text-xs-center align-self-center">
+                              {{ benefit }}
+                            </p>
+                          </v-list-tile-content>
+                        </v-list-tile>
+                      </v-list>
+                      <v-card-actions
+                        class="justify-center">
+                        <v-btn
+                          :to="membership.path"
+                          round
+                          large
+                          nuxt
+                          color="primary"
+                          class="black--text">
+                          {{ membership.cta }}
+                        </v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-flex>
+          </v-layout>
+        </v-card>
       </v-container>
     </v-flex>
   </v-layout>
@@ -78,9 +96,8 @@
             price: "Free",
             networth: "None",
             benefits: [
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
+              "1 hour access per day",
+              "Lap Pool",
             ],
             path: "/signup",
             cta: "Register",
@@ -90,10 +107,10 @@
             price: "10 million",
             networth: "100 million",
             benefits: [
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
+              "4 hour access per day",
+              "Lap Pool",
+              "Wave Pool",
+              "Recreational Pool",
             ],
             path: "/about",
             cta: "Inquire",
@@ -103,11 +120,12 @@
             price: "50 million",
             networth: "500 million",
             benefits: [
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
+              "8 hour access per day",
+              "Cafeteria access",
+              "Lap Pool",
+              "Wave Pool",
+              "Recreational Pool",
+              "Diving Pool",
             ],
             path: "/about",
             cta: "Inquire",
@@ -117,13 +135,15 @@
             price: "550 million",
             networth: "1.1 billion",
             benefits: [
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
+              "24 hour access per day",
+              "Cafeteria access",
+              "Lap Pool",
+              "Wave Pool",
+              "Recreational Pool",
+              "Diving Pool",
+              "Spa",
+              "Jacuzzi",
+              "Sauna",
             ],
             path: "/about",
             cta: "Inquire",
@@ -133,14 +153,17 @@
             price: "Must be a gold member",
             networth: "Must be a top 10 taxpayer",
             benefits: [
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
-              "Lap pool - 1 hour per day",
+              "24 hour access per day",
+              "Cafeteria access",
+              "Lounge access",
+              "Concierge",
+              "Lap Pool",
+              "Wave Pool",
+              "Recreational Pool",
+              "Diving Pool",
+              "Spa",
+              "Jacuzzi",
+              "Sauna",
             ],
             path: "/about",
             cta: "Inquire",

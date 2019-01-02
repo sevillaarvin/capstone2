@@ -11,10 +11,10 @@
       <div
         class="text-xs-center">
         <v-avatar
-          v-if="userInfo.avatar"
+          v-if="user.avatar"
           size="100">
           <v-img
-            :src="userInfo.avatar"
+            :src="user.avatar"
             class="cursor-pointer"
             @click="gotoDashboard" />
         </v-avatar>
@@ -30,45 +30,10 @@
       </div>
       <v-card-title
         class="justify-center">
-        {{ userInfo.firstName }} {{ userInfo.lastName }}
+        {{ user.firstName }} {{ user.lastName }}
       </v-card-title>
     </v-card>
     <v-list>
-      <!--
-      <template
-        v-for="link in userLinks">
-        <v-list-group
-          v-if="link.pages"
-          :key="link.name">
-          <v-list-tile slot="activator">
-            {{ link.name }}
-          </v-list-tile>
-          <v-list-tile
-            v-for="page in link.pages"
-            :key="page.name"
-            :to="adminLink(page.path)"
-            nuxt>
-            <v-list-tile-action>
-              <v-icon>{{ page.icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-title>
-              {{ page.name }}
-            </v-list-tile-title>
-          </v-list-tile>
-        </v-list-group>
-        <v-list-tile
-          v-else
-          :key="link.name"
-          :to="userLink(link.path)"
-          nuxt>
-          <v-list-tile-content>
-            {{ link.name }}
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-divider
-          :key="link.name + '1'" />
-      </template>
-      -->
       <template
         v-for="link in userLinks">
         <v-list-tile
@@ -124,6 +89,14 @@
             admin: false,
           },
         ]
+      }
+    },
+    computed: {
+      user() {
+        return this.userInfo || {
+          username: "Anonymous",
+          firstName: "Anonymous",
+        }
       }
     },
     methods: {

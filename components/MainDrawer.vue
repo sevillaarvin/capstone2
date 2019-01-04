@@ -76,11 +76,11 @@
     props: {
       value: {
         type: Boolean,
-        default: false
+        default: false,
       },
       userInfo: {
         type: Object,
-        required: true,
+        default: null,
       }
     },
     data() {

@@ -39,54 +39,56 @@
         v-model="dialog.edit"
         width="500">
         <v-card>
-          <v-container
-            fluid>
-            <v-layout>
-              <v-flex
-                xs12>
-                <v-form
-                  @submit.prevent="updateOrder">
-                  <v-text-field
-                    v-model="currentOrder.orderAt"
-                    label="Order At" />
-                  <v-text-field
-                    v-model="currentOrder.shipTo"
-                    label="Ship To" />
-                  <v-select
-                    :items="statusNames"
-                    v-model="currentOrder.status"
-                    label="Status" />
-                  <v-text-field
-                    v-model="currentOrder.shipAt"
-                    label="Ship At" />
-                  <v-text-field
-                    v-model="currentOrder.deliverAt"
-                    label="Deliver At" />
-                  <v-select
-                    :items="shipMethodNames"
-                    v-model="currentOrder.shipMethod"
-                    label="Ship Method" />
-                  <v-select
-                    :items="payMethodNames"
-                    v-model="currentOrder.payMethod"
-                    label="Pay Method" />
-                  <v-text-field
-                    v-model="currentOrder.paypalPaymentSid"
-                    label="PayPal Payment SID" />
-                  <v-card-actions>
-                    <v-btn
-                      type="submit">
-                      Submit
-                    </v-btn>
-                    <v-btn
-                      color="error">
-                      Delete
-                    </v-btn>
-                  </v-card-actions>
-                </v-form>
-              </v-flex>
-            </v-layout>
-          </v-container>
+          <v-form
+            @submit.prevent="updateOrder">
+            <v-card-title
+              primary-title
+              class="title">
+              Edit Order
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="currentOrder.orderAt"
+                label="Order At" />
+              <v-text-field
+                v-model="currentOrder.shipTo"
+                label="Ship To" />
+              <v-select
+                :items="statusNames"
+                v-model="currentOrder.status"
+                label="Status" />
+              <v-text-field
+                v-model="currentOrder.shipAt"
+                label="Ship At" />
+              <v-text-field
+                v-model="currentOrder.deliverAt"
+                label="Deliver At" />
+              <v-select
+                :items="shipMethodNames"
+                v-model="currentOrder.shipMethod"
+                label="Ship Method" />
+              <v-select
+                :items="payMethodNames"
+                v-model="currentOrder.payMethod"
+                label="Pay Method" />
+              <v-text-field
+                v-model="currentOrder.paypalPaymentSid"
+                label="PayPal Payment SID" />
+            </v-card-text>
+            <v-card-actions
+              class="justify-space-between">
+              <v-btn
+                color="secondary"
+                type="submit">
+                Submit
+              </v-btn>
+              <v-btn
+                color="error"
+                @click="deleteOrder">
+                Delete
+              </v-btn>
+            </v-card-actions>
+          </v-form>
         </v-card>
       </v-dialog>
     </v-flex>

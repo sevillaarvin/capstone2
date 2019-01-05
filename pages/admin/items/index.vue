@@ -13,55 +13,55 @@
           max-width="500px">
           <v-btn
             slot="activator"
-            color="primary"
-            dark
+            color="secondary"
             class="mb-2">
             New Item
           </v-btn>
           <v-card>
-            <v-card-title>
-              <span class="headline">New Item</span>
-            </v-card-title>
             <v-form
               @submit.prevent="createItem">
+              <v-card-title
+                primary-title
+                class="title">
+                New Item
+              </v-card-title>
               <v-card-text>
-                <v-container
-                  fluid>
-                  <v-layout
-                    wrap>
-                    <v-flex
-                      xs12>
-                      <v-text-field
-                        v-model="newItem.sku"
-                        label="SKU" />
-                      <v-text-field
-                        v-model="newItem.name"
-                        label="Name" />
-                      <v-select
-                        :items="categoryNames"
-                        v-model="newItem.category"
-                        label="Category" />
-                      <v-text-field
-                        v-model="newItem.description"
-                        label="Description" />
-                      <v-text-field
-                        v-model="newItem.img"
-                        label="Image" />
-                      <v-text-field
-                        v-model="newItem.price"
-                        type="number"
-                        label="Price" />
-                      <v-text-field
-                        v-model="newItem.discount"
-                        type="number"
-                        label="Discount" />
-                      <v-select
-                        :items="sizeNames"
-                        v-model="newItem.size"
-                        label="Size" />
-                    </v-flex>
-                  </v-layout>
-                </v-container>
+                <v-text-field
+                  v-model="newItem.sku"
+                  color="secondary"
+                  label="SKU" />
+                <v-text-field
+                  v-model="newItem.name"
+                  color="secondary"
+                  label="Name" />
+                <v-select
+                  :items="categoryNames"
+                  v-model="newItem.category"
+                  color="secondary"
+                  label="Category" />
+                <v-text-field
+                  v-model="newItem.description"
+                  color="secondary"
+                  label="Description" />
+                <v-text-field
+                  v-model="newItem.img"
+                  color="secondary"
+                  label="Image" />
+                <v-text-field
+                  v-model="newItem.price"
+                  type="number"
+                  color="secondary"
+                  label="Price" />
+                <v-text-field
+                  v-model="newItem.discount"
+                  type="number"
+                  color="secondary"
+                  label="Discount" />
+                <v-select
+                  :items="sizeNames"
+                  v-model="newItem.size"
+                  color="secondary"
+                  label="Size" />
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
@@ -116,56 +116,65 @@
         v-model="dialog.edit"
         width="500">
         <v-card>
-          <v-container
-            fluid>
-            <v-layout>
-              <v-flex
-                xs12>
-                <v-form
-                  @submit.prevent="updateItem">
-                  <v-text-field
-                    v-model="currentItem.sku"
-                    label="SKU"/>
-                  <v-text-field
-                    v-model="currentItem.name"
-                    label="Name"/>
-                  <v-text-field
-                    v-model="currentItem.description"
-                    label="Description"/>
-                  <v-select
-                    :items="categoryNames"
-                    v-model="currentItem.category"
-                    label="Category" />
-                  <v-text-field
-                    v-model="currentItem.img"
-                    label="Image" />
-                  <v-text-field
-                    v-model="currentItem.price"
-                    type="number"
-                    label="Price" />
-                  <v-text-field
-                    v-model="currentItem.discount"
-                    type="number"
-                    label="Discount" />
-                  <v-select
-                    :items="sizeNames"
-                    v-model="currentItem.size"
-                    label="Size" />
-                  <v-card-actions>
-                    <v-btn
-                      type="submit">
-                      Submit
-                    </v-btn>
-                    <v-btn
-                      color="error"
-                      @click="deleteItem">
-                      Delete
-                    </v-btn>
-                  </v-card-actions>
-                </v-form>
-              </v-flex>
-            </v-layout>
-          </v-container>
+          <v-form
+            @submit.prevent="updateItem">
+            <v-card-title
+              primary-title
+              class="title">
+              Edit Item
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="currentItem.sku"
+                color="secondary"
+                label="SKU"/>
+              <v-text-field
+                v-model="currentItem.name"
+                color="secondary"
+                label="Name"/>
+              <v-text-field
+                v-model="currentItem.description"
+                color="secondary"
+                label="Description"/>
+              <v-select
+                :items="categoryNames"
+                v-model="currentItem.category"
+                color="secondary"
+                label="Category" />
+              <v-text-field
+                v-model="currentItem.img"
+                color="secondary"
+                label="Image" />
+              <v-text-field
+                v-model="currentItem.price"
+                type="number"
+                color="secondary"
+                label="Price" />
+              <v-text-field
+                v-model="currentItem.discount"
+                type="number"
+                color="secondary"
+                label="Discount" />
+              <v-select
+                :items="sizeNames"
+                v-model="currentItem.size"
+                color="secondary"
+                label="Size" />
+            </v-card-text>
+            <v-card-actions
+              class="justify-space-between">
+              <v-btn
+                color="secondary"
+                type="submit">
+                Submit
+              </v-btn>
+              <v-btn
+                color="error"
+                @click="deleteItem">
+                Delete
+              </v-btn>
+            </v-card-actions>
+          </v-form>
         </v-card>
       </v-dialog>
     </v-flex>

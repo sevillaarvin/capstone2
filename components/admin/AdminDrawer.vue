@@ -8,13 +8,29 @@
     <v-card
       flat
       class="mt-3">
-      <v-img
-        :src="adminInfo.avatar"
-        contain
-        height="100" />
+      <div
+        class="text-xs-center">
+        <v-avatar
+          v-if="admin.avatar"
+          size="100">
+          <v-img
+            :src="admin.avatar"
+            class="cursor-pointer"
+            @click="gotoDashboard" />
+        </v-avatar>
+        <v-avatar
+          v-else
+          size="100">
+          <v-icon
+            size="100"
+            @click="gotoDashboard">
+            account_circle
+          </v-icon>
+        </v-avatar>
+      </div>
       <v-card-title
         class="justify-center">
-        {{ `${adminInfo.firstName} ${adminInfo.lastName}` }}
+        {{ `${admin.firstName} ${admin.lastName}` }}
       </v-card-title>
       <v-card-text>
         <v-text-field
@@ -77,9 +93,20 @@
         ]
       }
     },
+    computed: {
+      admin() {
+        return this.adminInfo || {
+          username: "admin",
+          firstName: "admin",
+        }
+      },
+    },
     methods: {
       adminLink(link) {
         return "/admin" + link
+      },
+      gotoDashboard() {
+        this.$router.push(this.adminLink())
       },
     },
   }

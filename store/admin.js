@@ -96,20 +96,34 @@ export const actions = {
 
     commit("setRoles", roles)
   },
-  async setMembers({ commit }) {
+  async setMembers({ commit }, pagination) {
     try {
+      const {
+        page,
+        rowsPerPage,
+        sortBy: orderBy,
+        descending
+      } = pagination || {}
+      const offset = (page - 1) * rowsPerPage || 0
+      let limit = rowsPerPage || 5
+      if (limit < 0) {
+        limit = null
+      }
       const members = await this.$axios.$get("/member", {
-        // params: {
-        //   offset: 0,
-        //   limit: 20,
-        // }
+        params: {
+          offset,
+          limit,
+          orderBy,
+          descending,
+        }
       })
+
       commit("setMembers", members)
     } catch (e) {
       return Promise.reject(e)
     }
   },
-  async createItem(context, member) {
+  async createMember(context, member) {
     try {
       await this.$axios.$post("/member", member)
     } catch (e) {
@@ -217,7 +231,12 @@ export const actions = {
   },
   async setOrders({ commit }, pagination) {
     try {
-      const { page, rowsPerPage, sortBy: orderBy, descending } = pagination
+      const {
+        page,
+        rowsPerPage,
+        sortBy: orderBy,
+        descending
+      } = pagination || {}
       const offset = (page - 1) * rowsPerPage || 0
       let limit = rowsPerPage || 5
       if (limit < 0) {

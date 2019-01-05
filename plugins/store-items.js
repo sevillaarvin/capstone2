@@ -6,9 +6,13 @@ Vue.filter("currency", (amount) => {
   }
 
   try {
-    return parseFloat(amount).toLocaleString("en-US", {
+    // return parseFloat(amount).toLocaleString("en-US", {
+    //   style: "currency",
+    //   currency: "USD"
+    // })
+    return parseFloat(amount).toLocaleString("en-PH", {
       style: "currency",
-      currency: "USD"
+      currency: "PHP"
     })
   } catch (e) {
     console.log(e)

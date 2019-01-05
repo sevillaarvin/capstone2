@@ -48,6 +48,8 @@
               wrap>
               <v-flex xs12>
                 <v-card-actions>
+                  <!-- TODO: Implement remember and forget -->
+                  <!--
                   <v-checkbox
                     label="Remember me?" />
                   <v-spacer />
@@ -55,6 +57,7 @@
                     flat>
                     Forgot Password?
                   </v-btn>
+                  -->
                 </v-card-actions>
               </v-flex>
             </v-layout>

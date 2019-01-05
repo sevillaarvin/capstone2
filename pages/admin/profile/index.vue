@@ -2,48 +2,62 @@
   <v-layout>
     <v-flex
       xs12>
-      <v-container
-        fluid>
-        <Title
-          title="Profile" />
-        <v-layout>
-          <v-flex
-            xs12>
-            <v-form
-              @submit.prevent="updateMember">
-              <v-card>
+      <v-container>
+        <v-card>
+          <Title
+            title="Profile" />
+          <v-layout>
+            <v-flex
+              xs12>
+              <v-form
+                @submit.prevent="updateMember">
                 <v-card-text>
-                  <v-container
-                    fluid>
-                    <v-layout>
-                      <v-flex
-                        xs12>
-                        <v-form>
-                          <v-text-field
-                            v-model="currentUser.firstName"
-                            label="First Name" />
-                          <v-text-field
-                            v-model="currentUser.lastName"
-                            label="Last Name" />
-                          <v-text-field
-                            v-model="currentUser.gender"
-                            label="Gender" />
-                          <v-text-field
-                            v-model="currentUser.email"
-                            label="Email" />
-                          <v-text-field
-                            v-model="currentUser.username"
-                            label="Username" />
-                          <v-text-field
-                            v-model="currentUser.birthdate"
-                            label="Birthdate" />
-                          <v-text-field
-                            v-model="currentUser.address"
-                            label="Address" />
-                        </v-form>
-                      </v-flex>
-                    </v-layout>
-                  </v-container>
+                  <v-text-field
+                    v-model="currentUser.firstName"
+                    color="secondary"
+                    label="First Name" />
+                  <v-text-field
+                    v-model="currentUser.lastName"
+                    color="secondary"
+                    label="Last Name" />
+                  <v-text-field
+                    v-model="currentUser.gender"
+                    color="secondary"
+                    label="Gender" />
+                  <v-text-field
+                    v-model="currentUser.email"
+                    color="secondary"
+                    label="Email" />
+                  <v-text-field
+                    v-model="currentUser.username"
+                    color="secondary"
+                    label="Username" />
+                  <v-text-field
+                    v-model="currentUser.birthdate"
+                    color="secondary"
+                    label="Birthdate" />
+                  <v-text-field
+                    v-model="currentUser.address"
+                    color="secondary"
+                    label="Address" />
+                </v-card-text>
+                <v-divider />
+                <v-card-text>
+                  <v-text-field
+                    v-model="currentUser.password"
+                    color="secondary"
+                    type="password"
+                    label="Current Password" />
+                  <v-text-field
+                    v-model="currentUser.newPassword"
+                    color="secondary"
+                    type="password"
+                    label="New Password" />
+                  <v-text-field
+                    v-model="currentUser.confirmPassword"
+                    color="secondary"
+                    type="password"
+                    label="Confirm Password" />
                 </v-card-text>
                 <v-card-actions>
                   <v-container
@@ -52,6 +66,7 @@
                       <v-flex
                         xs12>
                         <v-btn
+                          color="secondary"
                           type="submit">
                           Update
                         </v-btn>
@@ -59,10 +74,10 @@
                     </v-layout>
                   </v-container>
                 </v-card-actions>
-              </v-card>
-            </v-form>
-          </v-flex>
-        </v-layout>
+              </v-form>
+            </v-flex>
+          </v-layout>
+        </v-card>
       </v-container>
     </v-flex>
     <v-snackbar

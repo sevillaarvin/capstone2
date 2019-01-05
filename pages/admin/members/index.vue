@@ -13,61 +13,61 @@
           max-width="500px">
           <v-btn
             slot="activator"
-            color="primary"
-            dark
+            color="secondary"
             class="mb-2">
             New Member
           </v-btn>
           <v-card>
-            <v-card-title>
-              <span class="headline">New Member</span>
-            </v-card-title>
             <v-form
               @submit.prevent="createMember">
+              <v-card-title
+                primary-title
+                class="title">
+                New Member
+              </v-card-title>
               <v-card-text>
-                <v-container
-                  fluid>
-                  <v-layout
-                    wrap>
-                    <v-flex
-                      xs12>
-                      <v-select
-                        :items="roleNames"
-                        v-model="newMember.role"
-                        label="Role" />
-                      <v-text-field
-                        v-model="newMember.firstName"
-                        label="First Name" />
-                      <v-text-field
-                        v-model="newMember.lastName"
-                        label="Last Name" />
-                      <v-select
-                        :items="genders"
-                        v-model="newMember.gender"
-                        label="Gender" />
-                      <v-text-field
-                        v-model="newMember.username"
-                        label="Username" />
-                      <v-text-field
-                        v-model="newMember.email"
-                        label="Email" />
-                      <v-text-field
-                        v-model="newMember.birthdate"
-                        label="Birthdate" />
-                      <v-radio-group
-                        v-model="newMember.deactivated"
-                        row
-                        label="Deactivated">
-                        <v-radio
-                          :value="false"
-                          label="No" />
-                        <v-radio
-                          :value="true"
-                          label="Yes" />
-                      </v-radio-group>
-                    </v-flex>
-                  </v-layout>
-                </v-container>
+                <v-select
+                  :items="roleNames"
+                  v-model="newMember.role"
+                  color="secondary"
+                  label="Role" />
+                <v-text-field
+                  v-model="newMember.firstName"
+                  color="secondary"
+                  label="First Name" />
+                <v-text-field
+                  v-model="newMember.lastName"
+                  color="secondary"
+                  label="Last Name" />
+                <v-select
+                  :items="genders"
+                  v-model="newMember.gender"
+                  color="secondary"
+                  label="Gender" />
+                <v-text-field
+                  v-model="newMember.username"
+                  color="secondary"
+                  label="Username" />
+                <v-text-field
+                  v-model="newMember.email"
+                  color="secondary"
+                  label="Email" />
+                <v-text-field
+                  v-model="newMember.birthdate"
+                  color="secondary"
+                  label="Birthdate" />
+                <v-radio-group
+                  v-model="newMember.deactivated"
+                  row
+                  color="secondary"
+                  label="Deactivated">
+                  <v-radio
+                    :value="false"
+                    label="No" />
+                  <v-radio
+                    :value="true"
+                    label="Yes" />
+                </v-radio-group>
               </v-card-text>
               <v-card-actions>
                 <v-spacer />
@@ -112,70 +112,88 @@
         v-model="dialog.edit"
         width="500">
         <v-card>
-          <v-container
-            fluid>
-            <v-layout>
-              <v-flex
-                xs12>
-                <v-form
-                  @submit.prevent="updateMember">
-                  <v-text-field
-                    v-model="currentMember.id"
-                    label="ID"
-                    disabled />
-                  <v-select
-                    :items="roleNames"
-                    :disabled="currentMember.id == $auth.$state.user.userId"
-                    v-model="currentMember.role"
-                    label="Role" />
-                  <v-text-field
-                    v-model="currentMember.firstName"
-                    label="First Name" />
-                  <v-text-field
-                    v-model="currentMember.lastName"
-                    label="Last Name" />
-                  <v-select
-                    :items="genders"
-                    v-model="currentMember.gender"
-                    label="Gender" />
-                  <v-text-field
-                    v-model="currentMember.username"
-                    label="Username" />
-                  <v-text-field
-                    v-model="currentMember.email"
-                    label="Email" />
-                  <v-text-field
-                    v-model="currentMember.birthdate"
-                    label="Birthdate" />
-                  <v-radio-group
-                    v-model="currentMember.deactivated"
-                    row
-                    label="Deactivated">
-                    <v-radio
-                      :value="false"
-                      label="No" />
-                    <v-radio
-                      :value="true"
-                      label="Yes" />
-                  </v-radio-group>
-                  <v-card-actions>
-                    <v-btn>
-                      Reset Password
-                    </v-btn>
-                    <v-btn
-                      type="submit">
-                      Update
-                    </v-btn>
-                    <v-btn
-                      color="error"
-                      @click="deleteMember">
-                      Delete
-                    </v-btn>
-                  </v-card-actions>
-                </v-form>
-              </v-flex>
-            </v-layout>
-          </v-container>
+          <v-form
+            @submit.prevent="updateMember">
+            <v-card-title
+              primary-title
+              class="title">
+              Edit Member
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="currentMember.id"
+                label="ID"
+                color="secondary"
+                disabled />
+              <v-select
+                :items="roleNames"
+                :disabled="currentMember.id == $auth.$state.user.userId"
+                v-model="currentMember.role"
+                color="secondary"
+                label="Role" />
+              <v-text-field
+                v-model="currentMember.firstName"
+                color="secondary"
+                label="First Name" />
+              <v-text-field
+                v-model="currentMember.lastName"
+                color="secondary"
+                label="Last Name" />
+              <v-select
+                :items="genders"
+                v-model="currentMember.gender"
+                color="secondary"
+                label="Gender" />
+              <v-text-field
+                v-model="currentMember.username"
+                color="secondary"
+                label="Username" />
+              <v-text-field
+                v-model="currentMember.email"
+                color="secondary"
+                label="Email" />
+              <v-text-field
+                v-model="currentMember.birthdate"
+                color="secondary"
+                label="Birthdate" />
+              <v-radio-group
+                v-model="currentMember.deactivated"
+                row
+                color="secondary"
+                label="Deactivated">
+                <v-radio
+                  :value="false"
+                  label="No" />
+                <v-radio
+                  :value="true"
+                  label="Yes" />
+              </v-radio-group>
+            </v-card-text>
+            <v-card-actions
+              class="justify-space-between">
+              <div>
+                <v-btn
+                  color="secondary"
+                  type="submit">
+                  Update
+                </v-btn>
+                <!--
+                TODO: Implement this
+                <v-btn
+                  color="info">
+                  Reset Password
+                </v-btn>
+                -->
+              </div>
+              <div>
+                <v-btn
+                  color="error"
+                  @click="deleteMember">
+                  Delete
+                </v-btn>
+              </div>
+            </v-card-actions>
+          </v-form>
         </v-card>
       </v-dialog>
     </v-flex>
@@ -214,7 +232,9 @@
         snackbar: false,
         snackbarMessage: "",
         snackbarColor: "",
-        newMember: {},
+        newMember: {
+          deactivated: true,
+        },
         currentMember: {},
         headers: [{
           text: "ID",

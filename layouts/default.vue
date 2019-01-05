@@ -16,6 +16,21 @@
         fill-height
         class="pa-0">
         <nuxt />
+        <v-fab-transition>
+          <v-btn
+            v-scroll="onScroll"
+            v-show="fab"
+            fab
+            fixed
+            bottom
+            right
+            color="secondary"
+            @click="toTop">
+            <v-icon>
+              keyboard_arrow_up
+            </v-icon>
+          </v-btn>
+        </v-fab-transition>
       </v-container>
     </v-content>
     <TheFooter />
@@ -37,12 +52,21 @@
       return {
         drawer: false,
         navDrawer: false,
+        fab: false,
       }
     },
     computed: {
       allNavs() {
         return this.$store.getters.allNavs
       }
-    }
+    },
+    methods: {
+      onScroll() {
+        this.fab = (window.pageYOffset || document.documentElement.scrollTop) > 300
+      },
+      toTop() {
+        this.$vuetify.goTo(0)
+      },
+    },
   }
 </script>

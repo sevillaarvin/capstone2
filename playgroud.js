@@ -520,4 +520,37 @@ async function result17() {
   }
 }
 
-result17()
+// result17()
+
+async function result18() {
+  try {
+    const username = "rdyment0"
+    const user = await db.select([
+        "id",
+        "username",
+        "email",
+        "password",
+        "role_id",
+        "deactivated",
+      ])
+      .from("member")
+      .where({ username })
+      .orWhere({ email: username })
+      .first()
+    console.log(user)
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+// result18()
+
+async function result19() {
+  try {
+    throw new Error(" err msg ")
+  } catch (e) {
+    console.log(e.message)
+  }
+}
+
+result19()

@@ -54,11 +54,6 @@
           icon: "card_membership"
         },
         {
-          name: "Store",
-          path: "/store",
-          icon: "store_mall_directory"
-        },
-        {
           name: "About",
           path: "/about",
           icon: "sentiment_satisfied_alt"
@@ -66,12 +61,21 @@
       ],
       userNavs: [
         {
+          name: "Store",
+          path: "/store",
+          icon: "store_mall_directory",
+          guard: false,
+          auth: false,
+          admin: false,
+        },
+        {
           name: "Cart",
           path: "/store/cart",
           icon: "shopping_cart",
           guard: false,
           auth: false,
           admin: false,
+          cart: true,
         },
         {
           name: "Signin",
@@ -357,7 +361,7 @@ export const actions = {
     },
     async updateUserDetails(context, { id, ...user }) {
       try {
-        await this.$axios.$patch(`/profile/${id}`, user)
+        await this.$axios.$patch(`/user/${id}`, user)
       } catch (e) {
         return Promise.reject(e)
       }

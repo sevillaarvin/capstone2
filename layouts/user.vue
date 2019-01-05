@@ -17,6 +17,21 @@
       <v-container
         fluid>
         <nuxt />
+        <v-fab-transition>
+          <v-btn
+            v-scroll="onScroll"
+            v-show="fab"
+            fab
+            fixed
+            bottom
+            right
+            color="secondary"
+            @click="toTop">
+            <v-icon>
+              keyboard_arrow_up
+            </v-icon>
+          </v-btn>
+        </v-fab-transition>
       </v-container>
     </v-content>
   </v-app>
@@ -35,6 +50,7 @@
     },
     data() {
       return {
+        fab: false,
         drawer: null,
         navDrawer: false,
       }
@@ -46,6 +62,14 @@
       userInfo() {
         return this.$store.getters.userInfo
       }
+    },
+    methods: {
+      onScroll() {
+        this.fab = (window.pageYOffset || document.documentElement.scrollTop) > 300
+      },
+      toTop() {
+        this.$vuetify.goTo(0)
+      },
     },
     middleware: [
       "auth",

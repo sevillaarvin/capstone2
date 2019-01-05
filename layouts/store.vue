@@ -18,6 +18,21 @@
         fluid
         fill-height
         class="pa-0">
+        <v-fab-transition>
+          <v-btn
+            v-scroll="onScroll"
+            v-show="fab"
+            fab
+            fixed
+            bottom
+            right
+            color="secondary"
+            @click="toTop">
+            <v-icon>
+              keyboard_arrow_up
+            </v-icon>
+          </v-btn>
+        </v-fab-transition>
         <nuxt />
       </v-container>
     </v-content>
@@ -37,6 +52,7 @@
     },
     data() {
       return {
+        fab: false,
         drawer: null,
         navDrawer: false,
       }
@@ -48,6 +64,14 @@
       userInfo() {
         return this.$store.getters.userInfo
       }
+    },
+    methods: {
+      onScroll() {
+        this.fab = (window.pageYOffset || document.documentElement.scrollTop) > 300
+      },
+      toTop() {
+        this.$vuetify.goTo(0)
+      },
     },
     middleware: [
       "user",

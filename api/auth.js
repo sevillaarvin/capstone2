@@ -28,18 +28,18 @@ const findUserCredentials = async (username, password) => {
       "deactivated",
     ])
     .from("member")
-    .where({username: username})
-    .orWhere({email: username})
+    .where({ username })
+    .orWhere({ email: username })
     .first()
 
   if (!user) {
-    return Promise.reject()
+    return Promise.reject("Invalid username or password")
   }
 
   const valid = await bcrypt.compare(password, user.password)
 
   if (!valid) {
-    return Promise.reject()
+    return Promise.reject("Invalid username or password")
   }
 
   return {
@@ -50,8 +50,12 @@ const findUserCredentials = async (username, password) => {
   }
 }
 
-const hashPassword = async password => {
-  return await bcrypt.hash(password, 10)
+const hashPassword = async (password) => {
+  try {
+    return await bcrypt.hash(password, 10)
+  } catch (e) {
+    return Promise.reject("Unable to hash password")
+  }
 }
 
 const authenticate = async (req, res, next) => {

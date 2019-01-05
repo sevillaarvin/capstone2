@@ -38,9 +38,24 @@
             class="justify-center">
             <v-form
               @submit.prevent="updateItem(item)">
-              <v-text-field
-                v-model="quantity"
-                label="Quantity" />
+              <v-layout
+                row
+                wrap>
+                <v-flex
+                  xs12>
+                  <span
+                    class="font-weight-bold">
+                    {{ discountedPrice | currency }}
+                  </span>
+                </v-flex>
+                <v-flex
+                  xs12>
+                  <v-text-field
+                    v-model="quantity"
+                    color="secondary"
+                    label="Quantity" />
+                </v-flex>
+              </v-layout>
               <v-btn
                 type="submit"
                 color="secondary">
@@ -90,6 +105,7 @@
     },
     data() {
       return {
+        discountedPrice: this.item.price - this.item.discount,
         quantity: this.item.quantity,
         dialog: false,
       }

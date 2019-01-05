@@ -43,21 +43,41 @@
                 </v-card-text>
                 <v-divider />
                 <v-card-text>
-                  <v-text-field
-                    v-model="currentUser.password"
-                    color="secondary"
-                    type="password"
-                    label="Current Password" />
-                  <v-text-field
-                    v-model="currentUser.newPassword"
-                    color="secondary"
-                    type="password"
-                    label="New Password" />
-                  <v-text-field
-                    v-model="currentUser.confirmPassword"
-                    color="secondary"
-                    type="password"
-                    label="Confirm Password" />
+                  <v-container
+                    fluid
+                    grid-list-md
+                    class="pa-0">
+                    <v-layout
+                      row
+                      wrap>
+                      <v-flex
+                        xs12>
+                        <v-text-field
+                          v-model="currentUser.password"
+                          color="secondary"
+                          type="password"
+                          label="Current Password" />
+                      </v-flex>
+                      <v-flex
+                        xs12
+                        sm6>
+                        <v-text-field
+                          v-model="currentUser.newPassword"
+                          color="secondary"
+                          type="password"
+                          label="New Password" />
+                      </v-flex>
+                      <v-flex
+                        xs12
+                        sm6>
+                        <v-text-field
+                          v-model="currentUser.confirmPassword"
+                          color="secondary"
+                          type="password"
+                          label="Confirm Password" />
+                      </v-flex>
+                    </v-layout>
+                  </v-container>
                 </v-card-text>
                 <v-card-actions>
                   <v-container
@@ -93,15 +113,15 @@
   import Title from "~/components/TheTitle"
 
   export default {
-    async asyncData(context) {
+    async asyncData({ error, store }) {
       try {
-        await context.store.dispatch("setUserDetails")
+        await store.dispatch("setUserDetails")
       } catch (e) {
-        context.error(e)
+        error(e)
       }
 
       return {
-        currentUser: context.store.getters.userDetails,
+        currentUser: { ...store.getters.userDetails },
         snackbar: false,
         snackbarColor: "",
         updateResult: "",
@@ -115,10 +135,14 @@
         try {
           await this.$store.dispatch("updateUserDetails", this.currentUser)
           await this.loadUserDetails()
-          this.showSnackbar("User updated", "success")
+          this.showSnackbar("Profile updated", "success")
         } catch (e) {
-          console.log(e)
-          this.showSnackbar("Something went wrong", "error")
+          const { status, data } = e.response || {}
+          if (status === 409) {
+            this.showSnackbar(data, "error")
+          } else {
+            this.showSnackbar("Something went wrong", "error")
+          }
         }
       },
       async loadUserDetails() {

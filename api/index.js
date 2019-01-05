@@ -146,32 +146,6 @@ router.get("/profile/:id", authenticate, async (req, res, next) => {
   res.status(200).send(member)
 })
 
-// Update detailed member info
-router.patch("/profile/:id", authenticate, async (req, res, next) => {
-  const { user: { userId } } = res.locals
-  const { id } = req.params
-  const { ...memberDetails } = req.body
-  let result
-
-  // Only deep equality since typeof userId is string
-  if (!(userId == id))  {
-    res.status(401).send()
-    return
-  }
-
-  revertGender([memberDetails])
-  try {
-    result = await db("member")
-      .where({ id })
-      .update(memberDetails)
-  } catch (e) {
-    res.status(500).send()
-    return
-  }
-
-  res.status(200).send()
-})
-
 router.post("/signup", async (req, res) => {
   let member
   let role_id

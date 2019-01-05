@@ -48,6 +48,7 @@
                       <v-text-field
                         v-model="currentUser.firstName"
                         type="text"
+                        color="secondary"
                         label="First Name" />
                     </v-flex>
                     <v-flex
@@ -56,6 +57,7 @@
                       <v-text-field
                         v-model="currentUser.lastName"
                         type="text"
+                        color="secondary"
                         label="Last Name" />
                     </v-flex>
                     <v-flex
@@ -63,6 +65,7 @@
                       <v-select
                         v-model="currentUser.gender"
                         :items="genders"
+                        color="secondary"
                         label="Gender" />
                     </v-flex>
                     <v-flex
@@ -70,6 +73,7 @@
                       sm6>
                       <v-text-field
                         v-model="currentUser.username"
+                        color="secondary"
                         label="Username" />
                     </v-flex>
                     <v-flex
@@ -77,6 +81,7 @@
                       sm6>
                       <v-text-field
                         v-model="currentUser.email"
+                        color="secondary"
                         label="Email" />
                     </v-flex>
                     <v-flex
@@ -88,6 +93,7 @@
                         <v-text-field
                           slot="activator"
                           v-model="currentUser.birthdate"
+                          color="secondary"
                           readonly
                           label="Birthdate" />
                         <v-date-picker
@@ -101,7 +107,38 @@
                       md8>
                       <v-text-field
                         v-model="currentUser.address"
+                        color="secondary"
                         label="Address" />
+                    </v-flex>
+                    <v-flex
+                      xs12>
+                      <v-divider />
+                    </v-flex>
+                    <v-flex
+                      xs12>
+                      <v-text-field
+                        v-model="currentUser.password"
+                        type="password"
+                        color="secondary"
+                        label="Current Password" />
+                    </v-flex>
+                    <v-flex
+                      xs12
+                      sm6>
+                      <v-text-field
+                        v-model="currentUser.newPassword"
+                        type="password"
+                        color="secondary"
+                        label="New Password" />
+                    </v-flex>
+                    <v-flex
+                      xs12
+                      sm6>
+                      <v-text-field
+                        v-model="currentUser.confirmPassword"
+                        type="password"
+                        color="secondary"
+                        label="Confirm Password" />
                     </v-flex>
                     <v-flex
                       xs12>
@@ -169,11 +206,10 @@
       try {
         await store.dispatch("setUserDetails")
 
-        const currentUser = { ...store.getters.userDetails }
         const { avatar } = store.getters.userInfo
 
         return {
-          currentUser,
+          currentUser: { ...store.getters.userDetails },
           snackbar: false,
           snackbarColor: "",
           updateResult: "",
@@ -197,20 +233,28 @@
       async updateMember() {
         try {
           const avatar = this.imageUrl 
-          await this.$store.dispatch("updateUserDetails", { avatar, ...this.currentUser })
+          await this.$store.dispatch("updateUserDetails", {
+            avatar,
+            ...this.currentUser,
+          })
           await this.loadUserDetails()
-          this.showSnackbar("User updated", "success")
+          this.showSnackbar("Profile updated", "success")
         } catch (e) {
-          if (e.response.status === 413) {
+          const { status, data } = e.response || {}
+          if (status === 413) {
             this.showSnackbar("Image too large, please select a smaller file", "error")
             return
+          } else if (status === 409) {
+            this.showSnackbar(data, "error")
+          } else {
+            this.showSnackbar("Something went wrong", "error")
           }
-          this.showSnackbar("Something went wrong", "error")
         }
       },
       async loadUserDetails() {
         try {
           await this.$store.dispatch("setUserDetails")
+          await this.$store.dispatch("setUserInfo")
         } catch (e) {
           this.showSnackbar("Something went wrong", "error")
         }
@@ -224,7 +268,7 @@
         try {
           const { id } = this.currentUser
           await this.$store.dispatch("updateUserDetails", { id, deactivated: true })
-          this.showSnackbar("User updated", "success")
+          this.showSnackbar("User deactivated", "success")
           this.$router.push("/signout")
         } catch (e) {
           this.showSnackbar("Something went wrong", "error")

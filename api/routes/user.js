@@ -1,7 +1,15 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../../db/knex")
-const { authenticate } = require("../auth")
+const {
+  authenticate,
+  verifyUserToken,
+  findUserCredentials,
+  hashPassword,
+} = require("../auth")
+const {
+  revertGender,
+} = require("../utilities")
 
 router.get("/:userId/order", authenticate, async (req, res) => {
   const {
@@ -73,6 +81,70 @@ router.get("/:userId/order", authenticate, async (req, res) => {
       total,
       items,
     })
+    return
+  } catch (e) {
+    res.status(500).send()
+    return
+  }
+})
+
+// Update detailed member info
+router.patch("/:userId", authenticate, async (req, res, next) => {
+  try {
+    const { user: { userId, username } } = res.locals
+    const { userId: unverifiedId } = req.params
+    const {
+      password,
+      newPassword,
+      confirmPassword,
+      ...memberDetails
+    } = req.body
+
+    // Only deep equality since typeof userId is string
+    if (!(userId == unverifiedId))  {
+      res.status(401).send()
+      return
+    }
+
+    revertGender([memberDetails])
+
+    // Verify current password to change to new password
+    if (password || newPassword || confirmPassword) {
+      try {
+        try {
+          await findUserCredentials(username, password)
+        }
+        catch(e) {
+          // Revise error message
+          await Promise.reject("Invalid current password")
+        }
+
+        if (newPassword && confirmPassword) {
+          if (newPassword !== confirmPassword) {
+            await Promise.reject("New password does not match")
+          } else {
+            memberDetails.password = await hashPassword(newPassword)
+          }
+        } else {
+          await Promise.reject("New password does not match")
+        }
+      } catch (e) {
+        res.status(409).send(e)
+        return
+      }
+    }
+
+    const result = await db("member")
+      .where({ id: unverifiedId })
+      .update(memberDetails)
+
+    // Send 404 if nonexistent
+    if (!result) {
+      res.status(404).send()
+      return
+    }
+
+    res.status(200).send()
     return
   } catch (e) {
     res.status(500).send()

@@ -33,6 +33,7 @@
               v-for="item in nav.items"
               :key="item.name"
               :to="item.path"
+              nuxt
               exact
               class="cursor-pointer">
               <v-list-tile-content>
@@ -45,6 +46,7 @@
           v-else
           :key="nav.name"
           :to="nav.path"
+          nuxt
           exact
           flat>
           {{ nav.name }}
@@ -60,10 +62,13 @@
           v-if="!nav.guard && (nav.admin == $store.getters['admin/isAdmin'])"
           :key="nav.name"
           :to="nav.path"
+          nuxt
+          exact
           flat>
           <v-badge
             color="secondary">
             <span
+              v-if="nav.cart"
               slot="badge">
               {{ totalItemCount }}
             </span>
@@ -74,6 +79,8 @@
           v-else-if="nav.auth == $auth.$state.loggedIn"
           :key="nav.name"
           :to="nav.path"
+          nuxt
+          exact
           flat>
           {{ nav.name }}
         </v-btn>

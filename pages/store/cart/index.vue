@@ -2,76 +2,86 @@
   <v-layout
     fill-height>
     <v-flex xs12>
-      <Title :title="'Your Cart'" />
-      <v-container
-        grid-list-md>
-        <v-layout
-          v-if="items.length"
-          row
-          wrap>
-          <v-flex
-            v-for="item in items"
-            :key="item.id"
-            xs12>
-            <CartItem
-              :item="item"
-              @update="onUpdate"
-              @remove="onRemove" />
-          </v-flex>
-          <v-flex
-            xs12>
-            <v-layout>
-              <v-flex
-                xs6>
-                <v-btn
-                  :disabled="items.length <= 0"
-                  nuxt
-                  to="/store/checkout"
-                  color="primary dark--text">
-                  Checkout
-                </v-btn>
-              </v-flex>
-              <v-flex
-                xs6
-                class="text-xs-right">
-                <v-btn
-                  v-if="items.length > 0"
-                  color="error"
-                  @click="clearCart">
-                  Clear cart
-                </v-btn>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </v-layout>
-        <v-layout
-          v-else
-          row
-          wrap>
-          <v-flex
-            xs12
-            class="d-flex justify-center">
-            <v-icon
-              x-large
-              disabled>
-              add_shopping_cart
-            </v-icon>
-          </v-flex>
-          <v-flex
-            xs12
-            class="text-xs-center">
-            Cart is empty
-            <v-btn
-              round
-              nuxt
-              large
-              to="/store"
-              color="primary"
-              class="black--text">
-              Go to Store
-            </v-btn>
-          </v-flex>
-        </v-layout>
+      <v-container>
+        <v-card>
+          <v-layout>
+            <v-flex
+              xs12>
+              <Title :title="'Your Cart'" />
+              <v-container
+                fluid
+                grid-list-md>
+                <v-layout
+                  v-if="items.length"
+                  row
+                  wrap>
+                  <v-flex
+                    v-for="item in items"
+                    :key="item.id"
+                    xs12>
+                    <CartItem
+                      :item="item"
+                      @update="onUpdate"
+                      @remove="onRemove" />
+                  </v-flex>
+                  <v-flex
+                    xs12>
+                    <v-layout>
+                      <v-flex
+                        xs6>
+                        <v-btn
+                          :disabled="items.length <= 0"
+                          nuxt
+                          to="/store/checkout"
+                          color="primary dark--text">
+                          Checkout
+                        </v-btn>
+                      </v-flex>
+                      <v-flex
+                        xs6
+                        class="text-xs-right">
+                        <v-btn
+                          v-if="items.length > 0"
+                          color="error"
+                          @click="clearCart">
+                          Clear cart
+                        </v-btn>
+                      </v-flex>
+                    </v-layout>
+                  </v-flex>
+                </v-layout>
+                <v-layout
+                  v-else
+                  row
+                  wrap>
+                  <v-flex
+                    xs12
+                    class="d-flex justify-center">
+                    <v-icon
+                      x-large
+                      disabled>
+                      add_shopping_cart
+                    </v-icon>
+                  </v-flex>
+                  <v-flex
+                    xs12
+                    class="text-xs-center">
+                    Cart is empty
+                    <v-btn
+                      round
+                      nuxt
+                      large
+                      to="/store"
+                      color="primary"
+                      class="black--text">
+                      Go to Store
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+            </v-flex>
+          </v-layout>
+        </v-card>
       </v-container>
     </v-flex>
     <v-snackbar

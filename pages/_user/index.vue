@@ -15,7 +15,57 @@
                 wrap>
                 <v-flex
                   xs12>
-                  <!--Cart-->
+                  <v-card>
+                    <v-card-title
+                      class="title justify-center">
+                      Cart
+                    </v-card-title>
+                    <v-data-table
+                      :headers="cartHeaders"
+                      :items="cartItems"
+                      :pagination.sync="paginationCart"
+                      hide-actions
+                      sort-icon="">
+                      <template
+                        slot="items"
+                        slot-scope="{ item }">
+                        <td>
+                          <v-img
+                            :src="item.img"
+                            contain
+                            height="100" />
+                        </td>
+                        <td>
+                          {{ item.name }}
+                        </td>
+                        <td>
+                          {{ item.category }}
+                        </td>
+                        <td>
+                          {{ item.quantity }}
+                        </td>
+                        <td>
+                          {{ item.price - item.discount | currency }}
+                        </td>
+                        <td>
+                          {{ (item.price - item.discount) * item.quantity | currency }}
+                        </td>
+                      </template>
+                      <template
+                        slot="no-data">
+                        <v-alert
+                          :value="true"
+                          color="info">
+                          <v-icon
+                            class="v-alert__icon"
+                            @click="$router.push('/store')">
+                            shopping_cart
+                          </v-icon>
+                          You have no items in cart.
+                        </v-alert>
+                      </template>
+                    </v-data-table>
+                  </v-card>
                 </v-flex>
                 <v-flex
                   xs12
@@ -28,7 +78,7 @@
                     <v-data-table
                       :headers="orderHeaders"
                       :items="orders"
-                      :pagination.sync="pagination"
+                      :pagination.sync="paginationOrders"
                       hide-actions
                       sort-icon="">
                       <template
@@ -125,8 +175,28 @@
         await dispatch("member/setOrders")
 
         return {
+          cartHeaders: [{
+            text: "Photo",
+            value: "img",
+          }, {
+            text: "Name",
+            value: "name",
+          }, {
+            text: "Category",
+            value: "category",
+          }, {
+            text: "Quantity",
+            value: "quantity",
+          }, {
+            text: "Price",
+            value: "price",
+          }, {
+            text: "Subtotal",
+            value: "price",
+          }],
+          paginationCart: {},
           orderHeaders: [{
-            text: "ID",
+            text: "Reference",
             value: "id",
             sortable: false,
           }, {
@@ -142,7 +212,7 @@
             value: "order_at",
             sortable: false,
           }],
-          pagination: {
+          paginationOrders: {
             sortBy: "order_at",
             descending: true,
           },
@@ -154,6 +224,13 @@
       }
     },
     computed: {
+      cartItems() {
+        if (this.$store.getters.userCart) {
+          return this.$store.getters.userCart.items
+        } else {
+          return []
+        }
+      },
       orders() {
         return this.$store.getters["member/orders"]
       },

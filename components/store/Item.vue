@@ -58,7 +58,7 @@
     },
     methods: {
       onClick() {
-        this.$store.dispatch("setCurrentItem", this.item)
+        // this.$store.dispatch("setCurrentItem", this.item)
         // this.$router.push(this.itemLink)
       }
     }

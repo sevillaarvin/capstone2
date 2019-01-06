@@ -288,8 +288,8 @@ export const mutations = {
     setCurrentCategoryItems(state, currentCategory) {
       state.currentCategory = currentCategory
     },
-    setCurrentItem(state, item) {
-      state.currentItem = item
+    setCurrentItem(state, currentItem) {
+      state.currentItem = currentItem
     },
     signUpUser(state, user) {
       state.user = user
@@ -518,8 +518,15 @@ export const actions = {
         unsortedItems,
       })
     },
-    setCurrentItem({ commit }, item) {
-      commit("setCurrentItem", item)
+    async setCurrentItem({ commit }, sku) {
+      try {
+        const item = await this.$axios.$get("/item/" + sku)
+        const { average, ratings } = await this.$axios.$get(`/store/item/${item.id}/rating`)
+        commit("setCurrentItem", { item, ratings })
+        return average
+      } catch (e) {
+        return Promise.reject(e)
+      }
     },
     async signUpUser({ commit }, user) {
       try {

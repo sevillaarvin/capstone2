@@ -98,6 +98,14 @@ export const actions = {
         unsortedItems,
       })
   },
+  async sendComment({ commit, dispatch }, { itemId, sku, ...rating }) {
+    try {
+      await this.$axios.$post(`/store/item/${itemId}/rating`, rating)
+      await dispatch("setCurrentItem", sku, { root: true })
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  },
 }
 
 // TODO: Fix duplicate code, already in index.js

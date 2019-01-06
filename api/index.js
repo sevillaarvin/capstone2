@@ -5,6 +5,7 @@ const router = express.Router()
 const cart = require("./routes/cart")
 const admin = require("./routes/admin")
 const user = require("./routes/user")
+const store = require("./routes/store")
 const app = express()
 const {
   generateUserToken,
@@ -34,6 +35,7 @@ router.use(bodyParser.urlencoded({extended: false}))
 router.use(cart)
 router.use(admin)
 router.use("/user", user)
+router.use("/store", store)
 app.use(router)
 
 const getId = async (req, res) => {

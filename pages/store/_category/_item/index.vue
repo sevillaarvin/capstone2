@@ -33,7 +33,7 @@
                   xs12>
                   <v-card-title
                     primary-title
-                    class="title">
+                    class="display-2">
                     {{ item.name }}
                   </v-card-title>
                   <v-subheader
@@ -123,11 +123,99 @@
             </v-flex>
           </v-layout>
         </v-card>
+        <v-card
+          class="my-3">
+          <v-layout
+            row
+            wrap>
+            <v-flex
+              xs12>
+              <v-card-title
+                class="title">
+                Reviews&nbsp;
+                <span
+                  class="secondary--text">
+                  ({{ averageRating }} stars)
+                </span>
+              </v-card-title>
+            </v-flex>
+            <v-flex
+              v-if="!isDoneCommenting"
+              xs12>
+              <v-card-text>
+                <v-form
+                  @submit.prevent="sendComment">
+                  <v-layout
+                    row
+                    wrap>
+                    <v-flex
+                      xs12
+                      sm6>
+                      <v-avatar
+                        v-if="userInfo.avatar"
+                        size="50">
+                        <v-img
+                          :src="userInfo.avatar" />
+                      </v-avatar>
+                      <v-avatar
+                        v-else
+                        size="50">
+                        <v-icon
+                          size="50">
+                          account_circle
+                        </v-icon>
+                      </v-avatar>
+                      {{ userInfo.firstName }} {{ userInfo.lastName }}
+                    </v-flex>
+                    <v-flex
+                      xs12
+                      sm6>
+                      <v-rating
+                        v-model="stars"/>
+                    </v-flex>
+                    <v-flex
+                      xs12>
+                      <v-textarea
+                        v-model="comment"
+                        label="Comment"
+                        color="secondary"/>
+                      <div>
+                        <v-btn
+                          type="submit"
+                          color="secondary">
+                          Send
+                        </v-btn>
+                      </div>
+                    </v-flex>
+                  </v-layout>
+                </v-form>
+              </v-card-text>
+            </v-flex>
+            <v-flex
+              xs12>
+              <v-container
+                fluid
+                grid-list-md>
+                <v-layout
+                  row
+                  wrap>
+                  <v-flex
+                    v-for="rating in ratings"
+                    :key="rating.id"
+                    xs12>
+                    <Rating
+                      :rating="rating" />
+                  </v-flex>
+                </v-layout>
+              </v-container>
+              <v-card-text
+                v-if="!ratings.length">
+                No reviews for item. Be the first!
+              </v-card-text>
+            </v-flex>
+          </v-layout>
+        </v-card>
       </v-container>
-    </v-flex>
-    <v-flex
-      xs12>
-      <!-- TODO: Recommended items -->
     </v-flex>
     <v-snackbar
       v-model="snackbar"
@@ -140,11 +228,14 @@
 
 <script>
   import Item from "@/components/store/Item"
+  import Rating from "~/components/store/Rating"
+
   export default {
     components: {
-      Item
+      Item,
+      Rating,
     },
-    async asyncData(context) {
+    async asyncData({ error, route, store }) {
       // let item = context.store.getters.currentItem
       // if (!item) {
       //   try {
@@ -157,23 +248,42 @@
       // }
 
       try {
-        const sku = context.route.params.item
-        const item = await context.app.$axios.$get("/item/" + sku)
-        context.store.dispatch("setCurrentItem", item)
-      } catch (e) {
-        context.error(e)
-      }
+        let averageRating = await store.dispatch("setCurrentItem", route.params.item)
+        averageRating = Math.round(averageRating * 10) / 10
 
-      return {
-        quantity: 1,
-        snackbar: false,
-        snackbarColor: "",
-        addToCartResult: "",
+        return {
+          quantity: 1,
+          snackbar: false,
+          snackbarColor: "",
+          addToCartResult: "",
+          averageRating,
+          stars: 5,
+          comment: "",
+        }
+      } catch (e) {
+        error(e)
       }
     },
     computed: {
       item() {
-        return this.$store.getters.currentItem
+        return this.$store.getters.currentItem.item
+      },
+      ratings() {
+        return this.$store.getters.currentItem.ratings
+      },
+      isDoneCommenting() {
+        return this.ratings.some((rating) => {
+          if (this.$auth.loggedIn) {
+            return rating.memberId === this.$auth.$state.user.userId
+          } else {
+            return true
+          }
+        })
+      },
+      userInfo() {
+        return this.$store.getters.userInfo || {
+          firstName: "Anonymous",
+        }
       }
     },
     methods: {
@@ -186,6 +296,26 @@
           this.showSnackbar("Item added to cart", "success")
         } catch (e) {
           this.showSnackbar("Something went wrong", "error")
+        }
+      },
+      async sendComment() {
+        try {
+          await this.$store.dispatch("store/sendComment", {
+            memberId: this.$auth.$state.user.userId,
+            itemId: this.item.id,
+            stars: this.stars,
+            comment: this.comment,
+            sku: this.$route.params.item,
+          })
+        } catch (e) {
+          console.log("sendComment", e)
+          const { data, status } = e.response
+          
+          if (status === 400) {
+            this.showSnackbar(data, "error")
+          } else {
+            this.showSnackbar("Something went wrong", "error")
+          }
         }
       },
       showSnackbar(message, color) {

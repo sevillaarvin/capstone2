@@ -1,6 +1,10 @@
 <template>
   <v-card
-    class="cursor-pointer"
+    :disabled="!item.quantity"
+    :to="itemLink"
+    :color="!item.quantity ? 'grey' : ''"
+    nuxt
+    height="350"
     @click="onClick">
     <v-img
       :src="item.img || ''"
@@ -13,12 +17,18 @@
         {{ item.name }}
       </span>
       <v-badge
-        v-if="item.quantity">
+        v-if="item.quantity"
+        color="secondary">
         <span
           slot="badge">
           {{ item.quantity }}
         </span>
       </v-badge>
+    </v-card-title>
+    <v-card-title
+      v-if="!item.quantity"
+      class="white--text font-weight-bold justify-center text-xs-center py-0">
+      Out of Stock
     </v-card-title>
     <v-card-text
       class="text-xs-center">
@@ -49,7 +59,7 @@
     methods: {
       onClick() {
         this.$store.dispatch("setCurrentItem", this.item)
-        this.$router.push(this.itemLink)
+        // this.$router.push(this.itemLink)
       }
     }
   }

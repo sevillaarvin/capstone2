@@ -46,6 +46,7 @@ exports.up = function(knex, Promise) {
       table.text("img")
       table.decimal("price", 15, 6).notNullable()
       table.decimal("discount", 15, 6).defaultTo(0)
+      table.integer("quantity").notNullable().defaultTo(0)
       table.integer("size_id")
       table.foreign("size_id").references("id").inTable("size")
     })
@@ -140,6 +141,7 @@ exports.up = function(knex, Promise) {
     */
     .then(() => {
       knex.raw("alter table rating add check (stars between 1 and 5)").then(() => {})
+      knex.raw("alter table item add check (quantity >= 0)").then(() => {})
       knex.raw("alter table order_detail add check (quantity > 0)").then(() => {})
       knex.raw("alter table cart_item add check (quantity > 0)").then(() => {})
     })

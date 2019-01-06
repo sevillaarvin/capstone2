@@ -323,6 +323,35 @@ router.post("/checkout", authenticate, async (req, res) => {
       .where({ name: payMethod })
       .first()
 
+    // Deduct item quantity
+    // Make sure inventory doesn't go below 0
+    const cartItems = await db.select([
+        "cart_item.item_id",
+        "cart_item.quantity",
+        "item.price",
+        "item.discount",
+      ])
+      .from("cart_item")
+      .where({ cart_id })
+      .innerJoin("item", "item.id", "cart_item.item_id")
+
+    try {
+      await db.transaction(async function(trx) {
+        const itemsForDeduction = cartItems.map((item) => {
+          return { id: item.item_id, quantity: item.quantity }
+        })
+        for (let i = 0; i < itemsForDeduction.length; ++i) {
+          const { id, quantity } = itemsForDeduction[i]
+          await trx("item")
+            .where({ id })
+            .decrement({ quantity })
+        }
+      })
+    } catch (e) {
+      res.status(409).send("Not enought stock for certain items ordered")
+      return
+    }
+
     // assign order_id for cartId
     const [ order_id ] = await db.insert({
         member_id,
@@ -338,25 +367,15 @@ router.post("/checkout", authenticate, async (req, res) => {
       .where({ id: cart_id })
       .update({ order_id })
 
-    // assign order_detail for cart_item
-    let cartItems = await db.select([
-        "cart_item.item_id",
-        "cart_item.quantity",
-        "item.price",
-        "item.discount",
-      ])
-      .from("cart_item")
-      .where({ cart_id })
-      .innerJoin("item", "item.id", "cart_item.item_id")
-
-    cartItems = cartItems.map(item => {
+    // Transfer cartItems to orderDetail
+    const orderItems = cartItems.map(item => {
       item.order_id = order_id
       return item
     })
 
     // https://stackoverflow.com/a/1169596
     // An ambiguous case that breaks in the absence of a semicolon:
-    await db.insert(cartItems)
+    await db.insert(orderItems)
       .into("order_detail");
 
     // send back order details

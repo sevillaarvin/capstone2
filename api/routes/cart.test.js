@@ -315,6 +315,11 @@ describe("POST /checkout", () => {
     roleId: 2,
     username: "asdf",
   })
+  const token4 = generateUserToken({
+    userId: 4,
+    roleId: 2,
+    username: "asdf",
+  })
 
   it("should not checkout items for unauthenticated user", done => {
     request(app)
@@ -455,6 +460,61 @@ describe("POST /checkout", () => {
     } catch (e) {
       throw e
     }
+  })
+
+  it("should not deduct quantity of items after failed checkout", async function() {
+    let result
+
+    const [ cartId ] = await db.insert({
+        member_id: 4,
+      }, "id")
+      .into("cart")
+
+    await db.insert([
+        {
+          cart_id: cartId,
+          item_id: 3,
+          quantity: 999,
+        },
+        {
+          cart_id: cartId,
+          item_id: 4,
+          quantity: 999,
+        },
+      ])
+      .into("cart_item")
+
+    await request(app)
+      .post("/checkout")
+      .set("authorization", "Bearer " + token4)
+      .send({
+        cartId,
+        address: "Test address",
+        shipMethod: "Economy",
+        payMethod: "COD",
+      })
+      .expect(409)
+
+    const { order_id } = await db.select("order_id")
+      .from("cart")
+      .where({ id: cartId })
+      .first()
+    expect(order_id).to.be.null
+
+    const items = await db.select([
+        "id",
+        "quantity"
+      ])
+      .from("item")
+      .where({ id: 3 })
+      .orWhere({ id: 4 })
+    expect(items).to.have.deep.members([{
+      id: 3,
+      quantity: 3,
+    }, {
+      id: 4,
+      quantity: 4,
+    }])
   })
 
   // it("should checkout items for user 3 using PayPal", async function() {

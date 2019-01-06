@@ -137,21 +137,7 @@
 
 <script>
   export default {
-    computed: {
-      order() {
-        return this.$store.getters["cart/latestOrder"]
-      },
-      total() {
-        try {
-          return this.order.items
-            .map((item) => item.quantity * (item.price - item.discount))
-            .reduce((a, b) => a + b)
-        } catch (e) {
-          return 0
-        }
-      }
-    },
-    async asyncData({ error, route, store }) {
+    async asyncData({ error, redirect, route, store }) {
       const {
         paymentId,
         token,
@@ -164,6 +150,27 @@
         } catch (e) {
           error(e)
         }
+      }
+
+      const order = store.getters["cart/latestOrder"]
+      let total
+      try {
+        total = order.items
+          .map((item) => item.quantity * (item.price - item.discount))
+          .reduce((a, b) => a + b)
+      } catch (e) {
+        total = 0
+      }
+
+      // Re-route to cart if empty
+      if (Object.keys(order).length === 0 && order.constructor === Object) {
+        redirect("/store/cart")
+        return
+      }
+
+      return {
+        order,
+        total,
       }
     },
     layout: "store",

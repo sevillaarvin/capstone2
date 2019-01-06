@@ -288,6 +288,7 @@ router.get("/category/:name", async (req, res, next) => {
         "item.img",
         "item.price",
         "item.discount",
+        "item.quantity",
         "size.name as size"
       ])
       .avg("rating.stars as rating")
@@ -375,6 +376,7 @@ router.get("/item", async (req, res, next) => {
         "item.img",
         "item.price",
         "item.discount",
+        "item.quantity",
         "size.name as size"
       ])
       .avg("rating.stars as rating")
@@ -436,6 +438,7 @@ router.get("/item/:sku", async (req, res, next) => {
         "item.img",
         "item.price",
         "item.discount",
+        "item.quantity",
         "size.name as size"
       ])
       .avg("rating.stars as rating")

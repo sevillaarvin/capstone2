@@ -315,15 +315,19 @@ describe("GET /category/name", () => {
       .expect(res => {
         expect(res.body).to.be.an("object")
           .with.property("items")
-        expect(res.body.items[0]).to.include.all.keys(
+        expect(res.body.items[0]).to.have.keys([
           "id",
           "sku",
           "name",
           "category",
           "description",
+          "img",
           "price",
+          "discount",
+          "quantity",
           "rating",
-        )
+          "size",
+        ])
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -467,6 +471,7 @@ describe("GET /item", () => {
             "img",
             "price",
             "discount",
+            "quantity",
             "size",
             "rating",
           ])
@@ -632,15 +637,27 @@ describe("GET /item", () => {
   })
 })
 
-describe("GET /item/id", () => {
+describe("GET /item/sku", () => {
   it("should return the item with sku VXYIWV3367", done => {
     request(app)
       .get("/item/VXYIWV3367")
       .expect(200)
       .expect("content-type", /json/)
       .expect(res => {
-        expect(res.body).to.have.a.property("id")
-        expect(res.body.id).to.be.equal(1)
+        expect(res.body).to.have.keys([
+          "id",
+          "sku",
+          "name",
+          "category",
+          "description",
+          "img",
+          "price",
+          "discount",
+          "quantity",
+          "size",
+          "rating",
+        ])
+        expect(res.body).to.include({ sku: "VXYIWV3367" })
       })
       .end((err, res) => {
         if (err) return done(err)
@@ -648,7 +665,7 @@ describe("GET /item/id", () => {
       })
   })
 
-  it("should return 404 with an invalid item id", done => {
+  it("should return 404 with an invalid item sku", done => {
     request(app)
       .get("/item/asdfasdf")
       .expect(404)
@@ -658,34 +675,6 @@ describe("GET /item/id", () => {
       })
   })
 })
-
-// describe("GET /order/id", () => {
-//   it("should return the orders of member with id 2", done => {
-//     request(app)
-//       .get("/order/2")
-//       .set("authorization", "Bearer " + tokenUser)
-//       .expect(200)
-//       .expect("content-type", /json/)
-//       .expect(res => {
-//         expect(res.body).to.be.an("array")
-//       })
-//       .end((err, res) => {
-//         if (err) return done(err)
-//         done()
-//       })
-//   })
-// 
-//   it("should not return order items of different user", done => {
-//     request(app)
-//       .get("/order/3")
-//       .set("authorization", "Bearer " + tokenUser)
-//       .expect(401)
-//       .end((err, res) => {
-//         if (err) return done(err)
-//         done()
-//       })
-//   })
-// })
 
 describe("GET /order_detail/id", () => {
   it("should return the order_detail with id 1", done => {

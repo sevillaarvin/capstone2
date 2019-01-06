@@ -286,6 +286,13 @@
         </v-card>
       </v-container>
     </v-flex>
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      top>
+      <v-icon>error</v-icon>
+      {{ snackbarMessage }}
+    </v-snackbar>
   </v-layout>
 </template>
 
@@ -313,6 +320,9 @@
         selectedShipMethod: "Economy",
         payMethods,
         selectedPayMethod: "COD",
+        snackbar: false,
+        snackbarColor: "",
+        snackbarMessage: "",
       }
     },
     computed: {
@@ -356,6 +366,7 @@
             payMethod: this.selectedPayMethod,
           })
 
+          // result will return string if PayPal, else undefined
           if (!result) {
             this.$router.push("/store/checkout/thanks")
           } else {
@@ -363,11 +374,21 @@
             window.location.replace(result)
           }
         } catch (e) {
-          console.log(e)
+          const { data, status } = e.response
+          if (status === 409) {
+            this.showSnackbar(data, "error")
+          } else {
+            this.showSnackbar("Something went wront", "error")
+          }
         }
       },
       changeAddress() {
         this.$router.push("/" + this.$store.getters.userInfo.username + "/profile")
+      },
+      showSnackbar(message, color) {
+        this.snackbarMessage = message
+        this.snackbarColor = color
+        this.snackbar = true
       },
     },
     layout: "store"

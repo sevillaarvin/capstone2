@@ -522,8 +522,8 @@ export const actions = {
       try {
         const item = await this.$axios.$get("/item/" + sku)
         const { average, ratings } = await this.$axios.$get(`/store/item/${item.id}/rating`)
-        commit("setCurrentItem", { item, ratings })
-        return average
+        commit("setCurrentItem", { item, ratings, average })
+        return
       } catch (e) {
         return Promise.reject(e)
       }

@@ -33,7 +33,7 @@
                   xs12>
                   <v-card-title
                     primary-title
-                    class="display-2">
+                    class="display-1">
                     {{ item.name }}
                   </v-card-title>
                   <v-subheader
@@ -135,7 +135,7 @@
                 Reviews&nbsp;
                 <span
                   class="secondary--text">
-                  ({{ averageRating }} stars)
+                  ({{ average }} stars)
                 </span>
               </v-card-title>
             </v-flex>
@@ -236,27 +236,14 @@
       Rating,
     },
     async asyncData({ error, route, store }) {
-      // let item = context.store.getters.currentItem
-      // if (!item) {
-      //   try {
-      //     const sku = context.route.params.item
-      //     item = await context.app.$axios.$get("/item/" + sku)
-      //     context.store.dispatch("setCurrentItem", item)
-      //   } catch (e) {
-      //     context.error(e)
-      //   }
-      // }
-
       try {
-        let averageRating = await store.dispatch("setCurrentItem", route.params.item)
-        averageRating = Math.round(averageRating * 10) / 10
+        await store.dispatch("setCurrentItem", route.params.item)
 
         return {
           quantity: 1,
           snackbar: false,
           snackbarColor: "",
           addToCartResult: "",
-          averageRating,
           stars: 5,
           comment: "",
         }
@@ -270,6 +257,9 @@
       },
       ratings() {
         return this.$store.getters.currentItem.ratings
+      },
+      average() {
+        return Math.floor(this.$store.getters.currentItem.average * 10) / 10
       },
       isDoneCommenting() {
         return this.ratings.some((rating) => {

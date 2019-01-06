@@ -8,6 +8,14 @@
           Members
         </v-toolbar-title>
         <v-spacer />
+        <v-text-field
+          v-model="search"
+          single-line
+          hide-details
+          append-icon="search"
+          label="Search"
+          color="secondary" />
+        <v-spacer />
         <v-dialog
           v-model="dialog.new"
           max-width="500px">
@@ -87,7 +95,8 @@
       <v-divider />
       <v-data-table
         :headers="headers"
-        :items="members">
+        :items="members"
+        :search="search">
 
         <template
           slot="items"
@@ -266,7 +275,8 @@
         }, {
           text: "Deactivated",
           value: "deactivated",
-        }]
+        }],
+        search: "",
       }
     },
     computed: {

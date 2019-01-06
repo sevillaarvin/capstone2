@@ -24,6 +24,30 @@
                 primary-title
                 class="title">
                 New Item
+                <v-spacer />
+                <v-avatar
+                  v-if="imageUrl"
+                  size="100"
+                  @click="onPickFile">
+                  <v-img
+                    :src="imageUrl"
+                    class="cursor-pointer" />
+                </v-avatar>
+                <v-avatar
+                  v-else
+                  size="100">
+                  <v-icon
+                    size="100"
+                    @click="onPickFile">
+                    business_center
+                  </v-icon>
+                </v-avatar>
+                <input
+                  ref="fileInput"
+                  type="file"
+                  style="display: none"
+                  accept="image/*"
+                  @change="onFilePicked">
               </v-card-title>
               <v-card-text>
                 <v-text-field
@@ -43,10 +67,6 @@
                   v-model="newItem.description"
                   color="secondary"
                   label="Description" />
-                <v-text-field
-                  v-model="newItem.img"
-                  color="secondary"
-                  label="Image" />
                 <v-text-field
                   v-model="newItem.price"
                   type="number"
@@ -122,6 +142,30 @@
               primary-title
               class="title">
               Edit Item
+              <v-spacer />
+              <v-avatar
+                v-if="imageUrlEdit"
+                size="100"
+                @click="onPickFileEdit">
+                <v-img
+                  :src="imageUrlEdit"
+                  class="cursor-pointer" />
+              </v-avatar>
+              <v-avatar
+                v-else
+                size="100">
+                <v-icon
+                  size="100"
+                  @click="onPickFileEdit">
+                  business_center
+                </v-icon>
+              </v-avatar>
+              <input
+                ref="fileInputEdit"
+                type="file"
+                style="display: none"
+                accept="image/*"
+                @change="onFilePickedEdit">
             </v-card-title>
             <v-card-text>
               <v-text-field
@@ -141,10 +185,6 @@
                 v-model="currentItem.category"
                 color="secondary"
                 label="Category" />
-              <v-text-field
-                v-model="currentItem.img"
-                color="secondary"
-                label="Image" />
               <v-text-field
                 v-model="currentItem.price"
                 type="number"
@@ -209,6 +249,8 @@
         snackbarMessage: "",
         snackbarColor: "",
         newItem: {},
+        imageUrl: "",
+        imageUrlEdit: "",
         currentItem: {},
         pagination,
         // {
@@ -282,6 +324,7 @@
     methods: {
       async createItem() {
         try {
+          this.newItem.img = this.imageUrl
           await this.$store.dispatch("admin/createItem", this.newItem)
           this.showSnackbar("Item has been added", "success")
 
@@ -296,10 +339,12 @@
       dismissCreate() {
         this.dialog.new = false
         this.newItem = {}
+        this.imageUrl = ""
       },
       selectItem(item) {
-        const { rating, ...currentItem } = item
+        const { rating, img, ...currentItem } = item
         this.currentItem = currentItem
+        this.imageUrlEdit = img
         this.dialog.edit = true
       },
       loadItems() {
@@ -308,6 +353,7 @@
       },
       async updateItem() {
         try {
+          this.currentItem.img = this.imageUrlEdit
           await this.$store.dispatch("admin/updateItem", this.currentItem)
           this.showSnackbar("Item has been updated", "success")
           this.dismissUpdate()
@@ -319,6 +365,7 @@
       dismissUpdate() {
         this.dialog.edit = false
         this.currentItem = {}
+        this.imageUrlEdit = ""
       },
       async deleteItem() {
         const { id } = this.currentItem
@@ -336,6 +383,50 @@
         this.snackbarMessage = message
         this.snackbarColor = color
         this.snackbar = true
+      },
+      onPickFile() {
+        this.$refs.fileInput.click()
+      },
+      onFilePicked(event) {
+        const files = event.target.files
+        if (files.length === 0) {
+          return
+        }
+        let filename = files[0].name
+        if (filename.lastIndexOf('.') <= 0) {
+          this.showSnackbar("Please add a valid file!", "error")
+          return
+        }
+        const fileReader = new FileReader()
+        fileReader.addEventListener('load', () => {
+          // BUG: Doesn't allow currentUser.avatar modification
+          // Will not dynamically update images in template above
+          this.imageUrl = fileReader.result
+        })
+        fileReader.readAsDataURL(files[0])
+        this.image = files[0]
+      },
+      onPickFileEdit() {
+        this.$refs.fileInputEdit.click()
+      },
+      onFilePickedEdit(event) {
+        const files = event.target.files
+        if (files.length === 0) {
+          return
+        }
+        let filename = files[0].name
+        if (filename.lastIndexOf('.') <= 0) {
+          this.showSnackbar("Please add a valid file!", "error")
+          return
+        }
+        const fileReader = new FileReader()
+        fileReader.addEventListener('load', () => {
+          // BUG: Doesn't allow currentUser.avatar modification
+          // Will not dynamically update images in template above
+          this.imageUrlEdit = fileReader.result
+        })
+        fileReader.readAsDataURL(files[0])
+        this.image = files[0]
       },
     },
     layout: "admin",

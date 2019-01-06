@@ -27,7 +27,7 @@
     </v-card-title>
     <v-card-title
       v-if="!item.quantity"
-      class="white--text font-weight-bold justify-center text-xs-center py-0">
+      class="subheading white--text font-weight-bold justify-center text-xs-center py-0">
       Out of Stock
     </v-card-title>
     <v-card-text

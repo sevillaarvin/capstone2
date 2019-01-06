@@ -284,7 +284,8 @@
         }
         let filename = files[0].name
         if (filename.lastIndexOf('.') <= 0) {
-          return alert('Please add a valid file!')
+          this.showSnackbar('Please add a valid file!', "error")
+          return
         }
         const fileReader = new FileReader()
         fileReader.addEventListener('load', () => {

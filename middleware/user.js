@@ -11,7 +11,7 @@ export default async ({ app, error, redirect, store }) => {
     } catch (e) {
       // error(e)
       // User might not be logged in
-      console.log(e)
+      // console.log("middleware/user", e)
       return
     }
   }

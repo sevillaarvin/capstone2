@@ -122,14 +122,8 @@
         const { confirmPassword, ...user } = this.user
         try {
           await this.$store.dispatch("signUpUser", user)
-          // this.$router.push("/signin")
-          this.$auth.loginWith("local", {
-            data: {
-              username: user.username,
-              password: user.password,
-            },
-          })
           this.showSnackbar("Signed up successfully", "success")
+          this.$router.push("/signin")
         } catch(e) {
           this.showSnackbar("Something went wrong", "error")
         }

@@ -100,6 +100,10 @@
           await this.$auth.loginWith("local", {
             data: this.user
           })
+          // Execute since member not yet logged in
+          await this.$store.dispatch("setUserCart")
+          await this.$store.dispatch("setUserDetails")
+          this.$router.replace("/")
         } catch (e) {
           const status = e.response.status
           const message = e.response.data
@@ -109,10 +113,6 @@
           }
           return
         }
-        // Execute since member not yet logged in
-        await this.$store.dispatch("setUserCart")
-        await this.$store.dispatch("setUserDetails")
-        this.$router.replace("/")
       }
     }
   }

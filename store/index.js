@@ -528,13 +528,22 @@ export const actions = {
         return Promise.reject(e)
       }
     },
-    async signUpUser({ commit }, user) {
+    async signUpUser({ dispatch }, user) {
       try {
         await this.$axios.$post("/signup", user)
+        // commit("signUpUser", user)
+        await this.$auth.loginWith("local", {
+          data: {
+            username: user.username,
+            password: user.password,
+          },
+        })
+        await dispatch("setUserInfo")
+        await dispatch("setUserDetails")
+        await dispatch("setUserCart")
       } catch (e) {
         return Promise.reject(e)
       }
-      commit("signUpUser", user)
     },
     signOutUser({ commit }) {
       commit("setUserCart", null)

@@ -21,7 +21,7 @@ deploy_stage:
     - mkdir ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
     - rsync -avr -e "ssh -p 2222" --exclude=node_modules . aes@clubseville.icu:~/apps/clubseville
-    - ssh -p 2222 aes@clubseville.icu "cd ~/apps/clubseville; rm package-lock.json; npm run deploy:prod"
+    - ssh -p 2222 aes@clubseville.icu "cd ~/apps/clubseville; npm run deploy:prod"
 
 # deploy_production:
 #   stage: deploy

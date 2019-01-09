@@ -1,7 +1,11 @@
 const request = require("supertest")
 const expect = require("chai").expect
 const app = require("../index").app
-const { generateUserToken, verifyUserToken } = require("../auth")
+const {
+  generateUserToken,
+  verifyUserToken
+} = require("../auth")
+const bcrypt = require("bcryptjs")
 const db = require("../../db/knex")
 
 const tokenAdmin = generateUserToken({
@@ -58,28 +62,66 @@ describe("POST /cart", () => {
       })
   })
 
-  it("should change item quantity of cart if it already exists", done => {
-    request(app)
+  it("should change item quantity of cart if it already exists", async function() {
+    const [ member_id ] = await db.insert({
+       "username" : "lwellando",
+       "gender" : "f",
+       "password" : bcrypt.hashSync("537bade88345283e1cb794aa8230f377ff0a80e39cc3d1a06190cf8f6a49b8d7", 10),
+       "birthdate " : "10/6/2007",
+       "address" : "839 Dorton Alley",
+       "firstName" : "Lemmy",
+       "email" : "lwellando@vk.com",
+       "lastName" : "Welland",
+       "created_at" : "4/24/2010",
+       "role_id" : 2,
+    }, "id").into("member")
+    const tokenNewMember = generateUserToken({
+      userId: member_id,
+      roleId: 2,
+      username: "user",
+    })
+    const [ cart_id ] = await db.insert({
+        member_id,
+      }, "id")
+      .into("cart")
+    const [ item_id ] = await db.insert({
+        "category_id" : 2,
+        "price" : 2956.58,
+        "img" : "http://dummyimage.com/121x133.png/5fa2dd/ffffff",
+        "discount" : null,
+        "description" : "utilize cross-platform solutions",
+        "sku" : "VOYLBA5343",
+        "name" : "Banana Turning",
+        "size_id" : 5
+      }, "id")
+      .into("item")
+    await db.insert({
+        cart_id,
+        item_id,
+        quantity: 10
+      })
+      .into("cart_item")
+
+    let result
+    await request(app)
       .post("/cart")
-      .set("authorization", "Bearer " + tokenUser)
+      .set("authorization", "Bearer " + tokenNewMember)
       .send({
-        cartId: 4,
-        itemId: 100,
+        cartId: cart_id,
+        itemId: item_id,
         quantity: 100,
         update: true,
       })
-      .expect(200)
-      .end((err, res) => {
-        if (err) return done(err)
-        db.select("quantity")
-          .from("cart_item")
-          .where({ id: res.body[0] })
-          .first()
-          .then(result => {
-            expect(result.quantity).to.equal(100)
-            done()
-          }).catch(e => done(e))
+      .expect((res) => {
+        result = res.body
       })
+      .expect(200)
+
+    const { quantity } = await db.select("quantity")
+      .from("cart_item")
+      .where({ id: result[0] })
+      .first()
+    expect(quantity).to.equal(100)
   })
 })
 

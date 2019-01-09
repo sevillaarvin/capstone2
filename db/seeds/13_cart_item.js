@@ -32,17 +32,17 @@ exports.seed = async function(knex, Promise) {
         },
         {
           cart_id: 3,
-          item_id: 421,
+          item_id: 4,
           quantity: 100
         },
         {
           cart_id: 4,
-          item_id: 100,
+          item_id: 5,
           quantity: 9, 
         },
         {
           cart_id: 4,
-          item_id: 101,
+          item_id: 1,
           quantity: 99, 
         },
       ]);

@@ -276,28 +276,6 @@ let members = [
       "created_at" : "8/31/2012",
       "lastName" : "Antognetti"
    },
-   {
-      "address" : "29715 1st Hill",
-      "firstName" : "Danna",
-      "email" : "dcosgriffn@cdbaby.com",
-      "lastName" : "Cosgriff",
-      "created_at" : "3/24/2015",
-      "username" : "dcosgriffn",
-      "gender" : "m",
-      "password" : "aaba590eaf6354da94115dafdbe2b2a61f03331e0f78dba88b81b7b4b46ed6fa",
-      "birthdate " : "9/7/2001"
-   },
-   {
-      "username" : "lwellando",
-      "gender" : "f",
-      "password" : "537bade88345283e1cb794aa8230f377ff0a80e39cc3d1a06190cf8f6a49b8d7",
-      "birthdate " : "10/6/2007",
-      "address" : "839 Dorton Alley",
-      "firstName" : "Lemmy",
-      "email" : "lwellando@vk.com",
-      "lastName" : "Welland",
-      "created_at" : "4/24/2010"
-   }
 ]
 
 

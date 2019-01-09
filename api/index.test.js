@@ -361,43 +361,207 @@ describe("GET /category/name", () => {
       })
   })
 
-  it("should return the category with matching name skipping 10 items", done => {
-    request(app)
+  it("should return the category with matching name skipping 10 items", async function() {
+    const newItems = await db.insert([
+        {
+          "category_id" : 1,
+          "price" : 2900,
+          "description" : "orchestrate mission-critical synergies",
+          "sku" : "MGWRLW7280",
+          "name" : "Apple - Macintosh",
+          "size_id" : 5,
+          "img" : "http://dummyimage.com/247x240.png/5fa2dd/ffffff",
+          "discount" : null
+        },
+        {
+          "description" : "extend best-of-breed convergence",
+          "name" : "Wine - Touraine Azay - Le - Rideau",
+          "sku" : "NDOPVT9147",
+          "size_id" : 3,
+          "img" : "http://dummyimage.com/171x116.png/dddddd/000000",
+          "discount" : 213,
+          "category_id" : 1,
+          "price" : 9556.32
+        },
+        {
+          "size_id" : 2,
+          "description" : "redefine global systems",
+          "sku" : "JCASCZ6648",
+          "name" : "Chilli Paste, Ginger Garlic",
+          "discount" : null,
+          "img" : "http://dummyimage.com/159x185.bmp/5fa2dd/ffffff",
+          "category_id" : 1,
+          "price" : 907.78
+        },
+        {
+          "description" : "incentivize turn-key technologies",
+          "name" : "Leeks - Large",
+          "sku" : "CEFIXN8879",
+          "size_id" : 3,
+          "img" : "http://dummyimage.com/175x239.png/dddddd/000000",
+          "discount" : 412,
+          "category_id" : 1,
+          "price" : 2591.67
+        },
+        {
+          "category_id" : 1,
+          "price" : 3086.28,
+          "img" : "http://dummyimage.com/213x173.bmp/ff4444/ffffff",
+          "discount" : null,
+          "description" : "evolve world-class mindshare",
+          "name" : "Wine - Kwv Chenin Blanc South",
+          "sku" : "EOQKJO7948",
+          "size_id" : 2
+        },
+        {
+          "category_id" : 1,
+          "price" : 4337.72,
+          "description" : "reinvent intuitive interfaces",
+          "name" : "Spring Roll Wrappers",
+          "sku" : "ZKCJTS6351",
+          "size_id" : 4,
+          "img" : "http://dummyimage.com/225x131.jpg/ff4444/ffffff",
+          "discount" : 397
+        },
+        {
+          "category_id" : 1,
+          "price" : 8565.04,
+          "size_id" : 2,
+          "description" : "maximize global experiences",
+          "name" : "Honey - Lavender",
+          "sku" : "VYPLVS2349",
+          "discount" : null,
+          "img" : "http://dummyimage.com/202x176.bmp/5fa2dd/ffffff"
+        },
+        {
+          "category_id" : 1,
+          "price" : 668.62,
+          "size_id" : 5,
+          "description" : "integrate sticky relationships",
+          "sku" : "QMPGRL5867",
+          "name" : "Cabbage - Green",
+          "discount" : 466,
+          "img" : "http://dummyimage.com/227x208.jpg/dddddd/000000"
+        },
+        {
+          "name" : "Garam Marsala",
+          "sku" : "NMPULP4689",
+          "description" : "target global paradigms",
+          "size_id" : 1,
+          "img" : "http://dummyimage.com/227x105.bmp/5fa2dd/ffffff",
+          "discount" : 321,
+          "price" : 8429.52,
+          "category_id" : 1
+        },
+        {
+          "price" : 3022.13,
+          "category_id" : 1,
+          "sku" : "ALYABO4204",
+          "name" : "Country Roll",
+          "description" : "mesh end-to-end deliverables",
+          "size_id" : 2,
+          "img" : "http://dummyimage.com/177x180.jpg/5fa2dd/ffffff",
+          "discount" : null
+        },
+      ])
+      .into("item")
+
+    let result
+    await request(app)
       .get("/category/Swimming Equipment")
       .query({ offset: 10 })
       .expect(200)
       .expect(res => {
+        result = res.body
         expect(res.body).to.be.an("object")
           .with.keys([
             "total",
             "items",
           ])
       })
-      .end((err, res) => {
-        if (err) return done(err)
-        db.select(["item.id", "category.name as category"])
-          .from("item")
-          .where({ "category.name": "Swimming Equipment" })
-          .innerJoin("category", "item.category_id", "category.id")
-          .then(dbres => {
-            expect(res.body.items[0].id).to.equal(dbres[10].id)
-            done()
-        }).catch(e => done(e))
-      })
+    const swimItems = await db.select(["item.id", "category.name as category"])
+      .from("item")
+      .where({ "category.name": "Swimming Equipment" })
+      .innerJoin("category", "item.category_id", "category.id")
+    expect(result.items[0].id).to.equal(swimItems[10].id)
   })
 
-  it("should return 69 items for search term 'z'", async function() {
+  it("should return 3 items for search term 'xyz'", async function() {
+    const newItems = await db.insert([
+        {
+          "price" : 9038.05,
+          "category_id" : 1,
+          "discount" : 125,
+          "img" : "http://dummyimage.com/151x242.png/cc0000/ffffff",
+          "size_id" : 3,
+          "sku" : "YZPNIS9578",
+          "name" : "xyz This is item1",
+          "description" : "drive revolutionary experiences"
+        },
+        {
+          "size_id" : 2,
+          "name" : "This is item2",
+          "sku" : "PZESLF3359",
+          "description" : "xyz aggregate B2B e-tailers",
+          "discount" : null,
+          "img" : "http://dummyimage.com/213x209.jpg/ff4444/ffffff",
+          "price" : 9457.35,
+          "category_id" : 1
+        },
+        {
+          "discount" : 398,
+          "img" : "http://dummyimage.com/202x131.bmp/dddddd/000000",
+          "size_id" : null,
+          "sku" : "NDFQOJ9103",
+          "name" : "This is item xyz 3",
+          "description" : "extend transparent platforms",
+          "price" : 2489.64,
+          "category_id" : 1
+        },
+        {
+          "category_id" : 2,
+          "price" : 8477.52,
+          "size_id" : 3,
+          "description" : "xyz generate best-of-breed functionalities",
+          "name" : "Cheese - Roquefort Pappillon",
+          "sku" : "XRDFOY3241",
+          "discount" : 245,
+          "img" : "http://dummyimage.com/117x219.jpg/5fa2dd/ffffff"
+        },
+        {
+          "price" : 9399.95,
+          "category_id" : 4,
+          "size_id" : 2,
+          "sku" : "FKBKTB0115",
+          "name" : "Veal - xyz Tenderloin, Untrimmed",
+          "description" : "grow end-to-end methodologies",
+          "discount" : 405,
+          "img" : null
+        },
+        {
+          "discount" : 469,
+          "img" : "http://dummyimage.com/169x211.png/ff4444/ffffff",
+          "size_id" : 5,
+          "sku" : "MAJFWG2066",
+          "name" : "Pork - Butt, Boneless",
+          "description" : "unleash xyz 24/365 web-readiness",
+          "price" : 4712.1,
+          "category_id" : 3
+        },
+      ])
+      .into("item")
+
     await request(app)
       .get("/category/Swimming Equipment")
       .query({
-        search: "z",
+        search: "xyz",
       })
       .expect(200)
       .expect(({ body }) => {
         expect(body).to.have.property("total")
-          .to.equal(69)
+          .to.equal(3)
         expect(body).to.have.property("items")
-          .to.have.lengthOf(69)
+          .to.have.lengthOf(3)
       })
   })
 })
@@ -623,16 +787,69 @@ describe("GET /item", () => {
   })
 
   it("should search for items with name/description mesh", async function() {
+    const newItems = await db.insert([
+        {
+          "size_id" : 4,
+          "description" : "visualize revolutionary e-commerce",
+          "name" : "Cake - Pancake abc123",
+          "sku" : "TBYUSD6434",
+          "discount" : 51,
+          "img" : "http://dummyimage.com/145x165.bmp/cc0000/ffffff",
+          "category_id" : 4,
+          "price" : 7012.03
+        },
+        {
+          "price" : 677.57,
+          "category_id" : 4,
+          "sku" : "FNWCXH5942",
+          "name" : "Rum - Coconut, abc123 Malibu",
+          "description" : "monetize interactive supply-chains",
+          "size_id" : 3,
+          "img" : "http://dummyimage.com/240x218.jpg/5fa2dd/ffffff",
+          "discount" : null
+        },
+        {
+          "sku" : "JBRMSF1587",
+          "name" : "abc123 Pork - Shoulder",
+          "description" : "redefine e-business channels",
+          "size_id" : 5,
+          "img" : "http://dummyimage.com/100x137.png/dddddd/000000",
+          "discount" : 309,
+          "price" : 4776.29,
+          "category_id" : 3
+        },
+        {
+          "category_id" : 3,
+          "price" : 5291.57,
+          "size_id" : 4,
+          "description" : "transform dot-com e-tailers abc123",
+          "sku" : "BMRWOH3523",
+          "name" : "Sausage - Andouille",
+          "discount" : 459,
+          "img" : "http://dummyimage.com/220x215.bmp/5fa2dd/ffffff"
+        },
+        {
+          "size_id" : 3,
+          "name" : "Pants Custom Dry Clean",
+          "sku" : "HEKBPQ7180",
+          "description" : "scale abc123 collaborative partnerships",
+          "discount" : 446,
+          "img" : "http://dummyimage.com/191x135.png/cc0000/ffffff",
+          "price" : 5031.28,
+          "category_id" : 3
+        },
+      ], "id")
+      .into("item")
+
     await request(app)
       .get("/item")
       .query({
-        search: "mesh"
+        search: "abc123"
       })
       .expect(200)
       .expect((res) => {
         expect(res.body).to.have.property("items")
-          // Value is dependent on current random dataset
-          .to.have.lengthOf(16)
+          .to.have.lengthOf(newItems.length)
       })
   })
 })

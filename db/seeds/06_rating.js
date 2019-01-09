@@ -1,3 +1,4 @@
+/*
 let ratings = [
   {
     "item_id" : 683,
@@ -5999,6 +6000,40 @@ let ratings = [
     "comment" : null,
     "item_id" : 711
   }
+]
+*/
+
+let ratings = [
+  {
+    "item_id" : 1,
+    "comment" : "Future-proofed optimal moderator",
+    "stars" : 1,
+    "member_id" : 19
+  },
+  {
+    "item_id" : 2,
+    "comment" : "Enhanced logistical implementation",
+    "stars" : 2,
+    "member_id" : 22
+  },
+  {
+    "item_id" : 3,
+    "comment" : "Mandatory reciprocal hub",
+    "stars" : 4,
+    "member_id" : 13
+  },
+  {
+    "member_id" : 23,
+    "stars" : 3,
+    "comment" : "Innovative homogeneous workforce",
+    "item_id" : 4
+  },
+  {
+    "member_id" : 25,
+    "item_id" : 5,
+    "comment" : "Persevering upward-trending standardization",
+    "stars" : 1
+  },
 ]
 
 exports.seed = function(knex, Promise) {

@@ -12,16 +12,9 @@
             <v-flex
               xs12
               md4>
-              <!--
               <v-img
                 :src="item.img"
-                :max-height="$vuetify.breakpoint.smAndDown ? 250 : null"
-                contain />
-              -->
-              <v-img
-                :src="item.img"
-                contain
-                height="400" />
+                max-height="400" />
             </v-flex>
             <v-flex
               xs12
@@ -71,6 +64,7 @@
                         <v-text-field
                           v-model="quantity"
                           :disabled="!item.quantity"
+                          :max="item.quantity"
                           solo
                           type="number"
                           label="Quantity" />
@@ -177,13 +171,23 @@
                       xs12>
                       <v-textarea
                         v-model="comment"
+                        :disabled="!$auth.loggedIn"
+                        :placeholder="!$auth.loggedIn ? 'Please login to comment' : ''"
                         label="Comment"
                         color="secondary"/>
                       <div>
                         <v-btn
+                          v-if="$auth.loggedIn"
                           type="submit"
                           color="secondary">
                           Send
+                        </v-btn>
+                        <v-btn
+                          v-else
+                          to="/signin"
+                          nuxt
+                          color="secondary">
+                          Signin
                         </v-btn>
                       </div>
                     </v-flex>
@@ -323,5 +327,45 @@
   lang="scss">
   .line-through {
     text-decoration: line-through;
+  }
+  .skeleton {
+    /*
+      define as separate properties
+    */
+    --card-height: 340px;
+    --card-padding:24px;
+    --card-skeleton: linear-gradient(gray var(--card-height), transparent 0);
+
+    --title-height: 32px;
+    --title-width: 200px;
+    --title-position: var(--card-padding) 180px;
+    --title-skeleton: linear-gradient(white var(--title-height), transparent 0);
+
+    --avatar-size: 32px;
+    --avatar-position: var(--card-padding) var(--card-padding);
+    --avatar-skeleton: radial-gradient(
+      circle calc(var(--avatar-size) / 2), 
+      white 99%, 
+      transparent 0
+    );
+
+    /* 
+      now we can break the background up 
+      into individual shapes 
+    */
+    background-image: 
+      var(--avatar-skeleton),
+      var(--title-skeleton),
+      var(--card-skeleton);
+
+    background-size:
+      var(--avatar-size),
+      var(--title-width) var(--title-height),
+      100% 100%;
+
+    background-position:
+      var(--avatar-position),
+      var(--title-position),
+      0 0;
   }
 </style>

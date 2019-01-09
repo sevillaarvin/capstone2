@@ -1,3 +1,4 @@
+/*
 let items = [
   {
     "price" : 2959.88,
@@ -9999,6 +10000,211 @@ let items = [
     "price" : 2300.14,
     "category_id" : 1
   }
+]
+*/
+
+let items = [
+  {
+    "price" : 2959.88,
+    "category_id" : 1,
+    "img" : "http://photo.clubseville.icu/swimming-equipment1.jpeg",
+    "discount" : 371,
+    "name" : "Floating duck",
+    "sku" : "VXYIWV3367",
+    "description" : "This is a floating duck",
+    "size_id" : 4
+  },
+  {
+    "category_id" : 1,
+    "price" : 88.24,
+    "discount" : null,
+    "img" : "http://photo.clubseville.icu/swimming-equipment2.jpg",
+    "size_id" : 5,
+    "description" : "This is a swimming goggles",
+    "name" : "Swimming goggles",
+    "sku" : "BPZTVL8769"
+  },
+  {
+    "category_id" : 1,
+    "price" : 3444.99,
+    "description" : "This is a swimming cap",
+    "name" : "Swim cap",
+    "sku" : "XJGGUX7637",
+    "size_id" : 2,
+    "img" : "http://photo.clubseville.icu/swimming-equipment3.jpg",
+    "discount" : null
+  },
+  {
+    "price" : 2562.55,
+    "category_id" : 1,
+    "discount" : null,
+    "img" : "http://photo.clubseville.icu/swimming-equipment4.jpg",
+    "size_id" : 3,
+    "name" : "Swim ring",
+    "sku" : "VROFSX8195",
+    "description" : "This is a swim ring"
+  },
+  {
+    "price" : 1093.89,
+    "category_id" : 1,
+    "discount" : 365,
+    "img" : "http://photo.clubseville.icu/swimming-equipment5.jpeg",
+    "size_id" : 3,
+    "sku" : "EJFDHM5958",
+    "name" : "Underwater camera",
+    "description" : "This is an underwater camera"
+  },
+  {
+    "description" : "This is swimming slippers",
+    "sku" : "MUNVBG0243",
+    "name" : "Swim Slippers",
+    "size_id" : 3,
+    "img" : "http://photo.clubseville.icu/aqua-learning1.png",
+    "discount" : null,
+    "category_id" : 2,
+    "price" : 6407.27
+  },
+  {
+    "price" : 4510.91,
+    "category_id" : 2,
+    "name" : "Swim Slippers Green",
+    "sku" : "GPQVNA3868",
+    "description" : "This is swim slippers green",
+    "size_id" : 2,
+    "img" : "http://photo.clubseville.icu/aqua-learning2.png",
+    "discount" : 402
+  },
+  {
+    "price" : 6984.26,
+    "category_id" : 2,
+    "sku" : "IJQVUI4483",
+    "name" : "Swim Slippers Blue",
+    "description" : "This is swim slippers blue",
+    "size_id" : 2,
+    "img" : "http://photo.clubseville.icu/aqua-learning3.png",
+    "discount" : 475
+  },
+  {
+    "category_id" : 2,
+    "price" : 9610.56,
+    "size_id" : 5,
+    "description" : "This is swim board",
+    "sku" : "HMEOYS0451",
+    "name" : "Swim Board",
+    "discount" : 73,
+    "img" : "http://photo.clubseville.icu/aqua-learning4.jpg",
+  },
+  {
+    "category_id" : 2,
+    "price" : 5699.98,
+    "discount" : null,
+    "img" : "http://photo.clubseville.icu/aqua-learning5.png",
+    "size_id" : 2,
+    "description" : "This is swim slippers 143",
+    "sku" : "ZFSHMN8257",
+    "name" : "Swim Slippers 143"
+  },
+  {
+    "category_id" : 3,
+    "price" : 6193.23,
+    "discount" : 245,
+    "img" : "http://photo.clubseville.icu/open-water-swimming1.jpg",
+    "size_id" : null,
+    "description" : "This is swim cap",
+    "name" : "Swim Cap",
+    "sku" : "NJLVHA3514"
+  },
+  {
+    "price" : 7815.56,
+    "category_id" : 3,
+    "size_id" : 1,
+    "sku" : "MUIILM5152",
+    "name" : "Swim Tube",
+    "description" : "This is swim tube",
+    "discount" : 334,
+    "img" : "http://photo.clubseville.icu/open-water-swimming2.jpg",
+  },
+  {
+    "discount" : 434,
+    "img" : null,
+    "size_id" : 1,
+    "description" : "This is oxygen tank I",
+    "name" : "Oxygen Tank I",
+    "img" : "http://photo.clubseville.icu/open-water-swimming3.png",
+    "sku" : "QBTFMC3677",
+    "category_id" : 3,
+    "price" : 2485.14
+  },
+  {
+    "img" : "http://photo.clubseville.icu/open-water-swimming4.png",
+    "discount" : null,
+    "sku" : "VIYCAM5018",
+    "name" : "Oxygen Tank II",
+    "description" : "This is oxygen tank II",
+    "size_id" : 3,
+    "price" : 6877.51,
+    "category_id" : 3
+  },
+  {
+    "price" : 5292.08,
+    "category_id" : 3,
+    "size_id" : 4,
+    "sku" : "RDXPLR2289",
+    "name" : "Snorkle",
+    "description" : "This is snorkle",
+    "discount" : 56,
+    "img" : "http://photo.clubseville.icu/open-water-swimming5.jpg",
+  },
+  {
+    "category_id" : 4,
+    "price" : 7501.33,
+    "img" : "http://photo.clubseville.icu/swimsuits1.png",
+    "discount" : null,
+    "description" : "This is green two piece swimsuit",
+    "name" : "Green Two Piece Swimsuit",
+    "sku" : "KNOSKT1720",
+    "size_id" : 4
+  },
+  {
+    "img" : "http://photo.clubseville.icu/swimsuits2.jpg",
+    "discount" : 254,
+    "description" : "This is red two piece swimsuit",
+    "sku" : "RPDTOF9523",
+    "name" : "Red Two Piece Swimsuit",
+    "size_id" : 4,
+    "category_id" : 4,
+    "price" : 9359.63
+  },
+  {
+    "category_id" : 4,
+    "price" : 3353.92,
+    "discount" : null,
+    "img" : "http://photo.clubseville.icu/swimsuits3.png",
+    "size_id" : 3,
+    "description" : "This is one piece swimsuit",
+    "name" : "One Piece Swimsuit",
+    "sku" : "JQIEFH6223"
+  },
+  {
+    "price" : 1123.1,
+    "category_id" : 4,
+    "name" : "Swim Shorts",
+    "sku" : "HFOWFH2645",
+    "description" : "This is swim shorts",
+    "size_id" : 5,
+    "img" : "http://photo.clubseville.icu/swimsuits4.jpg",
+    "discount" : null
+  },
+  {
+    "price" : 5627.67,
+    "category_id" : 4,
+    "discount" : null,
+    "img" : "http://photo.clubseville.icu/swimsuits5.jpg",
+    "size_id" : 1,
+    "name" : "Swim Shorts Blue",
+    "sku" : "MOYBNX1104",
+    "description" : "This is swim shorts blue"
+  },
 ]
 
 exports.seed = function(knex, Promise) {

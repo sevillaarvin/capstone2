@@ -184,6 +184,10 @@
                               class="font-weight-bold">
                               {{ address }}
                             </span>
+                            <v-alert
+                              :value="!address">
+                              Please include a delivery address
+                            </v-alert>
                             <v-layout>
                               <v-flex
                                 xs12>
@@ -211,6 +215,7 @@
                             </v-btn>
                             <v-spacer />
                             <v-btn
+                              :disabled="!address"
                               round
                               large
                               color="primary"
@@ -378,7 +383,7 @@
           if (status === 409) {
             this.showSnackbar(data, "error")
           } else {
-            this.showSnackbar("Something went wront", "error")
+            this.showSnackbar("Something went wrong", "error")
           }
         }
       },

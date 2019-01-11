@@ -304,7 +304,8 @@ router.get("/category/:name", async (req, res, next) => {
       .offset(offset)
       .limit(limit)
       .groupBy(["item.id", "category.name", "size.name"])
-      .orderBy("item.id")
+      .orderBy(orderBy || "item.id", descending === "true" ? "desc" : "asc")
+
 
     if (search) {
       totalQuery.andWhere((queryBuilder) => {

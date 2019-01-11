@@ -483,6 +483,7 @@ describe("GET /category/name", () => {
       .from("item")
       .where({ "category.name": "Swimming Equipment" })
       .innerJoin("category", "item.category_id", "category.id")
+      .orderBy("item.id")
     expect(result.items[0].id).to.equal(swimItems[10].id)
   })
 

@@ -159,13 +159,17 @@ router.post("/signup", async (req, res) => {
     email,
     username,
     password,
+    confirmPassword,
     // role_id
   } = req.body
 
   try {
     // TODO: Fix validation user input
-    if (!firstName || !lastName || !email || !username || !password /* || !role_id */) {
+    if (!firstName || !lastName || !email || !username || !password || !confirmPassword /* || !role_id */) {
       throw new Error("Incomplete fields.")
+    }
+    if (password !== confirmPassword) {
+      throw new Error("Password does not match")
     }
 
     try {

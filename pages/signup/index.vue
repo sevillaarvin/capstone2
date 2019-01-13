@@ -77,6 +77,7 @@
               <v-flex xs12>
                 <v-btn
                   block
+                  color="secondary"
                   type="submit">
                   Submit
                 </v-btn>
@@ -119,13 +120,16 @@
     },
     methods: {
       async onSubmit() {
-        const { confirmPassword, ...user } = this.user
-        try {
-          await this.$store.dispatch("signUpUser", user)
-          this.showSnackbar("Signed up successfully", "success")
-          this.$router.push("/signin")
-        } catch(e) {
-          this.showSnackbar("Something went wrong", "error")
+        if (this.user.password !== this.user.confirmPassword) {
+          this.showSnackbar("Password does not match", "error")
+        } else {
+          try {
+            await this.$store.dispatch("signUpUser", this.user)
+            this.showSnackbar("Signed up successfully", "success")
+            this.$router.push("/signin")
+          } catch(e) {
+            this.showSnackbar("Something went wrong", "error")
+          }
         }
       },
       showSnackbar(message, color) {

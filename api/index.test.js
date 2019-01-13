@@ -113,6 +113,7 @@ describe("POST /signup", () => {
         email: "tif@test.com",
         username: "test",
         password: "test",
+        confirmPassword: "test",
         birthdate: "1990-01-01",
         address: "Somewhere in America",
         role_id: 1,
@@ -143,6 +144,7 @@ describe("POST /signup", () => {
         email: "ger@mane.com",
         username: "geraldgreg",
         password: "shouldbehashed",
+        confirmPassword: "shouldbehashed",
         birthdate: "2000-08-08",
         address: "18 Open Street, Ohio",
         role_id: 1
@@ -171,6 +173,7 @@ describe("POST /signup", () => {
         email: "ger@mane.com",
         username: "geraldgreg",
         password: "shouldbehashed",
+        confirmPassword: "shouldbehashed",
         birthdate: "2000-08-08",
         address: "18 Open Street, Ohio",
         role_id: 1
@@ -181,6 +184,22 @@ describe("POST /signup", () => {
         if (err) return done(err)
         done()
       })
+  })
+
+  it("should not register when password does not match", async function() {
+    await request(app)
+      .post("/signup")
+      .send({
+        firstName: "hmmm",
+        lastName: "hmmm",
+        email: "what@the.fff",
+        username: "whattheff",
+        password: "shouldbehashed",
+        confirmPassword: "asddf",
+        birthdate: "2000-08-08",
+        address: "18 Open Street, Ohio",
+      })
+      .expect(400)
   })
 
   it("should not register when required fields are missing", done => {

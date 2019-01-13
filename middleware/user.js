@@ -11,7 +11,10 @@ export default async ({ app, error, redirect, store }) => {
     } catch (e) {
       // error(e)
       // User might not be logged in
-      // console.log("middleware/user", e)
+      // console.log("middleware/user", e.message)
+      if ($auth.loggedIn) {
+        $auth.logout()
+      }
       return
     }
   }

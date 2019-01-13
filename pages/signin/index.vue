@@ -25,7 +25,9 @@
         <v-form
           @submit.prevent="onSubmit">
           <v-container>
-            <v-layout>
+            <v-layout
+              row
+              wrap>
               <v-flex xs12>
                 <v-text-field
                   v-model="user.username"
@@ -33,8 +35,6 @@
                   type="text"
                   label="Username or Email" />
               </v-flex>
-            </v-layout>
-            <v-layout>
               <v-flex xs12>
                 <v-text-field
                   v-model="user.password"
@@ -42,10 +42,6 @@
                   type="password"
                   label="Password" />
               </v-flex>
-            </v-layout>
-            <v-layout
-              row
-              wrap>
               <v-flex xs12>
                 <v-card-actions>
                   <!-- TODO: Implement remember and forget -->
@@ -58,14 +54,17 @@
                     Forgot Password?
                   </v-btn>
                   -->
+                  <nuxt-link
+                    to="/signup">
+                    New User?
+                  </nuxt-link>
                 </v-card-actions>
               </v-flex>
-            </v-layout>
-            <v-layout>
               <v-flex xs12>
                 <v-btn
                   block
-                  type="submit">
+                  type="submit"
+                  color="secondary">
                   Submit
                 </v-btn>
               </v-flex>

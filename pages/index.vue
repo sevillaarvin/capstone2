@@ -538,7 +538,7 @@
     },
     async asyncData({ app, redirect, store }) {
       const { $auth } = app
-      if ($auth.$state.loggedIn) {
+      if ($auth.loggedIn) {
         let link
 
         if (store.getters["admin/isAdmin"]) {

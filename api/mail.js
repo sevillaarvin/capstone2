@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer")
-const development = process.env.NODE_ENV === "production" || true
+const development = process.env.NODE_ENV === "development" || true
 
 const sendMail = (recipient, orderDetails) => {
   return new Promise((resolve, reject) => {

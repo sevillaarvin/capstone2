@@ -77,6 +77,11 @@
                   type="number"
                   color="secondary"
                   label="Discount" />
+                <v-text-field
+                  v-model="newItem.quantity"
+                  type="number"
+                  color="secondary"
+                  label="Quantity" />
                 <v-select
                   :items="sizeNames"
                   v-model="newItem.size"
@@ -128,6 +133,7 @@
             </td>
             <td>{{ item.price | currency }}</td>
             <td>{{ item.discount | currency }}</td>
+            <td>{{ item.quantity }}</td>
             <td>{{ item.size }}</td>
           </tr>
         </template>
@@ -195,6 +201,11 @@
                 type="number"
                 color="secondary"
                 label="Discount" />
+              <v-text-field
+                v-model="currentItem.quantity"
+                type="number"
+                color="secondary"
+                label="Quantity" />
               <v-select
                 :items="sizeNames"
                 v-model="currentItem.size"
@@ -292,6 +303,10 @@
           {
             text: "Discount",
             value: "discount",
+          },
+          {
+            text: "Quantity",
+            value: "quantity",
           },
           {
             text: "Size",
